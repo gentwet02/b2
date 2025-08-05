@@ -1,0 +1,161 @@
+$base-line-height: 1.6;
+$heading-line-height: 1.1;
+$body-max-width: 75ch;
+$color-placeholder: #9ca3af;
+
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    font: inherit;
+}
+
+html {
+    -moz-text-size-adjust: none;
+    -webkit-text-size-adjust: none;
+    text-size-adjust: none;
+    interpolate-size: allow-keywords;
+}
+
+body {
+    line-height: $base-line-height;
+    -webkit-font-smoothing: antialiased;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+button,
+input,
+label {
+    line-height: $heading-line-height;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+    text-wrap: balance;
+}
+
+p,
+li,
+figcaption {
+    max-width: $body-max-width;
+    text-wrap: pretty;
+}
+
+img,
+picture,
+video,
+canvas,
+svg {
+    display: block;
+    max-width: 100%;
+}
+
+img {
+    object-fit: cover;
+}
+
+a {
+    color: inherit;
+    text-decoration: inherit;
+}
+
+ol,
+ul,
+menu,
+li {
+    list-style: none;
+}
+
+button,
+select {
+    text-transform: none;
+}
+
+[type='number']::-webkit-outer-spin-button,
+[type='number']::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+[type='number'] {
+    -moz-appearance: textfield;
+}
+
+:-moz-focusring {
+    outline: auto;
+}
+
+:-moz-ui-invalid {
+    box-shadow: none;
+}
+
+[type='search'] {
+    -webkit-appearance: textfield;
+    outline-offset: -2px;
+}
+
+::-webkit-search-decoration {
+    -webkit-appearance: none;
+}
+
+input::-moz-placeholder,
+textarea::-moz-placeholder {
+    opacity: 1;
+    color: $color-placeholder;
+}
+
+input::placeholder,
+textarea::placeholder {
+    opacity: 1;
+    color: $color-placeholder;
+}
+
+button,
+[role='button'] {
+    cursor: pointer;
+}
+
+:disabled {
+    cursor: default;
+}
+
+textarea:not([rows]) {
+    min-height: 10em;
+}
+
+:target {
+    scroll-margin-block: 5ex;
+}
+
+[hidden] {
+    display: none;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+    html {
+        scroll-behavior: smooth;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    * {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+        scroll-behavior: auto !important;
+    }
+}
