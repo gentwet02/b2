@@ -1,0 +1,74 @@
+{
+    "compilerOptions": {
+        /* Type Checking */
+        "strict": false, // check every parameters individually instead
+        "allowUnreachableCode": false,
+        "allowUnusedLabels": false,
+        "alwaysStrict": false,
+        "exactOptionalPropertyTypes": true,
+        "noFallthroughCasesInSwitch": false,
+        "noImplicitAny": true,
+        "noImplicitOverride": true,
+        "noImplicitReturns": true,
+        "noImplicitThis": true,
+        "noPropertyAccessFromIndexSignature": false,
+        "noUncheckedIndexedAccess": true,
+        "noUnusedLocals": true,
+        "noUnusedParameters": true,
+        "strictBindCallApply": true,
+        "strictBuiltinIteratorReturn": true,
+        "strictFunctionTypes": true,
+        "strictNullChecks": true,
+        "strictPropertyInitialization": true,
+        "useUnknownInCatchVariables": true,
+
+        /* Modules */
+        "rewriteRelativeImportExtensions": false,
+        "allowArbitraryExtensions": false,
+        "allowImportingTsExtensions": true,
+        "allowUmdGlobalAccess": false,
+        "baseUrl": "./src",
+        "module": "ESNext",
+        "moduleResolution": "bundler",
+        "noResolve": false,
+        "noUncheckedSideEffectImports": true,
+        "paths": {
+            "@/*": ["./*"]
+        },
+        "resolveJsonModule": true,
+        "resolvePackageJsonExports": true,
+        "resolvePackageJsonImports": true,
+
+        /* Emit */
+        "noEmit": true,
+
+        /* JavaScript Support */
+        "allowJs": false,
+        //"checkJs": true, // if "allowJs" = true
+
+        /* Editor Support */
+        "disableSizeLimit": false,
+
+        /* Interop Constraints */
+        "allowSyntheticDefaultImports": true,
+        "erasableSyntaxOnly": true,
+        "forceConsistentCasingInFileNames": true,
+        "isolatedModules": true,
+        "preserveSymlinks": false, // to check if something weird with npm link
+        "verbatimModuleSyntax": true,
+
+        /* Language and Environment */
+        "jsx": "react-jsx",
+        "lib": ["ES2023", "DOM", "DOM.Iterable"],
+        "moduleDetection": "force",
+        "target": "ES2023",
+        "useDefineForClassFields": true,
+
+        /* Projects */
+        "tsBuildInfoFile": "./node_modules/.tmp/tsconfig.app.tsbuildinfo",
+
+        /* Completeness */
+        "skipLibCheck": true
+    },
+    "include": ["src"]
+}
