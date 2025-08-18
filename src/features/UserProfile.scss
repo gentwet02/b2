@@ -1,0 +1,341 @@
+.profile {
+    padding: 1.5rem;
+    max-width: 1200px;
+    margin: 0 auto;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+
+    &__header {
+        display: flex;
+        justify-content: flex-end;
+        margin-bottom: 1.5rem;
+    }
+
+    &__refresh-btn {
+        padding: 0.5rem 1rem;
+        background-color: #3b82f6;
+        color: white;
+        border: none;
+        border-radius: 0.375rem;
+        font-weight: 500;
+        cursor: pointer;
+        transition: background-color 0.2s ease;
+
+        &:hover {
+            background-color: #2563eb;
+        }
+    }
+
+    &__loading,
+    &__error {
+        text-align: center;
+        padding: 2rem;
+        font-size: 1.125rem;
+    }
+
+    &__error {
+        color: #dc2626;
+    }
+
+    &__card {
+        display: flex;
+        align-items: center;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        padding: 2rem;
+        border-radius: 1rem;
+        color: white;
+        margin-bottom: 2rem;
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+
+        @media (max-width: 768px) {
+            flex-direction: column;
+            text-align: center;
+            gap: 1rem;
+        }
+    }
+
+    &__avatar-section {
+        margin-right: 2rem;
+
+        @media (max-width: 768px) {
+            margin-right: 0;
+        }
+    }
+
+    &__avatar-container {
+        position: relative;
+        width: 120px;
+        height: 120px;
+    }
+
+    &__avatar {
+        width: 100%;
+        height: 100%;
+        border-radius: 50%;
+        object-fit: cover;
+    }
+
+    &__border {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        pointer-events: none;
+    }
+
+    &__name {
+        font-size: 2.5rem;
+        font-weight: 700;
+        margin: 0 0 0.5rem 0;
+        text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+    }
+
+    &__badges {
+        display: flex;
+        gap: 0.5rem;
+        margin-bottom: 1rem;
+
+        @media (max-width: 768px) {
+            justify-content: center;
+        }
+    }
+
+    &__badge {
+        padding: 0.25rem 0.75rem;
+        border-radius: 9999px;
+        font-size: 0.75rem;
+        font-weight: 600;
+
+        &--club {
+            background-color: rgba(34, 197, 94, 0.8);
+            backdrop-filter: blur(10px);
+        }
+
+        &--vip {
+            background-color: rgba(251, 191, 36, 0.8);
+            backdrop-filter: blur(10px);
+            color: #92400e;
+        }
+    }
+
+    &__arena {
+        font-size: 1.125rem;
+        font-weight: 500;
+    }
+
+    &__arena-name {
+        font-weight: 700;
+        color: #fbbf24;
+        text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+    }
+
+    &__stats-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 1.5rem;
+        margin-bottom: 2rem;
+    }
+
+    &__section {
+        margin-bottom: 2rem;
+    }
+
+    &__section-title {
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: #1f2937;
+        margin-bottom: 1rem;
+        border-bottom: 2px solid #e5e7eb;
+        padding-bottom: 0.5rem;
+    }
+}
+
+.stats-card {
+    background: white;
+    border-radius: 0.75rem;
+    padding: 1.5rem;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+    border: 1px solid #e5e7eb;
+
+    &__title {
+        font-size: 1.25rem;
+        font-weight: 600;
+        color: #1f2937;
+        margin-bottom: 1rem;
+        text-align: center;
+    }
+
+    &__content {
+        display: grid;
+        gap: 0.75rem;
+    }
+}
+
+.stat-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.5rem 0;
+    border-bottom: 1px solid #f3f4f6;
+
+    &:last-child {
+        border-bottom: none;
+    }
+
+    &__label {
+        font-weight: 500;
+        color: #6b7280;
+    }
+
+    &__value {
+        font-weight: 600;
+        color: #111827;
+
+        &--wins {
+            color: #059669;
+        }
+
+        &--losses {
+            color: #dc2626;
+        }
+    }
+}
+
+.towers-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1rem;
+}
+
+.tower-item {
+    background: white;
+    border-radius: 0.5rem;
+    padding: 1rem;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    border: 1px solid #e5e7eb;
+
+    &__name {
+        font-weight: 600;
+        color: #1f2937;
+        margin-bottom: 0.25rem;
+    }
+
+    &__usage {
+        font-size: 0.875rem;
+        color: #6b7280;
+        margin-bottom: 0.5rem;
+    }
+
+    &__bar {
+        width: 100%;
+        height: 4px;
+        background-color: #e5e7eb;
+        border-radius: 2px;
+        overflow: hidden;
+    }
+
+    &__bar-fill {
+        height: 100%;
+        background: linear-gradient(90deg, #3b82f6, #1d4ed8);
+        transition: width 0.3s ease;
+    }
+}
+
+.bloons-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1rem;
+}
+
+.bloon-item {
+    background: white;
+    border-radius: 0.5rem;
+    padding: 1rem;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    border: 1px solid #e5e7eb;
+
+    &__type {
+        font-weight: 700;
+        color: #1f2937;
+        margin-bottom: 0.5rem;
+        text-transform: capitalize;
+    }
+
+    &__stats {
+        display: flex;
+        flex-direction: column;
+        gap: 0.25rem;
+    }
+}
+
+.bloon-stat {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.875rem;
+
+    &__label {
+        color: #6b7280;
+    }
+
+    &__value {
+        font-weight: 600;
+        color: #1f2937;
+    }
+}
+
+.accolades-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1rem;
+}
+
+.accolade-item {
+    background: linear-gradient(135deg, #f59e0b, #d97706);
+    color: white;
+    border-radius: 0.5rem;
+    padding: 1rem;
+    text-align: center;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+
+    &__type {
+        font-weight: 600;
+        margin-bottom: 0.25rem;
+        font-size: 0.875rem;
+    }
+
+    &__subtype {
+        font-size: 0.75rem;
+        opacity: 0.9;
+        margin-bottom: 0.25rem;
+    }
+
+    &__value {
+        font-weight: 700;
+        font-size: 1.125rem;
+    }
+}
+
+// Responsive Design
+@media (max-width: 768px) {
+    .profile {
+        padding: 1rem;
+
+        &__stats-grid {
+            grid-template-columns: 1fr;
+        }
+
+        &__name {
+            font-size: 2rem;
+        }
+
+        &__card {
+            padding: 1.5rem;
+        }
+    }
+
+    .towers-grid,
+    .bloons-grid,
+    .accolades-grid {
+        grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    }
+}
