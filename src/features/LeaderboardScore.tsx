@@ -17,10 +17,11 @@ interface Player {
 
 interface LeaderboardScoreProps {
     season: number;
+    itemsPerPage?: number;
 }
 
 export default function LeaderboardScore(props: LeaderboardScoreProps) {
-    const { season } = props;
+    const { season, itemsPerPage = 25 } = props;
 
     const { data, isLoading, error } = useQuery<LeaderboardData>({
         queryKey: ['leaderboard', season],
@@ -53,7 +54,7 @@ export default function LeaderboardScore(props: LeaderboardScoreProps) {
 
     return (
         <div className='leaderboard__table-container'>
-            <Table data={rows} />
+            <Table data={rows} disableSorting={true} itemsPerPage={itemsPerPage} />
             {data.body.length === 0 && (
                 <div className='leaderboard__empty'>No players found for this season.</div>
             )}

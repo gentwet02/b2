@@ -43,7 +43,7 @@ export default function Home() {
         <main className='home'>
             {currentSeason && (
                 <div className='home__leaderboard'>
-                    <LeaderboardScore season={currentSeason} />
+                    <LeaderboardScore season={currentSeason} itemsPerPage={10} />
                 </div>
             )}
         </main>

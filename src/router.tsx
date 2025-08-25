@@ -2,9 +2,15 @@ import { createRouter, createRootRoute, createRoute, Outlet } from '@tanstack/re
 import Home from '@/pages/Home';
 import User from '@/pages/User';
 import Leaderboard from '@/pages/Leaderboard';
+import Header from '@/components/header/Header';
 
 const rootRoute = createRootRoute({
-    component: () => <Outlet />,
+    component: () => (
+        <>
+            <Header />
+            <Outlet />
+        </>
+    ),
 });
 
 const routes = [
