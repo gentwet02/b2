@@ -1,29 +1,20 @@
 import Table, { type Row } from '@/components/table/Table';
-import { matchesService } from '@/services/api/matchesHistory';
-import type { ApiResponse } from '@/types/api';
-import type { MatchesResponse } from '@/types/match';
-import { useQuery } from '@tanstack/react-query';
+import useMatchesHistory from '@/hooks/useMatchesHistory';
 
 export default function MatchesHistory() {
-    const { data, isLoading, error } = useQuery<ApiResponse<MatchesResponse>>({
-        queryKey: ['matchesHistory'],
-        queryFn: async () => {
-            const response = await matchesService.getMatchesRecentHistory();
-            if (!response.success) throw new Error('Failed to fetch leaderboard');
-            console.log('fetch matches history');
-            return response;
-        },
-    });
+    const { data, isLoading, error } = useMatchesHistory();
 
     if (isLoading) {
-        return <></>;
+        return <>Loading...</>;
     }
 
-    if (error || !data) {
-        return <></>;
+    if (error || !data?.data?.matches) {
+        return <>Error!</>;
     }
 
-    const rows = data.data?.matches.matches.map((match): Row => {
+    const matches = data.data?.matches.matches;
+
+    const rows = matches.map((match): Row => {
         return {
             id: match.id,
             gametype: match.gametype,
@@ -36,14 +27,10 @@ export default function MatchesHistory() {
         };
     });
 
-    if (!rows) {
-        return <></>;
-    }
-
     return (
         <div className='matches-history__table-container'>
             <Table data={rows} />
-            {data?.data?.matches.matches.length === 0 && (
+            {matches.length === 0 && (
                 <div className='matches-history__empty'>No players found for this season.</div>
             )}
         </div>

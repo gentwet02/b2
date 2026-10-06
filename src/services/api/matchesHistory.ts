@@ -3,7 +3,8 @@ import { getFromApi } from '@/services/api/utils';
 
 export const matchesService = {
     getMatchesRecentHistory: () => getFromApi<MatchesResponse>('matches-history'),
-    getMatchesRecentHistoryStatus: () => getFromApi<MatchesStatusResponse>('matchesHistory/status'),
+    getMatchesRecentHistoryStatus: () =>
+        getFromApi<MatchesStatusResponse>('matches-history/status'),
     matchesRecentHistoryForceUpdate: () =>
-        getFromApi<MatchesUpdateResponse>('matchesHistory/force-update'),
+        getFromApi<MatchesUpdateResponse>('matches-history/force-update'),
 };

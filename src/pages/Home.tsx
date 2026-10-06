@@ -1,49 +1,22 @@
 import LeaderboardScore from '@/features/LeaderboardScore';
-import { useQuery } from '@tanstack/react-query';
-
-interface Season {
-    id: string;
-    name: string;
-    start: number;
-    end: number;
-    live: boolean;
-    totalScores: number;
-    leaderboard: string;
-}
-
-interface SeasonsData {
-    error: Error;
-    success: boolean;
-    body: Season[];
-}
+import useSeasons from '@/hooks/useSeasons';
 
 export default function Home() {
-    const { data, isLoading, error } = useQuery<SeasonsData>({
-        queryKey: ['seasons'],
-        queryFn: async () => {
-            const response = await fetch('https://data.ninjakiwi.com/battles2/homs');
-            if (!response.ok) throw new Error('Failed to fetch leaderboard');
-            console.log('fetch');
-            return response.json();
-        },
-    });
+    const { data: liveSeason, isLoading, error } = useSeasons();
 
-    let currentSeason: number | undefined;
+    if (isLoading) {
+        return <>Loading...</>;
+    }
 
-    if (!isLoading && !error && data?.body) {
-        data.body.forEach((season) => {
-            if (season.live === true) {
-                const seasonStr = season.name.split('Season ')[1];
-                if (seasonStr) currentSeason = +seasonStr - 1;
-            }
-        });
+    if (error || !liveSeason?.data) {
+        return <>Error!</>;
     }
 
     return (
         <main className='home'>
-            {currentSeason && (
+            {liveSeason?.data?.liveSeason && (
                 <div className='home__leaderboard'>
-                    <LeaderboardScore season={currentSeason} itemsPerPage={10} />
+                    <LeaderboardScore season={liveSeason.data?.liveSeason} itemsPerPage={10} />
                 </div>
             )}
         </main>

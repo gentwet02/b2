@@ -9,7 +9,7 @@ export default function Leaderboard() {
     const { season } = routeApi.useParams();
     const queryClient = useQueryClient();
 
-    const queryKey = ['leaderboard', season];
+    const queryKey = [`leaderboard${season}`, season];
     const queryState = queryClient.getQueryState(queryKey);
     const isFetching = queryState?.fetchStatus === 'fetching';
 
