@@ -1,7 +1,7 @@
+/** GET /players/:id — known players answer { id, player }, unknown ones { error } (status 200). */
 export interface playerNameResponse {
-    error?: string | null;
-    id: string;
-    realName?: string;
+    id?: string;
+    player?: string;
     message?: string | null;
-    name: string;
+    error?: string | null;
 }

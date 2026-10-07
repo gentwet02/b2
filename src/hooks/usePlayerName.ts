@@ -1,16 +1,15 @@
 import { useQuery } from '@tanstack/react-query';
 import { playerService } from '@/services/api/player';
-import type { ApiResponse } from '@/types/api';
-import type { playerNameResponse } from '@/types/player';
 
-export default function useLeaderboard(playerId: string) {
-    return useQuery<ApiResponse<playerNameResponse>>({
-        queryKey: ['player-name'],
+/** Real name of a known player (from the server's name list), or null. */
+export default function usePlayerName(playerId: string) {
+    return useQuery<string | null>({
+        queryKey: ['playerName', playerId],
         queryFn: async () => {
             const response = await playerService.getPlayerName(playerId);
-            if (!response.success) throw new Error(`Failed to fetch player name for: ${playerId}`);
-            console.log(`fetch player name for: ${playerId}`);
-            return response;
+            return response.data?.player ?? null;
         },
+        enabled: !!playerId,
+        staleTime: Infinity,
     });
 }

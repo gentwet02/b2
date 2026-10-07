@@ -1,20 +1,19 @@
-@use 'sass:color';
 @use '@/styles/colors';
+@use '@/styles/mixins' as *;
 
 .table__pagination {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding-inline: 1rem;
     gap: 1rem;
 
     @media (max-width: 640px) {
         flex-direction: column;
-        gap: 1rem;
     }
 
     &-info {
         font-size: 0.875rem;
+        color: colors.$ink-soft;
     }
 
     &-controls {
@@ -23,23 +22,8 @@
     }
 
     &-button {
-        padding: 0.5rem 1rem;
-        border: 1px solid colors.$border;
-        border-radius: 0.375rem;
-        background-color: colors.$bg-white;
-        font-size: 0.875rem;
-        transition:
-            background-color 200ms,
-            border-color 200ms;
-
-        &:hover:not(:disabled) {
-            background-color: colors.$bg-hover;
-            border-color: color.adjust(colors.$border, $lightness: -10%);
-        }
-
-        &:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
-        }
+        @include button(colors.$paper, colors.$ink);
+        font-size: 0.9rem;
+        padding: 0.4rem 0.9rem;
     }
 }

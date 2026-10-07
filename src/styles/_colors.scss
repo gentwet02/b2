@@ -1,5 +1,18 @@
-$bg-white: #fff;
-$bg-hover: #cecece;
-$border: #dedede;
-$primary: #da2f4d;
-$text-grey: #333;
+// Palette: a bright game-menu look. Ink outlines on paper panels over a sky background.
+$sky: #cfe6fa; // page background
+$sky-deep: #a9d2f3;
+$paper: #fffdf7; // panels
+$paper-dim: #f4efe1; // table head, hover, inner wells
+$ink: #1b2340; // text and outlines
+$ink-soft: #5b6485; // secondary text
+$line: #e4dfcf; // hairlines inside panels
+$bloon: #e8364f; // primary, losses
+$banana: #ffc93c; // Hall of Masters, top ranks
+$leaf: #2e9e62; // wins
+
+// Names used by the table components
+$bg-white: $paper;
+$bg-hover: $paper-dim;
+$border: $line;
+$primary: $bloon;
+$text-grey: $ink-soft;

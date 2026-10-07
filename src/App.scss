@@ -1,1 +1,139 @@
 @use '@/styles/reset';
+@use '@/styles/colors';
+@use '@/styles/mixins' as *;
+
+:root {
+    color-scheme: light;
+}
+
+body {
+    min-height: 100dvh;
+    font-family: $font-body;
+    font-size: 1rem;
+    color: colors.$ink;
+    background-color: colors.$sky;
+    // faint bloon dots, drawn once, far in the background
+    background-image:
+        radial-gradient(circle at 12% 18%, rgba(255, 255, 255, 0.55) 0 3.5rem, transparent 3.6rem),
+        radial-gradient(circle at 88% 8%, rgba(255, 255, 255, 0.45) 0 2.5rem, transparent 2.6rem),
+        radial-gradient(circle at 78% 72%, rgba(255, 255, 255, 0.35) 0 4.5rem, transparent 4.6rem);
+    background-attachment: fixed;
+    font-variant-numeric: tabular-nums;
+}
+
+#root {
+    display: flex;
+    flex-direction: column;
+    min-height: 100dvh;
+}
+
+input,
+select {
+    color: colors.$ink;
+    background-color: colors.$paper;
+}
+
+:focus-visible {
+    outline: 3px solid colors.$bloon;
+    outline-offset: 2px;
+    border-radius: 4px;
+}
+
+.page {
+    width: min(72rem, 100% - 2rem);
+    margin-inline: auto;
+    padding-block: 2rem 4rem;
+    display: grid;
+    gap: 2rem;
+    flex: 1;
+
+    &__head {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: flex-end;
+        justify-content: space-between;
+        gap: 1rem;
+    }
+
+    &__title {
+        @include display(clamp(2rem, 5vw, 3rem));
+    }
+
+    &__subtitle {
+        color: colors.$ink-soft;
+        margin-top: 0.35rem;
+    }
+
+    &__actions {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 0.75rem;
+    }
+}
+
+.button {
+    @include button;
+
+    &--quiet {
+        @include button(colors.$paper, colors.$ink);
+    }
+}
+
+.select {
+    padding: 0.5rem 2rem 0.5rem 0.75rem;
+    font-weight: 600;
+    border: 2px solid colors.$ink;
+    border-radius: 0.75rem;
+    appearance: none;
+    background-image:
+        linear-gradient(45deg, transparent 50%, colors.$ink 50%),
+        linear-gradient(135deg, colors.$ink 50%, transparent 50%);
+    background-position:
+        calc(100% - 1rem) 55%,
+        calc(100% - 0.7rem) 55%;
+    background-size: 0.3rem 0.3rem;
+    background-repeat: no-repeat;
+    cursor: pointer;
+}
+
+.text-link {
+    font-weight: 600;
+    text-decoration: underline;
+    text-decoration-thickness: 2px;
+    text-underline-offset: 3px;
+    text-decoration-color: colors.$bloon;
+
+    &:hover {
+        color: colors.$bloon;
+    }
+}
+
+.visually-hidden {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+}
+
+.site-main {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+
+    > .status--loading {
+        flex: 1;
+        align-content: center;
+    }
+}
+
+.site-footer {
+    width: min(72rem, 100% - 2rem);
+    margin-inline: auto;
+    padding-block: 1.5rem 2rem;
+    font-size: 0.8125rem;
+    color: colors.$ink-soft;
+    border-top: 2px dashed rgba(colors.$ink, 0.2);
+}

@@ -1,0 +1,62 @@
+@use '@/styles/colors';
+@use '@/styles/mixins' as *;
+
+.status {
+    display: grid;
+    justify-items: center;
+    gap: 0.75rem;
+    padding: 3rem 1.5rem;
+    text-align: center;
+
+    &__bloon {
+        width: 2.5rem;
+        fill: colors.$bloon;
+        stroke: colors.$ink;
+        stroke-width: 2;
+        stroke-linejoin: round;
+        overflow: visible;
+        animation: bloon-bob 1.4s ease-in-out infinite;
+    }
+
+    &__string {
+        fill: none;
+        stroke-width: 1.5;
+    }
+
+    &__label {
+        color: colors.$ink-soft;
+        font-weight: 500;
+    }
+
+    &__title {
+        @include display(1.5rem);
+    }
+
+    &__text {
+        max-width: 42ch;
+        color: colors.$ink-soft;
+    }
+
+    &__action {
+        margin-top: 0.5rem;
+    }
+
+    &--error,
+    &--empty {
+        @include panel;
+    }
+
+    &--error &__title {
+        color: colors.$bloon;
+    }
+}
+
+@keyframes bloon-bob {
+    0%,
+    100% {
+        transform: translateY(0) rotate(-4deg);
+    }
+    50% {
+        transform: translateY(-8px) rotate(4deg);
+    }
+}

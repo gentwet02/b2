@@ -1,0 +1,194 @@
+@use '@/styles/colors';
+@use '@/styles/mixins' as *;
+
+.match-card {
+    display: grid;
+    grid-template-columns: 8.5rem 1fr;
+    align-items: center;
+    gap: 1rem;
+    padding: 0.75rem 1rem 0.75rem 1.1rem;
+    background: colors.$paper;
+    border: 2px solid colors.$ink;
+    border-radius: 0.75rem;
+    // the left edge carries the result when viewed from a profile
+    box-shadow: inset 6px 0 0 colors.$line;
+
+    &--win {
+        box-shadow: inset 6px 0 0 colors.$leaf;
+    }
+
+    &--lose {
+        box-shadow: inset 6px 0 0 colors.$bloon;
+    }
+
+    &__map {
+        display: grid;
+        gap: 0.4rem;
+    }
+
+    &__map-img {
+        width: 100%;
+        aspect-ratio: 16 / 9;
+        height: auto;
+        border: 1.5px solid colors.$ink;
+        border-radius: $radius-inner;
+        background: colors.$paper-dim;
+    }
+
+    &__map-info {
+        display: grid;
+        line-height: 1.25;
+    }
+
+    &__map-name {
+        font-weight: 700;
+    }
+
+    &__meta {
+        font-size: 0.8125rem;
+        color: colors.$ink-soft;
+    }
+
+    &__players {
+        display: grid;
+        grid-template-columns: 1fr auto 1fr;
+        align-items: center;
+        gap: 0.75rem;
+        min-width: 0;
+    }
+
+    &__vs {
+        @include display(1.1rem);
+        color: colors.$ink-soft;
+    }
+
+    &__side {
+        display: flex;
+        align-items: flex-start;
+        gap: 0.65rem;
+        min-width: 0;
+
+        &--right {
+            flex-direction: row-reverse;
+            text-align: right;
+
+            .match-card__name-row {
+                flex-direction: row-reverse;
+            }
+
+            .match-card__towers {
+                justify-content: flex-end;
+            }
+        }
+    }
+
+    &__hero-img {
+        flex: none;
+        width: 2.75rem;
+        height: 2.75rem;
+        border: 1.5px solid colors.$ink;
+        border-radius: 50%;
+        background: colors.$paper-dim;
+
+        &--empty {
+            display: block;
+        }
+    }
+
+    &__player {
+        display: grid;
+        gap: 0.2rem;
+        min-width: 0;
+    }
+
+    &__name-row {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        min-width: 0;
+    }
+
+    &__name {
+        font-weight: 700;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+
+        &:hover {
+            color: colors.$bloon;
+            text-decoration: underline;
+        }
+    }
+
+    &__result {
+        flex: none;
+        font-size: 0.75rem;
+        font-weight: 700;
+        padding: 0.05rem 0.45rem;
+        border-radius: 999px;
+
+        &--win {
+            color: #fff;
+            background: colors.$leaf;
+        }
+
+        &--lose {
+            color: #fff;
+            background: colors.$bloon;
+        }
+
+        &--neutral {
+            background: colors.$paper-dim;
+        }
+    }
+
+    &__hero {
+        font-size: 0.875rem;
+        color: colors.$ink-soft;
+    }
+
+    &__towers {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.25rem;
+    }
+
+    &__tower {
+        font-size: 0.75rem;
+        padding: 0.1rem 0.45rem;
+        background: colors.$paper-dim;
+        border-radius: 0.35rem;
+    }
+
+    @media (max-width: 720px) {
+        grid-template-columns: 1fr;
+
+        &__map {
+            grid-template-columns: 5rem 1fr;
+            align-items: center;
+        }
+    }
+
+    @media (max-width: 520px) {
+        &__players {
+            grid-template-columns: 1fr;
+        }
+
+        &__vs {
+            display: none;
+        }
+
+        &__side--right {
+            flex-direction: row;
+            text-align: left;
+
+            .match-card__name-row {
+                flex-direction: row;
+            }
+
+            .match-card__towers {
+                justify-content: flex-start;
+            }
+        }
+    }
+}

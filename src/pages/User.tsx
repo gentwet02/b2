@@ -7,8 +7,8 @@ export default function User() {
     const { userId } = routeApi.useParams();
 
     return (
-        <main className='user'>
-            <UserProfile userId={userId} />
+        <main className='page user'>
+            <UserProfile key={userId} userId={userId} />
         </main>
     );
 }

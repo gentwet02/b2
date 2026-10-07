@@ -1,3 +1,58 @@
+@use '@/styles/colors';
+@use '@/styles/mixins' as *;
+
 .home {
-    padding: 1rem 2rem;
+    &__hero {
+        @include panel(6px);
+        display: grid;
+        gap: 1.5rem;
+        padding: clamp(1.5rem, 4vw, 2.5rem) clamp(1rem, 4vw, 2.5rem) 0;
+        overflow: hidden;
+    }
+
+    &__intro {
+        text-align: center;
+        display: grid;
+        justify-items: center;
+        gap: 0.5rem;
+    }
+
+    &__title {
+        @include display(clamp(2.25rem, 6vw, 4rem));
+        max-width: 18ch;
+        // outlined lettering, like the game's menus
+        color: colors.$paper;
+        -webkit-text-stroke: 2px colors.$ink;
+        paint-order: stroke fill;
+        text-shadow: 4px 4px 0 colors.$ink;
+    }
+
+    &__lede {
+        color: colors.$ink-soft;
+        font-size: 1.05rem;
+    }
+
+    // the podium stands on this ground line
+    &__stage {
+        display: grid;
+        align-items: end;
+        min-height: 12rem;
+        margin-inline: calc(-1 * clamp(1rem, 4vw, 2.5rem));
+        padding-inline: clamp(1rem, 4vw, 2.5rem);
+        background: linear-gradient(to top, colors.$sky-deep 0 0.9rem, transparent 0.9rem);
+        border-top: 2px dashed colors.$line;
+
+        .status--error {
+            margin-bottom: 1.5rem;
+        }
+    }
+
+    &__section {
+        display: grid;
+        gap: 1rem;
+    }
+
+    &__section-title {
+        @include display(1.75rem);
+    }
 }

@@ -1,9 +1,82 @@
+@use '@/styles/colors';
+@use '@/styles/mixins' as *;
+
 .header {
-    &__nav {
-        margin: 1rem 2rem;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    background: colors.$paper;
+    border-bottom: 2px solid colors.$ink;
+
+    &__inner {
+        width: min(72rem, 100% - 2rem);
+        margin-inline: auto;
         display: flex;
-        gap: 2rem;
-        font-size: 1.5rem;
-        font-weight: 500;
+        align-items: center;
+        justify-content: space-between;
+        gap: 1rem;
+        min-height: 4rem;
+    }
+
+    &__brand {
+        @include display(1.75rem);
+        display: flex;
+        align-items: center;
+        gap: 0.6rem;
+    }
+
+    // a red bloon with its knot
+    &__logo {
+        position: relative;
+        width: 1.4rem;
+        height: 1.65rem;
+        background: colors.$bloon;
+        border: 2px solid colors.$ink;
+        border-radius: 50% 50% 48% 48% / 55% 55% 45% 45%;
+
+        &::after {
+            content: '';
+            position: absolute;
+            left: 50%;
+            bottom: -0.4rem;
+            translate: -50% 0;
+            border: 0.25rem solid transparent;
+            border-top: 0.3rem solid colors.$ink;
+        }
+    }
+
+    &__nav {
+        display: flex;
+        gap: 0.25rem;
+    }
+
+    &__link {
+        padding: 0.45rem 0.9rem;
+        font-weight: 600;
+        border: 2px solid transparent;
+        border-radius: 0.75rem;
+
+        &:hover {
+            background: colors.$paper-dim;
+        }
+
+        &--active {
+            background: colors.$banana;
+            border-color: colors.$ink;
+
+            &:hover {
+                background: colors.$banana;
+            }
+        }
+    }
+
+    @media (max-width: 480px) {
+        &__brand {
+            font-size: 1.4rem;
+        }
+
+        &__link {
+            padding-inline: 0.6rem;
+        }
     }
 }

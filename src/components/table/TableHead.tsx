@@ -26,7 +26,7 @@ export default function TableHead(props: TableHeadProps) {
                             : category.title;
                     return (
                         <th
-                            key={`table-head-${category}`}
+                            key={`table-head-${categoryName}`}
                             className='table__head-title'
                             data-category={categoryName}
                             onClick={() => {

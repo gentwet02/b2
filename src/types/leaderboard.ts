@@ -14,7 +14,10 @@ export interface LeaderboardPlayerEncoded {
 }
 
 export interface LeaderboardResponse {
+    seasonId?: number;
+    live?: boolean;
+    lastUpdated?: string;
     data?: LeaderboardPlayerEncoded[];
-    message?: string;
-    error?: string;
+    message?: string | null;
+    error?: string | null;
 }

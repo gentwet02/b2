@@ -1,0 +1,82 @@
+@use '@/styles/colors';
+@use '@/styles/mixins' as *;
+
+.leaderboard-score {
+    th[data-category='rank'] {
+        width: 4.5rem;
+    }
+
+    th[data-category='score'],
+    td:last-child {
+        text-align: right;
+    }
+
+    th[data-category='score'] .table__table__header-cell-content {
+        justify-content: flex-end;
+    }
+}
+
+.lb-rank {
+    display: inline-grid;
+    place-items: center;
+    min-width: 2.1rem;
+    height: 2.1rem;
+    padding-inline: 0.3rem;
+    font-family: $font-display;
+    font-size: 1.05rem;
+    border-radius: 999px;
+
+    &--1,
+    &--2,
+    &--3 {
+        border: 2px solid colors.$ink;
+    }
+
+    &--1 {
+        background: colors.$banana;
+    }
+
+    &--2 {
+        background: #dfe4ee;
+    }
+
+    &--3 {
+        background: #eab18a;
+    }
+}
+
+.lb-player {
+    display: grid;
+    line-height: 1.25;
+
+    &__name {
+        font-weight: 600;
+
+        &:hover {
+            color: colors.$bloon;
+            text-decoration: underline;
+        }
+    }
+
+    &__alias {
+        font-size: 0.8125rem;
+        color: colors.$ink-soft;
+    }
+}
+
+.lb-hom {
+    @include chip(colors.$banana);
+    font-size: 0.75rem;
+
+    &--out {
+        background: transparent;
+        border-style: dashed;
+        color: colors.$ink-soft;
+        border-color: colors.$ink-soft;
+    }
+}
+
+.lb-score {
+    font-family: $font-display;
+    font-size: 1.15rem;
+}

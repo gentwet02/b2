@@ -55,7 +55,9 @@ const heroMap: string[] = [
     'Etienne_Bee',
 ];
 
+// was missing 'club_jammin' at index 0 (every map decoded one off) and the last 7 maps
 const mapMap: string[] = [
+    'club_jammin',
     'thin_ice',
     'neo_highway',
     'star',
@@ -95,73 +97,55 @@ const mapMap: string[] = [
     'salmon_ladder',
     'skull_party',
     'bot_factory',
+    'lava_canyon',
+    'cobra_command_reversed',
+    'glade_reversed',
+    'oasis_reversed',
+    'inflection_reversed',
+    'offtide_reversed',
+    'park',
 ];
 
 const resultMap: string[] = ['cancelled', 'draw', 'lobbyDC', 'lose', 'opponentLobbyDC', 'win'];
 
-export function decodeTowers(dbTowers: string) {
-    if (!dbTowers) {
-        throw new Error('dbTowers code was null or undefined');
-    }
+/** `t` of a stored match player: hero(2) + 3 × tower(2) digits, leading zeros lost by parseInt. */
+export function decodeTowers(dbTowers: number | string) {
+    const code = String(dbTowers);
+    if (!/^\d+$/.test(code)) throw new Error(`Invalid towers code: ${code}`);
 
-    if (Number.isNaN(dbTowers)) {
-        throw new Error('dbTowers code was not a number');
-    }
+    const digits = code.padStart(8, '0');
+    const hero = heroMap[+digits.slice(0, 2)];
+    if (!hero) throw new Error(`Invalid hero code: ${digits.slice(0, 2)}`);
 
-    const dbTowersStr = dbTowers.toString().padStart(8, '0');
-
-    const heroCode = dbTowersStr.substring(0, 2);
-    const hero = heroMap[+heroCode];
-    if (!hero) {
-        throw new Error(`Invalid hero code: ${heroCode}`);
-    }
-
-    const towerCodes = dbTowers.substring(2);
-    const towers = [];
-    for (let i = 0; i + 1 <= dbTowers.length; i++) {
-        const towerCode = towerCodes.substring(i, i + 2);
+    const towers = [2, 4, 6].map((start) => {
+        const towerCode = digits.slice(start, start + 2);
         const tower = towerMap[+towerCode];
-        if (!tower) {
-            throw new Error(`Invalid tower code: ${towerCode}`);
-        } else {
-            towers.push(tower);
-        }
-        i++;
-    }
+        if (!tower) throw new Error(`Invalid tower code: ${towerCode}`);
+        return tower;
+    });
 
     return [hero, ...towers];
 }
 
-export function decodeMatchResult(dbmatchResult: number) {
-    if (!dbmatchResult) {
-        throw new Error('dbmatchResult code was null or undefined');
+/** `d` of a stored match: result(1) + map(2) + endRound(2) + duration(4+). */
+export function decodeMatchResult(dbMatchResult: number | string) {
+    const code = String(dbMatchResult);
+    if (!/^\d+$/.test(code)) throw new Error(`Invalid match code: ${code}`);
+
+    // result 0 ('cancelled') loses its leading digit through parseInt
+    const digits = code.padStart(9, '0');
+    const playerWin = digits[0] ? resultMap[+digits[0]] : 'cancelled';
+    if (!playerWin) throw new Error(`Invalid result code: ${digits[0]}`);
+
+    const map = mapMap[+digits.slice(1, 3)];
+    if (!map) throw new Error(`Invalid map code: ${digits.slice(1, 3)}`);
+
+    const endRound = +digits.slice(3, 5);
+    if (endRound < 1 || endRound > 50) {
+        throw new Error(`Invalid end round, must be between 1 and 50: ${digits.slice(3, 5)}`);
     }
 
-    if (Number.isNaN(dbmatchResult)) {
-        throw new Error('dbmatchResult code was not a number');
-    }
-    const dbmatchResultStr = dbmatchResult.toString();
-    const playerWin = resultMap[+dbmatchResultStr.substring(0, 1)];
-    if (!playerWin) {
-        throw Error(`Invalid player win code: ${dbmatchResultStr.substring(0, 1)}`);
-    }
-    const map = mapMap[+dbmatchResultStr.substring(1, 3)];
-    if (!map) {
-        throw new Error(`Invalid map code: ${dbmatchResultStr.substring(1, 3)}`);
-    }
-    const endRound = +dbmatchResultStr.substring(3, 5);
-    if (!endRound || !(endRound > 0 && endRound <= 50)) {
-        throw Error(
-            `Invalid end round code, must be between 1 and 50: ${dbmatchResultStr.substring(3, 5)}`
-        );
-    }
-    const duration = +dbmatchResultStr.substring(5);
-    return {
-        map: map,
-        playerWin: playerWin,
-        endRound: endRound,
-        duration: duration,
-    };
+    return { map, playerWin, endRound, duration: +digits.slice(5) };
 }
 
 export function decodeLeaderboardPlayer(player: LeaderboardPlayerEncoded): LeaderboardPlayer {
@@ -169,7 +153,8 @@ export function decodeLeaderboardPlayer(player: LeaderboardPlayerEncoded): Leade
         id: player.i,
         ...(player.r && { realName: player.r }),
         name: player.n,
-        currentlyInHoM: !!player.d.substring(0, 1),
-        score: +player.d.substring(1),
+        // was `!!substring(0, 1)`: "0" is a truthy string, so everybody was in HoM
+        currentlyInHoM: player.d[0] === '1',
+        score: Number(player.d.slice(1)),
     };
 }
