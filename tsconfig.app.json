@@ -1,6 +1,5 @@
 {
     "compilerOptions": {
-        "ignoreDeprecations": "6.0",
         /* Type Checking */
         "strict": false, // check every parameters individually instead
         "allowUnreachableCode": false,

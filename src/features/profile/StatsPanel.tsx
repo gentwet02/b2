@@ -1,13 +1,16 @@
 import type { Stats } from '@/types/profile';
 import { formatNumber, winRate } from '@/utils/format';
+import type { ReactNode } from 'react';
 
 interface StatsPanelProps {
     title: string;
     stats: Stats;
     accent?: boolean;
+    /** extra rows, e.g. best season finish */
+    extra?: { label: string; value: ReactNode }[];
 }
 
-export default function StatsPanel({ title, stats, accent = false }: StatsPanelProps) {
+export default function StatsPanel({ title, stats, accent = false, extra = [] }: StatsPanelProps) {
     const rate = winRate(stats.wins, stats.losses);
     const played = stats.wins + stats.losses + stats.draws;
     const winShare = played > 0 ? (stats.wins / played) * 100 : 0;
@@ -57,6 +60,12 @@ export default function StatsPanel({ title, stats, accent = false }: StatsPanelP
                     <div key={d.label} className='stats-panel__detail'>
                         <dt>{d.label}</dt>
                         <dd>{formatNumber(d.value ?? 0)}</dd>
+                    </div>
+                ))}
+                {extra.map((d) => (
+                    <div key={d.label} className='stats-panel__detail'>
+                        <dt>{d.label}</dt>
+                        <dd>{d.value}</dd>
                     </div>
                 ))}
             </dl>

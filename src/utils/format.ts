@@ -14,7 +14,6 @@ export function formatLabel(value: string): string {
         .replace(/HoM/g, ' \u0000 ') // keep the game's "HoM" acronym in one piece
         .replace(/([a-z])([A-Z])/g, '$1 $2')
         .replace(/([A-Z]+)([A-Z][a-z])/g, '$1 $2')
-        // eslint-disable-next-line no-control-regex
         .replace(/\u0000/g, 'HoM')
         .replace(/\s+/g, ' ')
         .trim();
@@ -33,7 +32,7 @@ export function formatMap(map: string): string {
 /** "Quincy_Cyber" → "Cyber Quincy", the way the game names skins. */
 export function formatHero(hero: string): string {
     const [base, skin] = hero.split('_');
-    const name = formatLabel(base || 'unknown');
+    const name = formatLabel(base);
     return skin ? `${formatLabel(skin)} ${name}` : name;
 }
 
@@ -62,3 +61,15 @@ export function timeAgo(date: string | Date | null | undefined): string | null {
 }
 
 export const seasonLabel = (seasonId: number) => `Season ${seasonId + 1}`;
+
+/** Same as the server: several NK ids of one map share a key ("banana_depot_scene" → "bananadepot"). */
+export function mapKey(map: string): string {
+    return map
+        .toLowerCase()
+        .replace(/_(scene|map_01)$/, '')
+        .replace(/_/g, '');
+}
+
+/** Comma lists in the URL ("Druid,Alchemist") ⇄ arrays. */
+export const splitList = (value?: string) => (value ? value.split(',').filter(Boolean) : []);
+export const joinList = (items: string[]) => (items.length ? items.join(',') : undefined);

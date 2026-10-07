@@ -7,12 +7,58 @@
     }
 
     th[data-category='score'],
-    td:last-child {
+    th[data-category='games'],
+    td:nth-child(3),
+    td:nth-child(4) {
         text-align: right;
     }
 
-    th[data-category='score'] .table__table__header-cell-content {
+    th[data-category='win-rate'] {
+        width: 9rem;
+    }
+
+    th[data-category='score'] .table__table__header-cell-content,
+    th[data-category='games'] .table__table__header-cell-content {
         justify-content: flex-end;
+    }
+
+    &__note {
+        margin-top: 0.6rem;
+        font-size: 0.8125rem;
+        color: colors.$ink-soft;
+    }
+}
+
+.lb-num {
+    font-weight: 600;
+
+    &--empty {
+        color: colors.$ink-soft;
+    }
+}
+
+.lb-rate {
+    display: grid;
+    grid-template-columns: 2.6rem 1fr;
+    align-items: center;
+    gap: 0.5rem;
+
+    &__value {
+        font-weight: 700;
+        text-align: right;
+    }
+
+    &__bar {
+        height: 0.4rem;
+        background: color-mix(in srgb, colors.$bloon 25%, colors.$paper-dim);
+        border-radius: 999px;
+        overflow: hidden;
+
+        span {
+            display: block;
+            height: 100%;
+            background: colors.$leaf;
+        }
     }
 }
 
@@ -46,8 +92,32 @@
 }
 
 .lb-player {
-    display: grid;
+    display: flex;
+    align-items: center;
+    gap: 0.7rem;
     line-height: 1.25;
+
+    &__avatar {
+        flex: none;
+        width: 2.25rem;
+        height: 2.25rem;
+        border-radius: 50%;
+        border: 1.5px solid colors.$ink;
+        background: colors.$paper-dim;
+        object-fit: cover;
+
+        &--empty {
+            display: grid;
+            place-items: center;
+            font-family: $font-display;
+            color: colors.$ink-soft;
+        }
+    }
+
+    &__names {
+        display: grid;
+        min-width: 0;
+    }
 
     &__name {
         font-weight: 600;
@@ -61,18 +131,6 @@
     &__alias {
         font-size: 0.8125rem;
         color: colors.$ink-soft;
-    }
-}
-
-.lb-hom {
-    @include chip(colors.$banana);
-    font-size: 0.75rem;
-
-    &--out {
-        background: transparent;
-        border-style: dashed;
-        color: colors.$ink-soft;
-        border-color: colors.$ink-soft;
     }
 }
 

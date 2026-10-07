@@ -1,14 +1,11 @@
-import { userService } from '@/services/api/user';
 import { toError } from '@/services/api/utils';
+import { userService } from '@/services/api/user';
 import type { UserProfileData } from '@/types/profile';
-import { useQuery } from '@tanstack/react-query';
+import { queryOptions, useQuery } from '@tanstack/react-query';
 
-/**
- * Goes through our server (/users/:id): Ninja Kiwi's API sends no CORS headers,
- * so calling it from the browser fails with "NetworkError when attempting to fetch resource".
- */
-export default function useProfile(userId: string) {
-    return useQuery<UserProfileData>({
+/** Goes through our server (/users/:id): Ninja Kiwi's API sends no CORS headers. */
+export const profileQueryOptions = (userId: string) =>
+    queryOptions<UserProfileData>({
         queryKey: ['userProfile', userId],
         queryFn: async () => {
             const response = await userService.getProfile(userId);
@@ -17,8 +14,16 @@ export default function useProfile(userId: string) {
             }
             return response.data;
         },
-        enabled: !!userId,
         staleTime: 60_000,
         retry: (count, error) => count < 2 && !/not found|invalid/i.test(error.message),
+        // the server answered with its stored copy and is fetching a fresh one: pick it up
+        refetchInterval: (query) => {
+            const fetchedAt = query.state.data?.fetchedAt;
+            const old = fetchedAt && Date.now() - new Date(fetchedAt).getTime() > 2 * 60_000;
+            return old && query.state.dataUpdateCount < 3 ? 4_000 : false;
+        },
     });
+
+export default function useProfile(userId: string) {
+    return useQuery({ ...profileQueryOptions(userId), enabled: !!userId });
 }

@@ -1,10 +1,10 @@
 import { toError } from '@/services/api/utils';
 import { userService } from '@/services/api/user';
 import type { Match } from '@/types/match';
-import { useQuery } from '@tanstack/react-query';
+import { queryOptions, useQuery } from '@tanstack/react-query';
 
-export default function useUserMatches(userId: string) {
-    return useQuery<Match[]>({
+export const userMatchesQueryOptions = (userId: string) =>
+    queryOptions<Match[]>({
         queryKey: ['userMatches', userId],
         queryFn: async () => {
             const response = await userService.getRecentMatches(userId);
@@ -13,8 +13,10 @@ export default function useUserMatches(userId: string) {
             }
             return response.data.body ?? [];
         },
-        enabled: !!userId,
         staleTime: 60_000,
         retry: 1,
     });
+
+export default function useUserMatches(userId: string, enabled = true) {
+    return useQuery({ ...userMatchesQueryOptions(userId), enabled: enabled && !!userId });
 }

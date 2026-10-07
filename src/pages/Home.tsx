@@ -1,6 +1,7 @@
 import { ErrorState, Loading } from '@/components/status/Status';
 import LeaderboardScore from '@/features/LeaderboardScore';
 import Podium from '@/features/Podium';
+import useLeaderboardStats from '@/hooks/useLeaderboardStats';
 import { useRankedPlayers } from '@/hooks/useRankedPlayers';
 import useSeasons from '@/hooks/useSeasons';
 import { formatNumber, seasonLabel, timeAgo } from '@/utils/format';
@@ -10,6 +11,7 @@ export default function Home() {
     const seasons = useSeasons();
     const liveSeason = seasons.data?.liveSeason;
     const { players, data, isLoading, error, refetch } = useRankedPlayers(liveSeason, true);
+    const { data: stats } = useLeaderboardStats(liveSeason);
 
     if (seasons.isLoading) return <Loading label='Finding the live season…' />;
     if (seasons.error || liveSeason === undefined) {
@@ -43,7 +45,7 @@ export default function Home() {
                 <div className='home__stage'>
                     {isLoading && <Loading label='Loading leaderboard…' />}
                     {error && <ErrorState error={error} onRetry={() => refetch()} />}
-                    {players.length > 0 && <Podium players={players} />}
+                    {players.length > 0 && <Podium players={players} avatars={stats?.avatars} />}
                 </div>
             </section>
 

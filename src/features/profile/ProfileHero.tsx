@@ -2,19 +2,86 @@ import type { UserProfile } from '@/types/profile';
 import { formatLabel } from '@/utils/format';
 import type { ReactNode } from 'react';
 
-interface ProfileHeroProps {
-    profile: UserProfile;
-    realName?: string | null | undefined;
-    actions?: ReactNode;
+/** Same footprint as the real hero, shown while the profile loads. */
+export function ProfileHeroPlaceholder({
+    name,
+    children,
+}: {
+    name?: string;
+    children?: ReactNode;
+}) {
+    return (
+        <section className='profile-hero profile-hero--placeholder' aria-busy='true'>
+            <div className='profile-hero__banner profile-hero__banner--empty' />
+            <div className='profile-hero__body'>
+                <div className='profile-hero__avatar'>
+                    <span className='profile-hero__avatar-img profile-hero__avatar-img--empty' />
+                </div>
+                <div className='profile-hero__info'>
+                    <h1 className='profile-hero__name'>{name ?? 'Loading profile…'}</h1>
+                    {children}
+                </div>
+            </div>
+        </section>
+    );
 }
 
-export default function ProfileHero({ profile, realName, actions }: ProfileHeroProps) {
+interface ProfileHeroProps {
+    profile: UserProfile;
+    realName?: string | null;
+    actions?: ReactNode;
+    /** e.g. "Updated 3 minutes ago" */
+    note?: string | null;
+}
+
+const IMAGE_URL = /^https?:\/\/\S+\.(png|jpe?g|webp|gif|svg)(\?\S*)?$/i;
+
+/**
+ * Equipped badges as Ninja Kiwi sends them. Their exact shape isn't documented, so read
+ * defensively: an image URL anywhere in the item becomes a picture, otherwise its name.
+ */
+interface Badge {
+    key: string;
+    name: string;
+    url?: string;
+}
+
+function readBadges(raw: unknown[] | undefined): Badge[] {
+    return (raw ?? []).flatMap((item, i): Badge[] => {
+        if (typeof item === 'string') {
+            return IMAGE_URL.test(item)
+                ? [{ key: `b${i}`, url: item, name: 'Badge' }]
+                : [{ key: `b${i}`, name: formatLabel(item) }];
+        }
+        if (item && typeof item === 'object') {
+            const values = Object.entries(item as Record<string, unknown>);
+            const url = values.find(([, v]) => typeof v === 'string' && IMAGE_URL.test(v))?.[1] as
+                | string
+                | undefined;
+            const nameField = values.find(
+                ([k, v]) => typeof v === 'string' && /^(name|badge|type|id)$/i.test(k),
+            )?.[1] as string | undefined;
+            const name = nameField ? formatLabel(nameField) : 'Badge';
+            return url || nameField ? [{ key: `b${i}`, url, name }] : [];
+        }
+        return [];
+    });
+}
+
+export default function ProfileHero({ profile, realName, actions, note }: ProfileHeroProps) {
+    const badges = readBadges(profile.badges_equipped);
     const knownAs = realName && realName !== profile.displayName ? realName : null;
     const title =
         profile.equippedTitle && profile.equippedTitle !== 'None' ? profile.equippedTitle : null;
 
     return (
-        <section className='profile-hero' aria-labelledby='profile-name'>
+        <section
+            className={`profile-hero${profile.equippedBorderURL ? ' profile-hero--framed' : ''}`}
+            aria-labelledby='profile-name'
+        >
+            {/* {profile.equippedBorderURL && (
+                <img className='profile-hero__frame' src={profile.equippedBorderURL} alt='' />
+            )} */}
             {profile.equippedBannerURL && (
                 <img className='profile-hero__banner' src={profile.equippedBannerURL} alt='' />
             )}
@@ -24,13 +91,6 @@ export default function ProfileHero({ profile, realName, actions }: ProfileHeroP
                         <img
                             className='profile-hero__avatar-img'
                             src={profile.equippedAvatarURL}
-                            alt=''
-                        />
-                    )}
-                    {profile.equippedBorderURL && (
-                        <img
-                            className='profile-hero__avatar-border'
-                            src={profile.equippedBorderURL}
                             alt=''
                         />
                     )}
@@ -52,8 +112,30 @@ export default function ProfileHero({ profile, realName, actions }: ProfileHeroP
                         )}
                         {profile.inGuild && <li className='profile-hero__badge'>In a guild</li>}
                     </ul>
+                    {badges.length > 0 && (
+                        <ul className='profile-hero__equipped' aria-label='Equipped badges'>
+                            {badges.map((badge) => (
+                                <li
+                                    key={badge.key}
+                                    className='profile-hero__equipped-item'
+                                    title={badge.name}
+                                >
+                                    {badge.url ? (
+                                        <img src={badge.url} alt={badge.name} />
+                                    ) : (
+                                        badge.name
+                                    )}
+                                </li>
+                            ))}
+                        </ul>
+                    )}
                 </div>
-                {actions && <div className='profile-hero__actions'>{actions}</div>}
+                {(actions || note) && (
+                    <div className='profile-hero__actions'>
+                        {note && <span className='profile-hero__note'>{note}</span>}
+                        {actions}
+                    </div>
+                )}
             </div>
         </section>
     );

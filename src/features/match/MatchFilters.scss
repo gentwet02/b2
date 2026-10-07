@@ -1,0 +1,189 @@
+@use '@/styles/colors';
+@use '@/styles/mixins' as *;
+
+.match-filters {
+    @include panel;
+    display: grid;
+    gap: 1rem;
+    padding: 1rem 1.25rem;
+
+    &__row {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: flex-end;
+        gap: 0.75rem;
+    }
+
+    &__search {
+        position: relative;
+        flex: 2 1 16rem;
+
+        input {
+            width: 100%;
+            padding: 0.6rem 1rem 0.6rem 2.5rem;
+            font-weight: 500;
+            border: 2px solid colors.$ink;
+            border-radius: 0.75rem;
+
+            &:focus {
+                outline: none;
+                box-shadow: 0 0 0 3px rgba(colors.$bloon, 0.35);
+            }
+        }
+    }
+
+    &__search-icon {
+        position: absolute;
+        left: 0.85rem;
+        top: 50%;
+        translate: 0 -50%;
+        color: colors.$ink-soft;
+        pointer-events: none;
+    }
+
+    &__field {
+        display: grid;
+        gap: 0.25rem;
+        flex: 1 1 10rem;
+        min-width: 0;
+
+        .select {
+            width: 100%;
+        }
+
+        &--map {
+            flex: 1 1 14rem;
+            max-width: 22rem;
+        }
+    }
+
+    &__label {
+        font-size: 0.8125rem;
+        font-weight: 600;
+        color: colors.$ink-soft;
+    }
+
+    &__cap {
+        font-weight: 400;
+        margin-left: 0.35rem;
+    }
+
+    &__group {
+        display: grid;
+        gap: 0.4rem;
+        padding-top: 0.9rem;
+        border-top: 1px solid colors.$line;
+    }
+
+    &__chips {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    &__hero-wrap {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    &__vs {
+        font-family: $font-display;
+        color: colors.$ink-soft;
+    }
+
+    &__add {
+        padding-block: 0.35rem;
+        font-size: 0.875rem;
+        border-style: dashed;
+        background-color: transparent;
+    }
+
+    &__hint {
+        font-size: 0.8125rem;
+        color: colors.$ink-soft;
+        margin-top: -0.4rem;
+    }
+
+    &__toggle {
+        display: flex;
+        align-items: flex-start;
+        gap: 0.55rem;
+        padding-bottom: 0.3rem;
+        font-weight: 600;
+        cursor: pointer;
+
+        input {
+            margin-top: 0.2rem;
+            width: 1.05rem;
+            height: 1.05rem;
+            accent-color: colors.$bloon;
+        }
+
+        &--off {
+            opacity: 0.6;
+        }
+    }
+
+    &__toggle-help {
+        display: block;
+        font-size: 0.8125rem;
+        font-weight: 400;
+        color: colors.$ink-soft;
+    }
+}
+
+.chip-filter {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    padding: 0.2rem 0.3rem 0.2rem 0.75rem;
+    font-size: 0.875rem;
+    font-weight: 600;
+    background: colors.$banana;
+    border: 2px solid colors.$ink;
+    border-radius: 999px;
+
+    &--hero {
+        background: colors.$sky;
+        padding-left: 0.3rem;
+    }
+
+    &__img {
+        width: 1.6rem;
+        height: 1.6rem;
+        border-radius: 50%;
+        border: 1.5px solid colors.$ink;
+        background: colors.$paper;
+    }
+
+    &__variant {
+        max-width: 11rem;
+        padding: 0.1rem 0.3rem;
+        font-size: 0.8125rem;
+        font-weight: 500;
+        background: colors.$paper;
+        border: 1.5px solid colors.$ink;
+        border-radius: 999px;
+        cursor: pointer;
+    }
+
+    &__remove {
+        display: grid;
+        place-items: center;
+        width: 1.4rem;
+        height: 1.4rem;
+        font-size: 1rem;
+        line-height: 1;
+        color: colors.$ink;
+        background: transparent;
+        border: none;
+        border-radius: 50%;
+
+        &:hover {
+            color: #fff;
+            background: colors.$ink;
+        }
+    }
+}

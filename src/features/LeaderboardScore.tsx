@@ -1,5 +1,6 @@
 import Table, { type Row } from '@/components/table/Table';
 import { ErrorState, Loading, StatusMessage } from '@/components/status/Status';
+import useLeaderboardStats from '@/hooks/useLeaderboardStats';
 import type { LeaderboardPlayer } from '@/types/leaderboard';
 import { formatNumber } from '@/utils/format';
 import { Link } from '@tanstack/react-router';
@@ -10,14 +11,30 @@ export interface RankedPlayer extends LeaderboardPlayer {
     rank: number;
 }
 
-export function PlayerName({ player }: { player: LeaderboardPlayer }) {
+export function PlayerName({ player, avatar }: { player: LeaderboardPlayer; avatar?: string }) {
     const alias = player.realName && player.realName !== player.name ? player.name : null;
     return (
         <span className='lb-player'>
-            <Link to='/user/$userId' params={{ userId: player.id }} className='lb-player__name'>
-                {player.realName || player.name}
-            </Link>
-            {alias && <span className='lb-player__alias'>{alias}</span>}
+            {avatar ? (
+                <img
+                    className='lb-player__avatar'
+                    src={avatar}
+                    alt=''
+                    loading='lazy'
+                    width={36}
+                    height={36}
+                />
+            ) : (
+                <span className='lb-player__avatar lb-player__avatar--empty' aria-hidden='true'>
+                    {(player.realName || player.name).charAt(0).toUpperCase()}
+                </span>
+            )}
+            <span className='lb-player__names'>
+                <Link to='/user/$userId' params={{ userId: player.id }} className='lb-player__name'>
+                    {player.realName || player.name}
+                </Link>
+                {alias && <span className='lb-player__alias'>{alias}</span>}
+            </span>
         </span>
     );
 }
@@ -33,11 +50,16 @@ interface LeaderboardScoreProps {
 export default function LeaderboardScore(props: LeaderboardScoreProps) {
     const { season, live = false, itemsPerPage = 25, range } = props;
     const { players, isLoading, error, refetch } = useRankedPlayers(season, live);
+    const { data: stats } = useLeaderboardStats(season);
 
     const rows = useMemo(() => {
         const visible = range ? players.slice(range[0] - 1, range[1]) : players;
-        return visible.map(
-            (player): Row => ({
+        return visible.map((player): Row => {
+            const record = stats?.records[player.id];
+            const [wins, losses, draws] = record ?? [0, 0, 0];
+            const games = wins + losses + draws;
+            const rate = wins + losses > 0 ? (wins / (wins + losses)) * 100 : null;
+            return {
                 rank: (
                     <span
                         className={`lb-rank${player.rank <= 3 ? ` lb-rank--${player.rank}` : ''}`}
@@ -45,22 +67,38 @@ export default function LeaderboardScore(props: LeaderboardScoreProps) {
                         {player.rank}
                     </span>
                 ),
-                player: <PlayerName player={player} />,
-                hall: player.currentlyInHoM ? (
-                    <span className='lb-hom' title='Currently in the Hall of Masters'>
-                        In HoM
-                    </span>
-                ) : (
-                    <span className='lb-hom lb-hom--out' title='Dropped out of the Hall of Masters'>
-                        Demoted
-                    </span>
-                ),
+                player: <PlayerName player={player} avatar={stats?.avatars[player.id]} />,
                 score: <span className='lb-score'>{formatNumber(player.score)}</span>,
-            }),
-        );
-    }, [players, range]);
+                games: <span className='lb-num'>{stats ? formatNumber(games) : '…'}</span>,
+                winRate:
+                    rate === null ? (
+                        <span className='lb-num lb-num--empty'>–</span>
+                    ) : (
+                        <span
+                            className='lb-rate'
+                            title={`${wins} won, ${losses} lost, ${draws} drawn`}
+                        >
+                            <span className='lb-rate__value'>{rate.toFixed(0)}%</span>
+                            <span className='lb-rate__bar' aria-hidden='true'>
+                                <span style={{ width: `${rate}%` }} />
+                            </span>
+                        </span>
+                    ),
+            };
+        });
+    }, [players, range, stats]);
 
-    if (isLoading) return <Loading label='Loading leaderboard…' />;
+    if (isLoading) {
+        return (
+            <Loading
+                label={
+                    live
+                        ? 'Loading leaderboard…'
+                        : 'Loading this season. The first visit after an update can take a few seconds.'
+                }
+            />
+        );
+    }
     if (error) return <ErrorState error={error} onRetry={() => refetch()} />;
     if (players.length === 0) {
         return (
@@ -77,8 +115,9 @@ export default function LeaderboardScore(props: LeaderboardScoreProps) {
                 categories={[
                     { name: 'rank', title: 'Rank' },
                     { name: 'player', title: 'Player' },
-                    { name: 'hall', title: 'Status' },
                     { name: 'score', title: 'Score' },
+                    { name: 'games', title: 'Games' },
+                    { name: 'win-rate', title: 'Win rate' },
                 ]}
                 data={rows}
                 disableSorting
@@ -89,6 +128,11 @@ export default function LeaderboardScore(props: LeaderboardScoreProps) {
                 searchPlaceHolder='Find a player'
                 searchAriaLabel='Find a player by name'
             />
+            {stats && (
+                <p className='leaderboard-score__note'>
+                    Games and win rate count the ranked matches our server recorded this season.
+                </p>
+            )}
         </div>
     );
 }

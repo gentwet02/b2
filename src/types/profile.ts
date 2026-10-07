@@ -66,4 +66,43 @@ export interface UserProfileData {
     error: string | null;
     message?: string | null;
     success: boolean;
+    /** when our server got this copy from Ninja Kiwi */
+    fetchedAt?: string;
+}
+
+/** GET /users/:id/season: computed from the matches our server recorded. */
+export interface SeasonStats {
+    seasonId: number;
+    seasonName: string;
+    recorded: number;
+    wins: number;
+    losses: number;
+    draws: number;
+    /** cancelled games and lobby disconnects */
+    other: number;
+    winStreak: number;
+    bestWinStreak: number;
+    heroes: { hero: string; played: number; wins: number; portrait?: string }[];
+    firstSeen: string | null;
+    lastSeen: string | null;
+    message?: string | null;
+    error?: string | null;
+}
+
+export interface SeasonRank {
+    seasonId: number;
+    name: string;
+    rank: number;
+    score: number;
+    final: boolean;
+}
+
+/** GET /users/:id/ranks */
+export interface RankHistory {
+    current: SeasonRank | null;
+    /** best finish of a finished season */
+    best: SeasonRank | null;
+    seasons: SeasonRank[];
+    message?: string | null;
+    error?: string | null;
 }

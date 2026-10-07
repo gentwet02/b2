@@ -1,43 +1,46 @@
 @use '@/styles/colors';
 @use '@/styles/mixins' as *;
 
+// [ left player | map and match info | right player ]: both players get equal room
 .match-card {
     display: grid;
-    grid-template-columns: 8.5rem 1fr;
-    align-items: center;
-    gap: 1rem;
-    padding: 0.75rem 1rem 0.75rem 1.1rem;
+    grid-template-columns: minmax(0, 1fr) minmax(8.5rem, 10.5rem) minmax(0, 1fr);
+    align-items: stretch;
+    gap: 0.75rem;
+    padding: 0.6rem;
     background: colors.$paper;
     border: 2px solid colors.$ink;
     border-radius: 0.75rem;
-    // the left edge carries the result when viewed from a profile
-    box-shadow: inset 6px 0 0 colors.$line;
 
+    // seen from a profile: the edge on the player's side carries their result
     &--win {
-        box-shadow: inset 6px 0 0 colors.$leaf;
+        box-shadow: inset 5px 0 0 colors.$leaf;
     }
 
     &--lose {
-        box-shadow: inset 6px 0 0 colors.$bloon;
+        box-shadow: inset 5px 0 0 colors.$bloon;
     }
 
-    &__map {
+    // ---------- center ----------
+
+    &__center {
         display: grid;
-        gap: 0.4rem;
+        justify-items: center;
+        align-content: center;
+        gap: 0.15rem;
+        text-align: center;
+        line-height: 1.25;
     }
 
     &__map-img {
         width: 100%;
         aspect-ratio: 16 / 9;
         height: auto;
+        object-fit: cover;
+        margin-bottom: 0.3rem;
         border: 1.5px solid colors.$ink;
         border-radius: $radius-inner;
         background: colors.$paper-dim;
-    }
-
-    &__map-info {
-        display: grid;
-        line-height: 1.25;
     }
 
     &__map-name {
@@ -49,24 +52,21 @@
         color: colors.$ink-soft;
     }
 
-    &__players {
-        display: grid;
-        grid-template-columns: 1fr auto 1fr;
-        align-items: center;
-        gap: 0.75rem;
-        min-width: 0;
+    &__outcome {
+        @include chip(colors.$paper-dim);
+        margin-top: 0.3rem;
+        font-size: 0.75rem;
     }
 
-    &__vs {
-        @include display(1.1rem);
-        color: colors.$ink-soft;
-    }
+    // ---------- players ----------
 
     &__side {
         display: flex;
-        align-items: flex-start;
-        gap: 0.65rem;
+        align-items: center;
+        gap: 0.75rem;
         min-width: 0;
+        padding: 0.6rem 0.75rem;
+        border-radius: $radius-inner;
 
         &--right {
             flex-direction: row-reverse;
@@ -84,8 +84,8 @@
 
     &__hero-img {
         flex: none;
-        width: 2.75rem;
-        height: 2.75rem;
+        width: 5rem;
+        height: 5rem;
         border: 1.5px solid colors.$ink;
         border-radius: 50%;
         background: colors.$paper-dim;
@@ -95,10 +95,15 @@
         }
     }
 
+    &__side--lose &__hero-img {
+        filter: saturate(0.25);
+    }
+
     &__player {
         display: grid;
         gap: 0.2rem;
         min-width: 0;
+        flex: 1;
     }
 
     &__name-row {
@@ -109,6 +114,7 @@
     }
 
     &__name {
+        font-size: 1.2rem;
         font-weight: 700;
         overflow: hidden;
         text-overflow: ellipsis;
@@ -120,25 +126,29 @@
         }
     }
 
+    &__alias {
+        font-size: 0.75rem;
+        color: colors.$ink-soft;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+
     &__result {
         flex: none;
-        font-size: 0.75rem;
+        font-size: 0.6875rem;
         font-weight: 700;
         padding: 0.05rem 0.45rem;
         border-radius: 999px;
 
         &--win {
-            color: #fff;
-            background: colors.$leaf;
+            color: colors.$leaf;
+            background: color-mix(in srgb, colors.$leaf 14%, colors.$paper);
         }
 
         &--lose {
-            color: #fff;
-            background: colors.$bloon;
-        }
-
-        &--neutral {
-            background: colors.$paper-dim;
+            color: colors.$bloon;
+            background: color-mix(in srgb, colors.$bloon 10%, colors.$paper);
         }
     }
 
@@ -154,29 +164,83 @@
     }
 
     &__tower {
+        display: inline-block;
         font-size: 0.75rem;
         padding: 0.1rem 0.45rem;
         background: colors.$paper-dim;
         border-radius: 0.35rem;
     }
 
-    @media (max-width: 720px) {
-        grid-template-columns: 1fr;
+    // hero, tower or map that filters the list when clicked
+    &__pick {
+        font: inherit;
+        color: inherit;
+        text-align: inherit;
+        border: none;
+        background: none;
+        padding: 0;
+        cursor: pointer;
 
-        &__map {
-            grid-template-columns: 5rem 1fr;
-            align-items: center;
+        &:hover {
+            color: colors.$bloon;
+            text-decoration: underline;
+        }
+
+        &.match-card__tower {
+            padding: 0.1rem 0.45rem;
+            font-size: 0.75rem;
+            background: colors.$paper-dim;
+
+            &:hover {
+                color: colors.$ink;
+                text-decoration: none;
+                background: colors.$banana;
+            }
+        }
+
+        &.match-card__hero {
+            font-size: 0.875rem;
+            color: colors.$ink-soft;
+        }
+
+        &.match-card__map-name {
+            font-weight: 700;
         }
     }
 
-    @media (max-width: 520px) {
-        &__players {
-            grid-template-columns: 1fr;
+    // ---------- narrow screens: map on top, players below ----------
+
+    @media (max-width: 760px) {
+        grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+
+        &__center {
+            grid-column: 1 / -1;
+            grid-row: 1;
+            grid-template-columns: auto auto;
+            justify-content: center;
+            column-gap: 0.75rem;
+            text-align: left;
+            justify-items: start;
         }
 
-        &__vs {
-            display: none;
+        &__map-img {
+            grid-row: span 4;
+            width: 7rem;
+            margin-bottom: 0;
         }
+
+        &__hero-img {
+            width: 4rem;
+            height: 4rem;
+        }
+
+        &__name {
+            font-size: 1rem;
+        }
+    }
+
+    @media (max-width: 480px) {
+        grid-template-columns: minmax(0, 1fr);
 
         &__side--right {
             flex-direction: row;
