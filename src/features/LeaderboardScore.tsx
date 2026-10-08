@@ -2,6 +2,7 @@ import PlayerAvatar from '@/components/avatar/PlayerAvatar';
 import { ErrorState, Loading, StatusMessage } from '@/components/status/Status';
 import Table from '@/components/table/Table';
 import useLeaderboardStats from '@/hooks/useLeaderboardStats';
+import usePlayerAvatar from '@/hooks/usePlayerAvatar';
 import usePlayerAvatars from '@/hooks/usePlayerAvatars';
 import { useRankedPlayers } from '@/hooks/useRankedPlayers';
 import type { LeaderboardPlayer, LeaderboardView } from '@/types/leaderboard';
@@ -14,19 +15,22 @@ export interface RankedPlayer extends LeaderboardPlayer {
     rank: number;
 }
 
-export function PlayerName({
-    player,
-    avatar,
-}: {
+interface PlayerNameProps {
     player: LeaderboardPlayer;
     avatar?: string | undefined;
-}) {
+    avatarReady?: boolean;
+}
+export function PlayerName(props: PlayerNameProps) {
+    const { player, avatar, avatarReady = true } = props;
+
+    const src = usePlayerAvatar(player.id, avatar, avatarReady);
     const alias = player.realName && player.realName !== player.name ? player.name : null;
+
     return (
         <span className='lb-player'>
             <PlayerAvatar
                 className='lb-player__avatar'
-                src={avatar}
+                src={src}
                 name={player.realName || player.name}
                 size={36}
                 lazy
@@ -96,9 +100,8 @@ export default function LeaderboardScore(props: LeaderboardScoreProps) {
         onTableStateChange,
     } = props;
     const { players, isLoading, error, refetch } = useRankedPlayers(season, live);
-    const { data: stats } = useLeaderboardStats(season);
+    const { data: stats, isPending: statsPending } = useLeaderboardStats(season);
     const avatars = usePlayerAvatars(stats?.avatars);
-    //const avatarsKey = JSON.stringify(avatars);
 
     const sort = view?.sort ?? 'rank';
     const minGames = view?.minGames ?? 0;
@@ -131,7 +134,13 @@ export default function LeaderboardScore(props: LeaderboardScoreProps) {
                             {player.rank}
                         </span>
                     ),
-                    player: <PlayerName player={player} avatar={avatars[player.id]} />,
+                    player: (
+                        <PlayerName
+                            player={player}
+                            avatar={avatars[player.id]}
+                            avatarReady={!statsPending}
+                        />
+                    ),
                     score: <span className='lb-score'>{formatNumber(player.score)}</span>,
                     games: <span className='lb-num'>{stats ? formatNumber(games) : '…'}</span>,
                     winRate:
@@ -150,7 +159,7 @@ export default function LeaderboardScore(props: LeaderboardScoreProps) {
                         ),
                 }),
             ),
-        [lines, avatars, stats],
+        [lines, avatars, stats, statsPending],
     );
 
     const searchText = useMemo(
