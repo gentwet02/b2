@@ -103,6 +103,14 @@ export default function LeaderboardScore(props: LeaderboardScoreProps) {
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [players, range, stats, JSON.stringify(avatars)]);
 
+    const searchText = useMemo(
+        () =>
+            (range ? players.slice(range[0] - 1, range[1]) : players).map((p) =>
+                [p.realName, p.name].filter(Boolean).join(' '),
+            ),
+        [players, range],
+    );
+
     if (isLoading) {
         return (
             <Loading
@@ -142,6 +150,7 @@ export default function LeaderboardScore(props: LeaderboardScoreProps) {
                 pageSizeOptions={[10, 25, 50, 100]}
                 searchPlaceHolder='Find a player'
                 searchAriaLabel='Find a player by name'
+                searchText={searchText}
                 state={range ? undefined : tableState}
                 onStateChange={range ? undefined : onTableStateChange}
             />

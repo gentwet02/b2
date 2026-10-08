@@ -56,14 +56,14 @@ const leaderboardRoute = createRoute({
     validateSearch: (search: Record<string, unknown>): LeaderboardSearch => {
         const page = Number(search.page);
         const size = Number(search.size);
-        const q = typeof search.q === 'string' ? search.q.trim().slice(0, 40) : '';
+        const q = typeof search.q === 'string' ? search.q.slice(0, 40) : '';
         return {
             page: Number.isInteger(page) && page > 1 ? page : undefined,
             size:
                 LEADERBOARD_PAGE_SIZES.includes(size) && size !== LEADERBOARD_DEFAULT_SIZE
                     ? size
                     : undefined,
-            q: q || undefined,
+            q: q.trim() ? q : undefined,
         };
     },
     loader: ({ context, params }) => {
