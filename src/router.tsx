@@ -9,7 +9,7 @@ import { leaderboardQueryOptions } from '@/hooks/useLeaderboard';
 import { profileQueryOptions } from '@/hooks/useProfile';
 import { seasonStatsQueryOptions } from '@/hooks/useSeasonStats';
 import { queryClient } from '@/queryClient';
-import { MATCH_SORTS, type MatchesQuery, type MatchSort } from '@/types/match';
+import { LEADERBOARD_DEFAULT_SIZE, LEADERBOARD_PAGE_SIZES } from '@/config/leaderboard';
 import Header from '@/components/header/Header';
 import Home from '@/pages/Home';
 import Leaderboard from '@/pages/Leaderboard';
@@ -17,6 +17,8 @@ import LeaderboardIndex from '@/pages/LeaderboardIndex';
 import MatchesHistory from '@/pages/MatchesHistory';
 import NotFound from '@/pages/NotFound';
 import User from '@/pages/User';
+import { MATCH_SORTS, type MatchesQuery, type MatchSort } from '@/types/match';
+import type { LeaderboardSearch } from '@/types/leaderboard';
 
 const rootRoute = createRootRouteWithContext<{ queryClient: QueryClient }>()({
     component: () => (
@@ -52,6 +54,19 @@ const leaderboardRoute = createRoute({
     params: {
         parse: ({ season }) => ({ season: Number(season) }),
         stringify: ({ season }) => ({ season: String(season) }),
+    },
+    validateSearch: (search: Record<string, unknown>): LeaderboardSearch => {
+        const page = Number(search.page);
+        const size = Number(search.size);
+        const q = typeof search.q === 'string' ? search.q.slice(0, 40) : '';
+        return {
+            page: Number.isInteger(page) && page > 1 ? page : 0,
+            size:
+                LEADERBOARD_PAGE_SIZES.includes(size) && size !== LEADERBOARD_DEFAULT_SIZE
+                    ? size
+                    : LEADERBOARD_DEFAULT_SIZE,
+            q: q.trim() ? q : '',
+        };
     },
     // starts on hover (preload) and on navigation, without blocking the page
     loader: ({ context, params }) => {

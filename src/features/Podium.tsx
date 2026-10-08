@@ -1,3 +1,5 @@
+import PlayerAvatar from '@/components/avatar/PlayerAvatar';
+import usePlayerAvatars from '@/hooks/usePlayerAvatars';
 import { formatNumber } from '@/utils/format';
 import { Link } from '@tanstack/react-router';
 import type { RankedPlayer } from './LeaderboardScore';
@@ -6,11 +8,12 @@ const ORDER = [2, 1, 3];
 
 export default function Podium({
     players,
-    avatars = {},
+    avatars: serverAvatars,
 }: {
     players: RankedPlayer[];
     avatars?: Record<string, string>;
 }) {
+    const avatars = usePlayerAvatars(serverAvatars);
     const top = ORDER.map((rank) => players[rank - 1]).filter(Boolean);
     if (top.length === 0) return null;
 
@@ -25,22 +28,12 @@ export default function Podium({
                                 params={{ userId: player.id }}
                                 className='podium__player'
                             >
-                                {avatars[player.id] ? (
-                                    <img
-                                        className='podium__avatar'
-                                        src={avatars[player.id]}
-                                        alt=''
-                                        width={72}
-                                        height={72}
-                                    />
-                                ) : (
-                                    <span
-                                        className='podium__avatar podium__avatar--empty'
-                                        aria-hidden='true'
-                                    >
-                                        {(player.realName || player.name).charAt(0).toUpperCase()}
-                                    </span>
-                                )}
+                                <PlayerAvatar
+                                    className='podium__avatar'
+                                    src={avatars[player.id]}
+                                    name={player.realName || player.name}
+                                    size={72}
+                                />
                                 <span className='podium__name'>
                                     {player.realName || player.name}
                                 </span>

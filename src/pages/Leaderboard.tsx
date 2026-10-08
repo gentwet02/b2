@@ -1,3 +1,5 @@
+import type { TableState, TableStateCause } from '@/components/table/Table';
+import { LEADERBOARD_DEFAULT_SIZE } from '@/config/leaderboard';
 import LeaderboardScore from '@/features/LeaderboardScore';
 import useLeaderboard, { leaderboardKey } from '@/hooks/useLeaderboard';
 import useSeasons from '@/hooks/useSeasons';
@@ -11,6 +13,7 @@ const routeApi = getRouteApi('/leaderboard/$season');
 export default function Leaderboard() {
     const { season } = routeApi.useParams();
     const navigate = routeApi.useNavigate();
+    const search = routeApi.useSearch();
     const queryClient = useQueryClient();
 
     const seasons = useSeasons();
@@ -25,6 +28,22 @@ export default function Leaderboard() {
         callback: () => queryClient.invalidateQueries({ queryKey: leaderboardKey(season) }),
         delay: 2000,
     });
+
+    const onTableStateChange = (next: TableState, cause: TableStateCause) =>
+        navigate({
+            search: {
+                page: next.page > 1 ? next.page : 1,
+                size:
+                    next.pageSize !== LEADERBOARD_DEFAULT_SIZE
+                        ? next.pageSize
+                        : LEADERBOARD_DEFAULT_SIZE,
+                q: next.search || '',
+            },
+            // typing replaces the entry instead of adding one per letter; page changes can be undone with Back
+            replace: cause === 'search',
+            // stay where you are when clicking Next at the bottom of the table
+            resetScroll: false,
+        });
 
     const count = data?.data?.length;
     const updated = timeAgo(data?.lastUpdated);
@@ -73,7 +92,18 @@ export default function Leaderboard() {
                     </button>
                 </div>
             </div>
-            <LeaderboardScore key={season} season={season} live={live} />
+            <LeaderboardScore
+                key={season}
+                season={season}
+                live={live}
+                itemsPerPage={LEADERBOARD_DEFAULT_SIZE}
+                tableState={{
+                    page: search.page || 1,
+                    pageSize: search.size || LEADERBOARD_DEFAULT_SIZE,
+                    search: search.q || '',
+                }}
+                onTableStateChange={onTableStateChange}
+            />
         </main>
     );
 }

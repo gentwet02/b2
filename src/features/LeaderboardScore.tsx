@@ -1,4 +1,4 @@
-import Table, { type Row } from '@/components/table/Table';
+import Table, { type Row, type TableState, type TableStateCause } from '@/components/table/Table';
 import { ErrorState, Loading, StatusMessage } from '@/components/status/Status';
 import useLeaderboardStats from '@/hooks/useLeaderboardStats';
 import type { LeaderboardPlayer } from '@/types/leaderboard';
@@ -45,10 +45,19 @@ interface LeaderboardScoreProps {
     itemsPerPage?: number;
     /** Show only ranks from..to (1-based, inclusive), without table controls. */
     range?: [number, number];
+    tableState?: Partial<TableState>;
+    onTableStateChange?: (next: TableState, cause: TableStateCause) => void;
 }
 
 export default function LeaderboardScore(props: LeaderboardScoreProps) {
-    const { season, live = false, itemsPerPage = 25, range } = props;
+    const {
+        season,
+        live = false,
+        itemsPerPage = 25,
+        range,
+        tableState,
+        onTableStateChange,
+    } = props;
     const { players, isLoading, error, refetch } = useRankedPlayers(season, live);
     const { data: stats } = useLeaderboardStats(season);
 
@@ -67,7 +76,7 @@ export default function LeaderboardScore(props: LeaderboardScoreProps) {
                         {player.rank}
                     </span>
                 ),
-                player: <PlayerName player={player} avatar={stats?.avatars[player.id]} />,
+                player: <PlayerName player={player} avatar={stats?.avatars[player.id] || ''} />,
                 score: <span className='lb-score'>{formatNumber(player.score)}</span>,
                 games: <span className='lb-num'>{stats ? formatNumber(games) : '…'}</span>,
                 winRate:
@@ -127,6 +136,8 @@ export default function LeaderboardScore(props: LeaderboardScoreProps) {
                 pageSizeOptions={[10, 25, 50, 100]}
                 searchPlaceHolder='Find a player'
                 searchAriaLabel='Find a player by name'
+                state={range ? undefined : tableState}
+                onStateChange={range ? undefined : onTableStateChange}
             />
             {stats && (
                 <p className='leaderboard-score__note'>

@@ -1,3 +1,4 @@
+// src/components/table/Table.tsx
 import { isValidElement, useMemo, useState, type ReactNode } from 'react';
 import TableBody from './TableBody';
 import TableHead from './TableHead';
@@ -12,6 +13,15 @@ export interface Row {
     [key: string]: ReactNode;
 }
 
+/** Page, page size and search, for tables whose parent keeps them (e.g. in the URL). */
+export interface TableState {
+    page: number;
+    pageSize: number;
+    search: string;
+}
+
+export type TableStateCause = 'page' | 'pageSize' | 'search';
+
 interface TableProps {
     categories?: Category[];
     data?: Row[];
@@ -23,6 +33,12 @@ interface TableProps {
     disableSearch?: boolean;
     disablePageSize?: boolean;
     disableSorting?: boolean;
+    /**
+     * With onStateChange the table is controlled: it shows `state` (missing fields use the
+     * defaults) and reports changes instead of keeping them. Without it, it keeps its own.
+     */
+    state?: Partial<TableState>;
+    onStateChange?: (next: TableState, cause: TableStateCause) => void;
 }
 
 type SortConfig = { key: string | null; direction: 'asc' | 'desc' };
@@ -58,12 +74,31 @@ export default function Table(props: TableProps) {
         disableSearch = false,
         disablePageSize = false,
         disableSorting = false,
+        state,
+        onStateChange,
     } = props;
 
     const [sortConfig, setSortConfig] = useState<SortConfig>({ key: null, direction: 'asc' });
-    const [searchTerm, setSearchTerm] = useState('');
-    const [currentPage, setCurrentPage] = useState(1);
-    const [pageSize, setPageSize] = useState(itemsPerPage);
+    const [ownSearch, setOwnSearch] = useState('');
+    const [ownPage, setOwnPage] = useState(1);
+    const [ownPageSize, setOwnPageSize] = useState(itemsPerPage);
+
+    const controlled = !!onStateChange;
+    const searchTerm = controlled ? (state?.search ?? '') : ownSearch;
+    const currentPage = controlled ? (state?.page ?? 1) : ownPage;
+    const pageSize = controlled ? (state?.pageSize ?? itemsPerPage) : ownPageSize;
+
+    const update = (patch: Partial<TableState>, cause: TableStateCause) => {
+        const next = { page: currentPage, pageSize, search: searchTerm, ...patch };
+        if (onStateChange) {
+            onStateChange(next, cause);
+        } else {
+            setOwnSearch(next.search);
+            setOwnPage(next.page);
+            setOwnPageSize(next.pageSize);
+        }
+    };
+
     const columns: Category[] = categories || Object.keys(data[0] || {});
 
     const filteredAndSortedData = useMemo(() => {
@@ -93,7 +128,7 @@ export default function Table(props: TableProps) {
 
     const totalPages = Math.max(1, Math.ceil(filteredAndSortedData.length / pageSize));
     // keep the page in range when the data shrinks (search, page size, refetch)
-    const page = Math.min(currentPage, totalPages);
+    const page = Math.min(Math.max(1, currentPage), totalPages);
 
     const handleSort = (category: Category) => {
         const key = categoryKey(category);
@@ -103,15 +138,12 @@ export default function Table(props: TableProps) {
         }));
     };
 
-    const handleSearch = (value: string) => {
-        setSearchTerm(value);
-        setCurrentPage(1);
-    };
+    const handleSearch = (value: string) => update({ search: value, page: 1 }, 'search');
 
-    const handlePageSize = (value: number) => {
-        setPageSize(value);
-        setCurrentPage(1);
-    };
+    const handlePageSize = (value: number) => update({ pageSize: value, page: 1 }, 'pageSize');
+
+    const handlePage = (value: number | ((previous: number) => number)) =>
+        update({ page: typeof value === 'function' ? value(page) : value }, 'page');
 
     const paginatedData = filteredAndSortedData.slice((page - 1) * pageSize, page * pageSize);
 
@@ -156,7 +188,7 @@ export default function Table(props: TableProps) {
                     totalPages={totalPages}
                     itemsPerPage={pageSize}
                     totalItems={filteredAndSortedData.length}
-                    onPageChange={setCurrentPage}
+                    onPageChange={handlePage}
                 />
             )}
         </div>

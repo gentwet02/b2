@@ -22,6 +22,12 @@ export interface LeaderboardResponse {
     error?: string | null;
 }
 
+export interface LeaderboardSearch {
+    page?: number;
+    size?: number;
+    q?: string;
+}
+
 /** GET /leaderboard/:id/stats */
 export interface LeaderboardStats {
     seasonId: number;

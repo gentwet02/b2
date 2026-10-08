@@ -1,0 +1,2 @@
+export const LEADERBOARD_PAGE_SIZES = [10, 25, 50, 100];
+export const LEADERBOARD_DEFAULT_SIZE = 25;
