@@ -1,26 +1,11 @@
-// src/components/table/Table.tsx
 import { isValidElement, useMemo, useState, type ReactNode } from 'react';
+import { convertString } from 'str-case-converter';
 import TableBody from './TableBody';
 import TableHead from './TableHead';
-import { convertString } from 'str-case-converter';
 import TablePageSizeSelector from './TablePageSizeSelector';
 import TablePagination from './TablePagination';
 import TableSearch from './TableSearch';
-
-export type Category = string | { name: string; title: string };
-
-export interface Row {
-    [key: string]: ReactNode;
-}
-
-/** Page, page size and search, for tables whose parent keeps them (e.g. in the URL). */
-export interface TableState {
-    page: number;
-    pageSize: number;
-    search: string;
-}
-
-export type TableStateCause = 'page' | 'pageSize' | 'search';
+import type { Category, Row, TableState, TableStateCause, TableStateInput } from '@/types/table';
 
 interface TableProps {
     categories?: Category[];
@@ -33,12 +18,8 @@ interface TableProps {
     disableSearch?: boolean;
     disablePageSize?: boolean;
     disableSorting?: boolean;
-    /**
-     * With onStateChange the table is controlled: it shows `state` (missing fields use the
-     * defaults) and reports changes instead of keeping them. Without it, it keeps its own.
-     */
-    state?: Partial<TableState>;
-    onStateChange?: (next: TableState, cause: TableStateCause) => void;
+    state?: TableStateInput | undefined;
+    onStateChange?: ((next: TableState, cause: TableStateCause) => void) | undefined;
 }
 
 type SortConfig = { key: string | null; direction: 'asc' | 'desc' };

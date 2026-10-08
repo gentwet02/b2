@@ -40,19 +40,19 @@ export type MatchSort = (typeof MATCH_SORTS)[number];
  * Lists are comma separated to keep URLs readable.
  */
 export interface MatchesQuery {
-    season?: number;
-    player?: string;
+    season?: number | undefined;
+    player?: string | undefined;
     /** one player's matches (profiles) */
-    playerId?: string;
+    playerId?: string | undefined;
     /** up to 2: "Quincy" = any variant, "Quincy:Quincy_Cyber" = that variant */
-    heroes?: string;
+    heroes?: string | undefined;
     /** up to 6, all of them in the match */
-    towers?: string;
+    towers?: string | undefined;
     /** map key, see MatchFilterOptions.maps */
-    map?: string;
-    sort?: MatchSort;
+    map?: string | undefined;
+    sort?: MatchSort | undefined;
     /** player, hero and towers on the same side */
-    sameSide?: boolean;
+    sameSide?: boolean | undefined;
 }
 
 /** One page of GET /matches-history (read from the database). */

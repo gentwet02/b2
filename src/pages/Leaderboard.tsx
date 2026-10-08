@@ -1,9 +1,9 @@
-import type { TableState, TableStateCause } from '@/components/table/Table';
 import { LEADERBOARD_DEFAULT_SIZE } from '@/config/leaderboard';
 import LeaderboardScore from '@/features/LeaderboardScore';
 import useLeaderboard, { leaderboardKey } from '@/hooks/useLeaderboard';
 import useSeasons from '@/hooks/useSeasons';
 import { useThrottle } from '@/hooks/useThrottle';
+import type { TableState, TableStateCause } from '@/types/table';
 import { formatNumber, seasonLabel, timeAgo } from '@/utils/format';
 import { useIsFetching, useQueryClient } from '@tanstack/react-query';
 import { getRouteApi } from '@tanstack/react-router';
@@ -32,16 +32,11 @@ export default function Leaderboard() {
     const onTableStateChange = (next: TableState, cause: TableStateCause) =>
         navigate({
             search: {
-                page: next.page > 1 ? next.page : 1,
-                size:
-                    next.pageSize !== LEADERBOARD_DEFAULT_SIZE
-                        ? next.pageSize
-                        : LEADERBOARD_DEFAULT_SIZE,
-                q: next.search || '',
+                page: next.page > 1 ? next.page : undefined,
+                size: next.pageSize !== LEADERBOARD_DEFAULT_SIZE ? next.pageSize : undefined,
+                q: next.search || undefined,
             },
-            // typing replaces the entry instead of adding one per letter; page changes can be undone with Back
             replace: cause === 'search',
-            // stay where you are when clicking Next at the bottom of the table
             resetScroll: false,
         });
 
@@ -98,9 +93,9 @@ export default function Leaderboard() {
                 live={live}
                 itemsPerPage={LEADERBOARD_DEFAULT_SIZE}
                 tableState={{
-                    page: search.page || 1,
-                    pageSize: search.size || LEADERBOARD_DEFAULT_SIZE,
-                    search: search.q || '',
+                    page: search.page,
+                    pageSize: search.size,
+                    search: search.q,
                 }}
                 onTableStateChange={onTableStateChange}
             />

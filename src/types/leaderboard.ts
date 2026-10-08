@@ -23,9 +23,9 @@ export interface LeaderboardResponse {
 }
 
 export interface LeaderboardSearch {
-    page?: number;
-    size?: number;
-    q?: string;
+    page?: number | undefined;
+    size?: number | undefined;
+    q?: string | undefined;
 }
 
 /** GET /leaderboard/:id/stats */

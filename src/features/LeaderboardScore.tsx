@@ -1,34 +1,36 @@
-import Table, { type Row, type TableState, type TableStateCause } from '@/components/table/Table';
+import PlayerAvatar from '@/components/avatar/PlayerAvatar';
 import { ErrorState, Loading, StatusMessage } from '@/components/status/Status';
+import Table from '@/components/table/Table';
 import useLeaderboardStats from '@/hooks/useLeaderboardStats';
+import usePlayerAvatars from '@/hooks/usePlayerAvatars';
+import { useRankedPlayers } from '@/hooks/useRankedPlayers';
 import type { LeaderboardPlayer } from '@/types/leaderboard';
+import type { Row, TableState, TableStateCause, TableStateInput } from '@/types/table';
 import { formatNumber } from '@/utils/format';
 import { Link } from '@tanstack/react-router';
 import { useMemo } from 'react';
-import { useRankedPlayers } from '@/hooks/useRankedPlayers';
 
 export interface RankedPlayer extends LeaderboardPlayer {
     rank: number;
 }
 
-export function PlayerName({ player, avatar }: { player: LeaderboardPlayer; avatar?: string }) {
+export function PlayerName({
+    player,
+    avatar,
+}: {
+    player: LeaderboardPlayer;
+    avatar?: string | undefined;
+}) {
     const alias = player.realName && player.realName !== player.name ? player.name : null;
     return (
         <span className='lb-player'>
-            {avatar ? (
-                <img
-                    className='lb-player__avatar'
-                    src={avatar}
-                    alt=''
-                    loading='lazy'
-                    width={36}
-                    height={36}
-                />
-            ) : (
-                <span className='lb-player__avatar lb-player__avatar--empty' aria-hidden='true'>
-                    {(player.realName || player.name).charAt(0).toUpperCase()}
-                </span>
-            )}
+            <PlayerAvatar
+                className='lb-player__avatar'
+                src={avatar}
+                name={player.realName || player.name}
+                size={36}
+                lazy
+            />
             <span className='lb-player__names'>
                 <Link to='/user/$userId' params={{ userId: player.id }} className='lb-player__name'>
                     {player.realName || player.name}
@@ -41,12 +43,13 @@ export function PlayerName({ player, avatar }: { player: LeaderboardPlayer; avat
 
 interface LeaderboardScoreProps {
     season: number;
-    live?: boolean;
-    itemsPerPage?: number;
+    live?: boolean | undefined;
+    itemsPerPage?: number | undefined;
     /** Show only ranks from..to (1-based, inclusive), without table controls. */
-    range?: [number, number];
-    tableState?: Partial<TableState>;
-    onTableStateChange?: (next: TableState, cause: TableStateCause) => void;
+    range?: [number, number] | undefined;
+    /** page, page size and search kept by the parent (the URL); the table keeps its own without */
+    tableState?: TableStateInput | undefined;
+    onTableStateChange?: ((next: TableState, cause: TableStateCause) => void) | undefined;
 }
 
 export default function LeaderboardScore(props: LeaderboardScoreProps) {
@@ -60,6 +63,7 @@ export default function LeaderboardScore(props: LeaderboardScoreProps) {
     } = props;
     const { players, isLoading, error, refetch } = useRankedPlayers(season, live);
     const { data: stats } = useLeaderboardStats(season);
+    const avatars = usePlayerAvatars(stats?.avatars);
 
     const rows = useMemo(() => {
         const visible = range ? players.slice(range[0] - 1, range[1]) : players;
@@ -76,7 +80,7 @@ export default function LeaderboardScore(props: LeaderboardScoreProps) {
                         {player.rank}
                     </span>
                 ),
-                player: <PlayerName player={player} avatar={stats?.avatars[player.id] || ''} />,
+                player: <PlayerName player={player} avatar={avatars[player.id]} />,
                 score: <span className='lb-score'>{formatNumber(player.score)}</span>,
                 games: <span className='lb-num'>{stats ? formatNumber(games) : '…'}</span>,
                 winRate:
@@ -95,7 +99,9 @@ export default function LeaderboardScore(props: LeaderboardScoreProps) {
                     ),
             };
         });
-    }, [players, range, stats]);
+        // avatars is rebuilt each render; its content only changes with stats or a visited profile
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [players, range, stats, JSON.stringify(avatars)]);
 
     if (isLoading) {
         return (

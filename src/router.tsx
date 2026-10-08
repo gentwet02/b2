@@ -11,6 +11,7 @@ import { seasonStatsQueryOptions } from '@/hooks/useSeasonStats';
 import { queryClient } from '@/queryClient';
 import { LEADERBOARD_DEFAULT_SIZE, LEADERBOARD_PAGE_SIZES } from '@/config/leaderboard';
 import Header from '@/components/header/Header';
+import Footer from '@/components/footer/Footer';
 import Home from '@/pages/Home';
 import Leaderboard from '@/pages/Leaderboard';
 import LeaderboardIndex from '@/pages/LeaderboardIndex';
@@ -27,9 +28,7 @@ const rootRoute = createRootRouteWithContext<{ queryClient: QueryClient }>()({
             <div className='site-main'>
                 <Outlet />
             </div>
-            <footer className='site-footer'>
-                Data from the Ninja Kiwi Open Data API. Not affiliated with Ninja Kiwi.
-            </footer>
+            <Footer />
         </>
     ),
     notFoundComponent: NotFound,
@@ -50,7 +49,6 @@ const leaderboardIndexRoute = createRoute({
 const leaderboardRoute = createRoute({
     getParentRoute: () => rootRoute,
     path: '/leaderboard/$season',
-    // the URL holds a string, the app works with the numeric season id
     params: {
         parse: ({ season }) => ({ season: Number(season) }),
         stringify: ({ season }) => ({ season: String(season) }),
@@ -58,17 +56,16 @@ const leaderboardRoute = createRoute({
     validateSearch: (search: Record<string, unknown>): LeaderboardSearch => {
         const page = Number(search.page);
         const size = Number(search.size);
-        const q = typeof search.q === 'string' ? search.q.slice(0, 40) : '';
+        const q = typeof search.q === 'string' ? search.q.trim().slice(0, 40) : '';
         return {
-            page: Number.isInteger(page) && page > 1 ? page : 0,
+            page: Number.isInteger(page) && page > 1 ? page : undefined,
             size:
                 LEADERBOARD_PAGE_SIZES.includes(size) && size !== LEADERBOARD_DEFAULT_SIZE
                     ? size
-                    : LEADERBOARD_DEFAULT_SIZE,
-            q: q.trim() ? q : '',
+                    : undefined,
+            q: q || undefined,
         };
     },
-    // starts on hover (preload) and on navigation, without blocking the page
     loader: ({ context, params }) => {
         void context.queryClient.prefetchQuery(leaderboardQueryOptions(params.season));
     },
@@ -78,23 +75,24 @@ const leaderboardRoute = createRoute({
 const matchesRoute = createRoute({
     getParentRoute: () => rootRoute,
     path: '/matches-history',
-    // filters live in the URL: shareable links, and Back undoes a filter
     validateSearch: (search: Record<string, unknown>): MatchesQuery => {
         const text = (value: unknown, max = 40) =>
             typeof value === 'string' && value.trim() !== ''
                 ? value.trim().slice(0, max)
                 : undefined;
         const season = Number(search.season);
+        const sort = search.sort as MatchSort;
         return {
-            season: season,
-            player: text(search.player) || '',
-            heroes: text(search.heroes, 120) || '',
-            towers: text(search.towers, 200) || '',
-            map: text(search.map) || '',
-            sort: MATCH_SORTS.includes(search.sort as MatchSort)
-                ? (search.sort as MatchSort)
-                : 'newest',
-            sameSide: search.sameSide === true || search.sameSide === 'true' ? true : false,
+            season:
+                search.season != null && Number.isInteger(season) && season >= 0
+                    ? season
+                    : undefined,
+            player: text(search.player),
+            heroes: text(search.heroes, 120),
+            towers: text(search.towers, 200),
+            map: text(search.map),
+            sort: MATCH_SORTS.includes(sort) && sort !== 'newest' ? sort : undefined,
+            sameSide: search.sameSide === true || search.sameSide === 'true' ? true : undefined,
         };
     },
     component: MatchesHistory,
@@ -105,7 +103,6 @@ const userRoute = createRoute({
     path: '/user/$userId',
     loader: ({ context, params, preload }) => {
         void context.queryClient.prefetchQuery(profileQueryOptions(params.userId));
-        // the rest only once the visitor actually opens the profile, not on every hover
         if (!preload)
             void context.queryClient.prefetchQuery(seasonStatsQueryOptions(params.userId));
     },
@@ -124,14 +121,11 @@ export const router = createRouter({
     routeTree,
     context: { queryClient },
     scrollRestoration: true,
-    // hovering or focusing a link for 150 ms runs its loader, which prefetches the data
     defaultPreload: 'intent',
     defaultPreloadDelay: 150,
-    // React Query owns caching; let loaders run every time
     defaultPreloadStaleTime: 0,
 });
 
-// typed <Link to> / useParams across the app
 declare module '@tanstack/react-router' {
     interface Register {
         router: typeof router;
