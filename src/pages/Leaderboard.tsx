@@ -1,8 +1,10 @@
 import { LEADERBOARD_DEFAULT_SIZE } from '@/config/leaderboard';
+import LeaderboardFilters from '@/features/LeaderboardFilters';
 import LeaderboardScore from '@/features/LeaderboardScore';
 import useLeaderboard, { leaderboardKey } from '@/hooks/useLeaderboard';
 import useSeasons from '@/hooks/useSeasons';
 import { useThrottle } from '@/hooks/useThrottle';
+import type { LeaderboardView } from '@/types/leaderboard';
 import type { TableState, TableStateCause } from '@/types/table';
 import { formatNumber, seasonLabel, timeAgo } from '@/utils/format';
 import { useIsFetching, useQueryClient } from '@tanstack/react-query';
@@ -29,13 +31,35 @@ export default function Leaderboard() {
         delay: 2000,
     });
 
+    const view = {
+        sort: search.sort ?? 'rank',
+        minGames: search.min ?? 0,
+        knownOnly: search.known ?? false,
+    } satisfies Required<LeaderboardView>;
+
+    const onViewChange = (patch: LeaderboardView) => {
+        const next = { ...view, ...patch };
+        navigate({
+            search: (prev) => ({
+                ...prev,
+                sort: next.sort !== 'rank' ? next.sort : undefined,
+                min: next.minGames > 0 ? next.minGames : undefined,
+                known: next.knownOnly || undefined,
+                page: undefined,
+            }),
+            replace: true,
+            resetScroll: false,
+        });
+    };
+
     const onTableStateChange = (next: TableState, cause: TableStateCause) =>
         navigate({
-            search: {
+            search: (prev) => ({
+                ...prev,
                 page: next.page > 1 ? next.page : undefined,
                 size: next.pageSize !== LEADERBOARD_DEFAULT_SIZE ? next.pageSize : undefined,
                 q: next.search || undefined,
-            },
+            }),
             replace: cause === 'search',
             resetScroll: false,
         });
@@ -65,7 +89,10 @@ export default function Leaderboard() {
                                 className='select'
                                 value={season}
                                 onChange={(e) =>
-                                    navigate({ params: { season: Number(e.target.value) } })
+                                    navigate({
+                                        params: { season: Number(e.target.value) },
+                                        search: (prev) => ({ ...prev, page: undefined }),
+                                    })
                                 }
                             >
                                 {known.map((s) => (
@@ -87,16 +114,14 @@ export default function Leaderboard() {
                     </button>
                 </div>
             </div>
+            <LeaderboardFilters view={view} onChange={onViewChange} />
             <LeaderboardScore
                 key={season}
                 season={season}
                 live={live}
+                view={view}
                 itemsPerPage={LEADERBOARD_DEFAULT_SIZE}
-                tableState={{
-                    page: search.page,
-                    pageSize: search.size,
-                    search: search.q,
-                }}
+                tableState={{ page: search.page, pageSize: search.size, search: search.q }}
                 onTableStateChange={onTableStateChange}
             />
         </main>

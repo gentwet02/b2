@@ -9,7 +9,11 @@ import { leaderboardQueryOptions } from '@/hooks/useLeaderboard';
 import { profileQueryOptions } from '@/hooks/useProfile';
 import { seasonStatsQueryOptions } from '@/hooks/useSeasonStats';
 import { queryClient } from '@/queryClient';
-import { LEADERBOARD_DEFAULT_SIZE, LEADERBOARD_PAGE_SIZES } from '@/config/leaderboard';
+import {
+    LEADERBOARD_DEFAULT_SIZE,
+    LEADERBOARD_MIN_GAMES,
+    LEADERBOARD_PAGE_SIZES,
+} from '@/config/leaderboard';
 import Header from '@/components/header/Header';
 import Footer from '@/components/footer/Footer';
 import Home from '@/pages/Home';
@@ -19,7 +23,11 @@ import MatchesHistory from '@/pages/MatchesHistory';
 import NotFound from '@/pages/NotFound';
 import User from '@/pages/User';
 import { MATCH_SORTS, type MatchesQuery, type MatchSort } from '@/types/match';
-import type { LeaderboardSearch } from '@/types/leaderboard';
+import {
+    LEADERBOARD_SORTS,
+    type LeaderboardSearch,
+    type LeaderboardSort,
+} from '@/types/leaderboard';
 
 const rootRoute = createRootRouteWithContext<{ queryClient: QueryClient }>()({
     component: () => (
@@ -56,6 +64,8 @@ const leaderboardRoute = createRoute({
     validateSearch: (search: Record<string, unknown>): LeaderboardSearch => {
         const page = Number(search.page);
         const size = Number(search.size);
+        const sort = search.sort as LeaderboardSort;
+        const min = Number(search.min);
         const q = typeof search.q === 'string' ? search.q.slice(0, 40) : '';
         return {
             page: Number.isInteger(page) && page > 1 ? page : undefined,
@@ -64,6 +74,9 @@ const leaderboardRoute = createRoute({
                     ? size
                     : undefined,
             q: q.trim() ? q : undefined,
+            sort: LEADERBOARD_SORTS.includes(sort) && sort !== 'rank' ? sort : undefined,
+            min: LEADERBOARD_MIN_GAMES.includes(min) && min > 0 ? min : undefined,
+            known: search.known === true || search.known === 'true' ? true : undefined,
         };
     },
     loader: ({ context, params }) => {

@@ -1,0 +1,33 @@
+@use '@/styles/colors';
+
+.leaderboard-filters {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-end;
+    gap: 0.75rem 1.25rem;
+    margin-bottom: 1rem;
+
+    &__field {
+        display: grid;
+        gap: 0.25rem;
+    }
+
+    &__label {
+        font-size: 0.75rem;
+        font-weight: 600;
+        color: colors.$ink-soft;
+    }
+
+    &__check {
+        display: flex;
+        align-items: center;
+        gap: 0.4rem;
+        min-height: 2.25rem;
+        font-size: 0.875rem;
+        cursor: pointer;
+    }
+
+    &__reset {
+        min-height: 2.25rem;
+    }
+}

@@ -4,7 +4,7 @@ import Table from '@/components/table/Table';
 import useLeaderboardStats from '@/hooks/useLeaderboardStats';
 import usePlayerAvatars from '@/hooks/usePlayerAvatars';
 import { useRankedPlayers } from '@/hooks/useRankedPlayers';
-import type { LeaderboardPlayer } from '@/types/leaderboard';
+import type { LeaderboardPlayer, LeaderboardView } from '@/types/leaderboard';
 import type { Row, TableState, TableStateCause, TableStateInput } from '@/types/table';
 import { formatNumber } from '@/utils/format';
 import { Link } from '@tanstack/react-router';
@@ -47,9 +47,47 @@ interface LeaderboardScoreProps {
     itemsPerPage?: number | undefined;
     /** Show only ranks from..to (1-based, inclusive), without table controls. */
     range?: [number, number] | undefined;
+    /** sort and filters; missing = by rank, everybody */
+    view?: LeaderboardView | undefined;
     /** page, page size and search kept by the parent (the URL); the table keeps its own without */
     tableState?: TableStateInput | undefined;
     onTableStateChange?: ((next: TableState, cause: TableStateCause) => void) | undefined;
+}
+
+interface Line {
+    player: RankedPlayer;
+    wins: number;
+    losses: number;
+    draws: number;
+    games: number;
+    /** % of decided games won, null without any */
+    rate: number | null;
+}
+
+const displayName = (p: LeaderboardPlayer) => p.realName || p.name;
+
+function compare(sort: LeaderboardView['sort'], a: Line, b: Line) {
+    const byRank = a.player.rank - b.player.rank;
+    switch (sort) {
+        case 'games':
+            return b.games - a.games || byRank;
+        case 'wins':
+            return b.wins - a.wins || byRank;
+        case 'winrate':
+            // players without decided games go last
+            if (a.rate === null || b.rate === null) {
+                return (a.rate === null ? 1 : 0) - (b.rate === null ? 1 : 0) || byRank;
+            }
+            return b.rate - a.rate || b.games - a.games || byRank;
+        case 'name':
+            return (
+                displayName(a.player).localeCompare(displayName(b.player), undefined, {
+                    sensitivity: 'base',
+                }) || byRank
+            );
+        default:
+            return byRank;
+    }
 }
 
 export default function LeaderboardScore(props: LeaderboardScoreProps) {
@@ -58,57 +96,78 @@ export default function LeaderboardScore(props: LeaderboardScoreProps) {
         live = false,
         itemsPerPage = 25,
         range,
+        view,
         tableState,
         onTableStateChange,
     } = props;
     const { players, isLoading, error, refetch } = useRankedPlayers(season, live);
     const { data: stats } = useLeaderboardStats(season);
     const avatars = usePlayerAvatars(stats?.avatars);
+    const avatarsKey = JSON.stringify(avatars);
 
-    const rows = useMemo(() => {
+    const sort = view?.sort ?? 'rank';
+    const minGames = view?.minGames ?? 0;
+    const knownOnly = view?.knownOnly ?? false;
+
+    // sorted and filtered players; rows and search text are built from the same list,
+    // so the table can match them by index
+    const lines = useMemo(() => {
         const visible = range ? players.slice(range[0] - 1, range[1]) : players;
-        return visible.map((player): Row => {
-            const record = stats?.records[player.id];
-            const [wins, losses, draws] = record ?? [0, 0, 0];
-            const games = wins + losses + draws;
-            const rate = wins + losses > 0 ? (wins / (wins + losses)) * 100 : null;
+        const all = visible.map((player): Line => {
+            const [wins, losses, draws] = stats?.records[player.id] ?? [0, 0, 0];
             return {
-                rank: (
-                    <span
-                        className={`lb-rank${player.rank <= 3 ? ` lb-rank--${player.rank}` : ''}`}
-                    >
-                        {player.rank}
-                    </span>
-                ),
-                player: <PlayerName player={player} avatar={avatars[player.id]} />,
-                score: <span className='lb-score'>{formatNumber(player.score)}</span>,
-                games: <span className='lb-num'>{stats ? formatNumber(games) : '…'}</span>,
-                winRate:
-                    rate === null ? (
-                        <span className='lb-num lb-num--empty'>–</span>
-                    ) : (
-                        <span
-                            className='lb-rate'
-                            title={`${wins} won, ${losses} lost, ${draws} drawn`}
-                        >
-                            <span className='lb-rate__value'>{rate.toFixed(0)}%</span>
-                            <span className='lb-rate__bar' aria-hidden='true'>
-                                <span style={{ width: `${rate}%` }} />
-                            </span>
-                        </span>
-                    ),
+                player,
+                wins,
+                losses,
+                draws,
+                games: wins + losses + draws,
+                rate: wins + losses > 0 ? (wins / (wins + losses)) * 100 : null,
             };
         });
-        // avatars is rebuilt each render; its content only changes with stats or a visited profile
+        if (range) return all;
+        return all
+            .filter((l) => l.games >= minGames && (!knownOnly || !!l.player.realName))
+            .sort((a, b) => compare(sort, a, b));
+    }, [players, range, stats, sort, minGames, knownOnly]);
+
+    const rows = useMemo(
+        () =>
+            lines.map(
+                ({ player, wins, losses, draws, games, rate }): Row => ({
+                    rank: (
+                        <span
+                            className={`lb-rank${player.rank <= 3 ? ` lb-rank--${player.rank}` : ''}`}
+                        >
+                            {player.rank}
+                        </span>
+                    ),
+                    player: <PlayerName player={player} avatar={avatars[player.id]} />,
+                    score: <span className='lb-score'>{formatNumber(player.score)}</span>,
+                    games: <span className='lb-num'>{stats ? formatNumber(games) : '…'}</span>,
+                    winRate:
+                        rate === null ? (
+                            <span className='lb-num lb-num--empty'>–</span>
+                        ) : (
+                            <span
+                                className='lb-rate'
+                                title={`${wins} won, ${losses} lost, ${draws} drawn`}
+                            >
+                                <span className='lb-rate__value'>{rate.toFixed(0)}%</span>
+                                <span className='lb-rate__bar' aria-hidden='true'>
+                                    <span style={{ width: `${rate}%` }} />
+                                </span>
+                            </span>
+                        ),
+                }),
+            ),
+        // avatars is rebuilt each render; its content is what matters
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [players, range, stats, JSON.stringify(avatars)]);
+        [lines, stats, avatarsKey],
+    );
 
     const searchText = useMemo(
-        () =>
-            (range ? players.slice(range[0] - 1, range[1]) : players).map((p) =>
-                [p.realName, p.name].filter(Boolean).join(' '),
-            ),
-        [players, range],
+        () => lines.map(({ player }) => [player.realName, player.name].filter(Boolean).join(' ')),
+        [lines],
     );
 
     if (isLoading) {

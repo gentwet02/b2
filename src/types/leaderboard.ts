@@ -22,19 +22,35 @@ export interface LeaderboardResponse {
     error?: string | null;
 }
 
+export const LEADERBOARD_SORTS = ['rank', 'games', 'winrate', 'wins', 'name'] as const;
+export type LeaderboardSort = (typeof LEADERBOARD_SORTS)[number];
+
 export interface LeaderboardSearch {
     page?: number | undefined;
     size?: number | undefined;
     q?: string | undefined;
+    sort?: LeaderboardSort | undefined;
+    min?: number | undefined;
+    known?: boolean | undefined;
+}
+export interface LeaderboardView {
+    sort?: LeaderboardSort;
+    minGames?: number;
+    knownOnly?: boolean;
 }
 
-/** GET /leaderboard/:id/stats */
 export interface LeaderboardStats {
     seasonId: number;
-    /** userId → [wins, losses, draws], from the matches our server recorded */
     records: Record<string, [number, number, number]>;
-    /** userId → avatar URL, for the players whose profile we have */
     avatars: Record<string, string>;
     message?: string | null;
     error?: string | null;
 }
+
+export const LEADERBOARD_SORT_LABELS: Record<LeaderboardSort, string> = {
+    rank: 'Rank',
+    games: 'Most games',
+    winrate: 'Best win rate',
+    wins: 'Most wins',
+    name: 'Name (A–Z)',
+};
