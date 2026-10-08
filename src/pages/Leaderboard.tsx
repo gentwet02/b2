@@ -34,7 +34,6 @@ export default function Leaderboard() {
     const view = {
         sort: search.sort ?? 'rank',
         minGames: search.min ?? 0,
-        knownOnly: search.known ?? false,
     } satisfies Required<LeaderboardView>;
 
     const onViewChange = (patch: LeaderboardView) => {
@@ -44,7 +43,6 @@ export default function Leaderboard() {
                 ...prev,
                 sort: next.sort !== 'rank' ? next.sort : undefined,
                 min: next.minGames > 0 ? next.minGames : undefined,
-                known: next.knownOnly || undefined,
                 page: undefined,
             }),
             replace: true,

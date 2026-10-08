@@ -12,7 +12,7 @@ interface LeaderboardFiltersProps {
 }
 
 export default function LeaderboardFilters({ view, onChange }: LeaderboardFiltersProps) {
-    const changed = view.sort !== 'rank' || view.minGames > 0 || view.knownOnly;
+    const changed = view.sort !== 'rank' || view.minGames > 0;
 
     return (
         <section className='leaderboard-filters' aria-label='Sort and filters'>
@@ -46,20 +46,11 @@ export default function LeaderboardFilters({ view, onChange }: LeaderboardFilter
                 </select>
             </label>
 
-            <label className='leaderboard-filters__check'>
-                <input
-                    type='checkbox'
-                    checked={view.knownOnly}
-                    onChange={(e) => onChange({ knownOnly: e.target.checked })}
-                />
-                Known players only
-            </label>
-
             {changed && (
                 <button
                     type='button'
                     className='text-link leaderboard-filters__reset'
-                    onClick={() => onChange({ sort: 'rank', minGames: 0, knownOnly: false })}
+                    onClick={() => onChange({ sort: 'rank', minGames: 0 })}
                 >
                     Reset
                 </button>

@@ -66,7 +66,10 @@ const leaderboardRoute = createRoute({
         const size = Number(search.size);
         const sort = search.sort as LeaderboardSort;
         const min = Number(search.min);
-        const q = typeof search.q === 'string' ? search.q.slice(0, 40) : '';
+        const q =
+            typeof search.q === 'string' || typeof search.q === 'number'
+                ? String(search.q).slice(0, 40)
+                : '';
         return {
             page: Number.isInteger(page) && page > 1 ? page : undefined,
             size:
@@ -76,7 +79,6 @@ const leaderboardRoute = createRoute({
             q: q.trim() ? q : undefined,
             sort: LEADERBOARD_SORTS.includes(sort) && sort !== 'rank' ? sort : undefined,
             min: LEADERBOARD_MIN_GAMES.includes(min) && min > 0 ? min : undefined,
-            known: search.known === true || search.known === 'true' ? true : undefined,
         };
     },
     loader: ({ context, params }) => {

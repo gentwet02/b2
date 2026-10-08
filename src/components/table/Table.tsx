@@ -86,19 +86,13 @@ export default function Table(props: TableProps) {
 
     const filteredAndSortedData = useMemo(() => {
         const term = searchTerm.trim().toLowerCase();
-        let processedData = term
+        const processedData = term
             ? data.filter((item, i) =>
                   (searchText?.[i] ?? Object.values(item).map(nodeText).join(' '))
                       .toLowerCase()
                       .includes(term),
               )
             : [...data];
-
-        if (term) {
-            processedData = processedData.filter((item) =>
-                Object.values(item).some((value) => nodeText(value).toLowerCase().includes(term)),
-            );
-        }
 
         const key = sortConfig.key;
         if (key) {

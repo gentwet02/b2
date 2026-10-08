@@ -45,11 +45,8 @@ interface LeaderboardScoreProps {
     season: number;
     live?: boolean | undefined;
     itemsPerPage?: number | undefined;
-    /** Show only ranks from..to (1-based, inclusive), without table controls. */
     range?: [number, number] | undefined;
-    /** sort and filters; missing = by rank, everybody */
     view?: LeaderboardView | undefined;
-    /** page, page size and search kept by the parent (the URL); the table keeps its own without */
     tableState?: TableStateInput | undefined;
     onTableStateChange?: ((next: TableState, cause: TableStateCause) => void) | undefined;
 }
@@ -60,7 +57,6 @@ interface Line {
     losses: number;
     draws: number;
     games: number;
-    /** % of decided games won, null without any */
     rate: number | null;
 }
 
@@ -74,7 +70,6 @@ function compare(sort: LeaderboardView['sort'], a: Line, b: Line) {
         case 'wins':
             return b.wins - a.wins || byRank;
         case 'winrate':
-            // players without decided games go last
             if (a.rate === null || b.rate === null) {
                 return (a.rate === null ? 1 : 0) - (b.rate === null ? 1 : 0) || byRank;
             }
@@ -103,14 +98,11 @@ export default function LeaderboardScore(props: LeaderboardScoreProps) {
     const { players, isLoading, error, refetch } = useRankedPlayers(season, live);
     const { data: stats } = useLeaderboardStats(season);
     const avatars = usePlayerAvatars(stats?.avatars);
-    const avatarsKey = JSON.stringify(avatars);
+    //const avatarsKey = JSON.stringify(avatars);
 
     const sort = view?.sort ?? 'rank';
     const minGames = view?.minGames ?? 0;
-    const knownOnly = view?.knownOnly ?? false;
 
-    // sorted and filtered players; rows and search text are built from the same list,
-    // so the table can match them by index
     const lines = useMemo(() => {
         const visible = range ? players.slice(range[0] - 1, range[1]) : players;
         const all = visible.map((player): Line => {
@@ -125,10 +117,8 @@ export default function LeaderboardScore(props: LeaderboardScoreProps) {
             };
         });
         if (range) return all;
-        return all
-            .filter((l) => l.games >= minGames && (!knownOnly || !!l.player.realName))
-            .sort((a, b) => compare(sort, a, b));
-    }, [players, range, stats, sort, minGames, knownOnly]);
+        return all.filter((l) => l.games >= minGames).sort((a, b) => compare(sort, a, b));
+    }, [players, range, stats, sort, minGames]);
 
     const rows = useMemo(
         () =>
@@ -160,9 +150,7 @@ export default function LeaderboardScore(props: LeaderboardScoreProps) {
                         ),
                 }),
             ),
-        // avatars is rebuilt each render; its content is what matters
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-        [lines, stats, avatarsKey],
+        [lines, avatars, stats],
     );
 
     const searchText = useMemo(

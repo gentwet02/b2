@@ -31,12 +31,10 @@ export interface LeaderboardSearch {
     q?: string | undefined;
     sort?: LeaderboardSort | undefined;
     min?: number | undefined;
-    known?: boolean | undefined;
 }
 export interface LeaderboardView {
     sort?: LeaderboardSort;
     minGames?: number;
-    knownOnly?: boolean;
 }
 
 export interface LeaderboardStats {
