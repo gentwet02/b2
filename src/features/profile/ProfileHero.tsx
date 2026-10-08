@@ -7,7 +7,7 @@ export function ProfileHeroPlaceholder({
     name,
     children,
 }: {
-    name?: string;
+    name?: string | undefined;
     children?: ReactNode;
 }) {
     return (
@@ -28,7 +28,7 @@ export function ProfileHeroPlaceholder({
 
 interface ProfileHeroProps {
     profile: UserProfile;
-    realName?: string | null;
+    realName?: string | null | undefined;
     actions?: ReactNode;
     /** e.g. "Updated 3 minutes ago" */
     note?: string | null;
@@ -43,7 +43,7 @@ const IMAGE_URL = /^https?:\/\/\S+\.(png|jpe?g|webp|gif|svg)(\?\S*)?$/i;
 interface Badge {
     key: string;
     name: string;
-    url?: string;
+    url?: string | undefined;
 }
 
 function readBadges(raw: unknown[] | undefined): Badge[] {

@@ -14,6 +14,7 @@ export function formatLabel(value: string): string {
         .replace(/HoM/g, ' \u0000 ') // keep the game's "HoM" acronym in one piece
         .replace(/([a-z])([A-Z])/g, '$1 $2')
         .replace(/([A-Z]+)([A-Z][a-z])/g, '$1 $2')
+        // eslint-disable-next-line no-control-regex
         .replace(/\u0000/g, 'HoM')
         .replace(/\s+/g, ' ')
         .trim();
@@ -30,10 +31,17 @@ export function formatMap(map: string): string {
 }
 
 /** "Quincy_Cyber" → "Cyber Quincy", the way the game names skins. */
-export function formatHero(hero: string): string {
+export function formatHero(hero: string | undefined): string {
+    if (!hero) return '';
     const [base, skin] = hero.split('_');
-    const name = formatLabel(base);
+    const name = formatLabel(base || '');
     return skin ? `${formatLabel(skin)} ${name}` : name;
+}
+
+/** "Quincy" or "Quincy:Quincy_Cyber" ⇄ { base, hero } */
+export function parseHero(item: string) {
+    const [base, hero] = item.split(':');
+    return { base, hero: hero || undefined };
 }
 
 export function formatDuration(seconds: number): string {

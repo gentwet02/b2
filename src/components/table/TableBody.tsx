@@ -1,4 +1,4 @@
-import type { Category, Row } from './Table';
+import type { Category, Row } from '@/types/table';
 
 interface TableBodyProps {
     categories: Category[];

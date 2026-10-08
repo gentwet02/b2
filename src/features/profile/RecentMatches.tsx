@@ -13,7 +13,7 @@ export default function RecentMatches({
     playerName,
 }: {
     userId: string;
-    playerName?: string;
+    playerName?: string | undefined;
 }) {
     const stored = useMatchesHistory({ playerId: userId });
     const page = stored.data?.pages[0]?.matches;

@@ -1,12 +1,20 @@
 import MatchCard, { type MatchPick } from '@/components/match/MatchCard';
 import { ErrorState, Loading, StatusMessage } from '@/components/status/Status';
-import MatchFilters, { parseHero } from '@/features/match/MatchFilters';
+import MatchFilters from '@/features/match/MatchFilters';
 import useDebouncedValue from '@/hooks/useDebouncedValue';
 import useMatchFilters from '@/hooks/useMatchFilters';
 import useMatchesHistory from '@/hooks/useMatchesHistory';
 import useSeasons from '@/hooks/useSeasons';
 import type { MatchesQuery } from '@/types/match';
-import { formatNumber, joinList, mapKey, seasonLabel, splitList, timeAgo } from '@/utils/format';
+import {
+    formatNumber,
+    joinList,
+    mapKey,
+    parseHero,
+    seasonLabel,
+    splitList,
+    timeAgo,
+} from '@/utils/format';
 import { getRouteApi } from '@tanstack/react-router';
 import { useEffect, useState } from 'react';
 

@@ -1,5 +1,10 @@
 import { SearchIcon } from '@/components/icons';
-import type { MatchFilterOptions, MatchesQuery, MatchSort } from '@/types/match';
+import {
+    type MatchFilterOptions,
+    type MatchesQuery,
+    type MatchSort,
+    SORT_LABELS,
+} from '@/types/match';
 import type { SeasonSummary } from '@/types/info';
 import {
     formatHero,
@@ -7,32 +12,20 @@ import {
     formatMap,
     formatNumber,
     joinList,
+    parseHero,
     splitList,
 } from '@/utils/format';
 
-export const SORT_LABELS: Record<MatchSort, string> = {
-    newest: 'Newest first',
-    oldest: 'Oldest first',
-    longest: 'Longest',
-    shortest: 'Shortest',
-    rounds: 'Most rounds',
-};
-
-/** "Quincy" or "Quincy:Quincy_Cyber" ⇄ { base, hero } */
-export const parseHero = (item: string) => {
-    const [base, hero] = item.split(':');
-    return { base, hero: hero || undefined };
-};
 const heroItem = ({ base, hero }: { base: string; hero?: string }) =>
     hero ? `${base}:${hero}` : base;
 
 interface MatchFiltersProps {
     query: MatchesQuery;
     onChange: (patch: Partial<MatchesQuery>) => void;
-    options?: MatchFilterOptions;
+    options?: MatchFilterOptions | undefined;
     seasons: SeasonSummary[];
-    liveSeason?: number;
-    seasonId?: number;
+    liveSeason?: number | undefined;
+    seasonId?: number | undefined;
     playerText: string;
     onPlayerText: (value: string) => void;
 }
@@ -137,7 +130,7 @@ export default function MatchFilters(props: MatchFiltersProps) {
                                         <img className='chip-filter__img' src={portrait} alt='' />
                                     )}
                                     <span className='chip-filter__name'>
-                                        {formatHero(pick.base)}
+                                        {formatHero(pick.base || '')}
                                     </span>
                                     <select
                                         className='chip-filter__variant'

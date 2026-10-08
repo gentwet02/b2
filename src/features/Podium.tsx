@@ -11,7 +11,7 @@ export default function Podium({
     avatars: serverAvatars,
 }: {
     players: RankedPlayer[];
-    avatars?: Record<string, string>;
+    avatars?: Record<string, string> | undefined;
 }) {
     const avatars = usePlayerAvatars(serverAvatars);
     const top = ORDER.map((rank) => players[rank - 1]).filter(Boolean);

@@ -1,6 +1,6 @@
 import { convertString } from 'str-case-converter';
-import type { Category } from './Table';
-import { ChevronDownIcon } from '../icons';
+import { ChevronDownIcon } from '@/components/icons';
+import type { Category } from '@/types/table';
 
 interface TableHeadProps {
     categories: Category[];

@@ -112,3 +112,11 @@ export interface UserMatchesResponse {
 export interface MatchesUpdateResponse {
     message: string;
 }
+
+export const SORT_LABELS: Record<MatchSort, string> = {
+    newest: 'Newest first',
+    oldest: 'Oldest first',
+    longest: 'Longest',
+    shortest: 'Shortest',
+    rounds: 'Most rounds',
+};
