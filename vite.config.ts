@@ -14,5 +14,5 @@ export default defineConfig({
         },
         extensions: ['.js', '.ts', '.jsx', '.tsx'],
     },
-    base: './',
+    base: '/',
 });
