@@ -71,15 +71,15 @@ const matchesRoute = createRoute({
                 : undefined;
         const season = Number(search.season);
         return {
-            season: Number.isInteger(season) && season >= 0 ? season : undefined,
-            player: text(search.player),
-            heroes: text(search.heroes, 120),
-            towers: text(search.towers, 200),
-            map: text(search.map),
+            season: season,
+            player: text(search.player) || '',
+            heroes: text(search.heroes, 120) || '',
+            towers: text(search.towers, 200) || '',
+            map: text(search.map) || '',
             sort: MATCH_SORTS.includes(search.sort as MatchSort)
                 ? (search.sort as MatchSort)
-                : undefined,
-            sameSide: search.sameSide === true || search.sameSide === 'true' ? true : undefined,
+                : 'newest',
+            sameSide: search.sameSide === true || search.sameSide === 'true' ? true : false,
         };
     },
     component: MatchesHistory,
