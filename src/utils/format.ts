@@ -1,3 +1,5 @@
+import type { HeroPick } from '@/types/tower';
+
 const PROFILE_PREFIX = 'https://data.ninjakiwi.com/battles2/users/';
 
 export function extractUserId(profileUrl: string): string {
@@ -38,10 +40,13 @@ export function formatHero(hero: string | undefined): string {
     return skin ? `${formatLabel(skin)} ${name}` : name;
 }
 
+/** { base, hero } → "Quincy" or "Quincy:Quincy_Cyber" */
+export const formatHeroPick = ({ base, hero }: HeroPick) => (hero ? `${base}:${hero}` : base);
+
 /** "Quincy" or "Quincy:Quincy_Cyber" ⇄ { base, hero } */
-export function parseHero(item: string) {
-    const [base, hero] = item.split(':');
-    return { base, hero: hero || undefined };
+export function parseHero(item: string): HeroPick {
+    const [base = '', hero] = item.split(':');
+    return hero ? { base, hero } : { base };
 }
 
 export function formatDuration(seconds: number): string {

@@ -6,8 +6,10 @@ import {
     SORT_LABELS,
 } from '@/types/match';
 import type { SeasonSummary } from '@/types/info';
+import type { HeroPick } from '@/types/tower';
 import {
     formatHero,
+    formatHeroPick,
     formatLabel,
     formatMap,
     formatNumber,
@@ -15,9 +17,6 @@ import {
     parseHero,
     splitList,
 } from '@/utils/format';
-
-const heroItem = ({ base, hero }: { base: string; hero?: string }) =>
-    hero ? `${base}:${hero}` : base;
 
 interface MatchFiltersProps {
     query: MatchesQuery;
@@ -38,12 +37,11 @@ export default function MatchFilters(props: MatchFiltersProps) {
     const maxHeroes = options?.maxHeroes ?? 2;
     const maxTowers = options?.maxTowers ?? 6;
 
-    const setHeroes = (next: { base: string; hero?: string }[]) =>
-        onChange({ heroes: joinList(next.map(heroItem)) });
+    const setHeroes = (next: HeroPick[]) =>
+        onChange({ heroes: joinList(next.map(formatHeroPick)) });
     const setTowers = (next: string[]) => onChange({ towers: joinList(next) });
 
     const sameSidePossible = heroes.length <= 1 && towers.length <= 3;
-    // worth it once two things could be split across players: name + hero, hero + tower, 2+ towers…
     const parts = [playerText.trim() !== '', heroes.length > 0, towers.length > 0].filter(
         Boolean,
     ).length;
@@ -91,7 +89,6 @@ export default function MatchFilters(props: MatchFiltersProps) {
                             value={seasonId ?? ''}
                             onChange={(e) => {
                                 const id = Number(e.target.value);
-                                // other seasons have other heroes/maps: reset those filters
                                 onChange({
                                     season: id === liveSeason ? undefined : id,
                                     heroes: undefined,
@@ -130,7 +127,7 @@ export default function MatchFilters(props: MatchFiltersProps) {
                                         <img className='chip-filter__img' src={portrait} alt='' />
                                     )}
                                     <span className='chip-filter__name'>
-                                        {formatHero(pick.base || '')}
+                                        {formatHero(pick.base)}
                                     </span>
                                     <select
                                         className='chip-filter__variant'
@@ -140,10 +137,9 @@ export default function MatchFilters(props: MatchFiltersProps) {
                                             setHeroes(
                                                 heroes.map((h) =>
                                                     h.base === pick.base
-                                                        ? {
-                                                              base: h.base,
-                                                              hero: e.target.value || undefined,
-                                                          }
+                                                        ? e.target.value
+                                                            ? { base: h.base, hero: e.target.value }
+                                                            : { base: h.base }
                                                         : h,
                                                 ),
                                             )

@@ -71,16 +71,18 @@ export default function MatchesHistory() {
             if (towers.includes(value) || towers.length >= (options?.maxTowers ?? 6)) return;
             setQuery({ towers: joinList([...towers, value]) });
         } else {
-            const base =
-                options?.heroes.find((h) => h.variants.some((v) => v.hero === value))?.base ??
-                value;
+            const base = options?.heroes.find((h) =>
+                h.variants.some((v) => v.hero === value),
+            )?.base;
             const heroes = splitList(query.heroes);
+            const item = base ?? (value.includes('_') ? `${value.split('_')[0]}:${value}` : value);
+            const itemBase = parseHero(item).base;
             if (
-                heroes.some((h) => parseHero(h).base === base) ||
+                heroes.some((h) => parseHero(h).base === itemBase) ||
                 heroes.length >= (options?.maxHeroes ?? 2)
             )
                 return;
-            setQuery({ heroes: joinList([...heroes, base]) });
+            setQuery({ heroes: joinList([...heroes, item]) });
         }
         window.scrollTo({ top: 0, behavior: 'smooth' });
     };
