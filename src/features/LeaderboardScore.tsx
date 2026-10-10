@@ -210,11 +210,6 @@ export default function LeaderboardScore(props: LeaderboardScoreProps) {
                 state={range ? undefined : tableState}
                 onStateChange={range ? undefined : onTableStateChange}
             />
-            {stats && (
-                <p className='leaderboard-score__note'>
-                    Games and win rate count the ranked matches our server recorded this season.
-                </p>
-            )}
         </div>
     );
 }

@@ -110,9 +110,7 @@ export default function MatchFilters(props: MatchFiltersProps) {
             </div>
 
             <div className='match-filters__group'>
-                <span className='match-filters__label'>
-                    Heroes <span className='match-filters__cap'>up to {maxHeroes}</span>
-                </span>
+                <span className='match-filters__label'>Heroes</span>
                 <div className='match-filters__chips'>
                     {heroes.map((pick, index) => {
                         const option = options?.heroes.find((h) => h.base === pick.base);
@@ -209,10 +207,7 @@ export default function MatchFilters(props: MatchFiltersProps) {
             </div>
 
             <div className='match-filters__group'>
-                <span className='match-filters__label'>
-                    Towers{' '}
-                    <span className='match-filters__cap'>up to {maxTowers}, all in the match</span>
-                </span>
+                <span className='match-filters__label'>Towers </span>
                 <div className='match-filters__chips'>
                     {towers.map((tower) => (
                         <span key={tower} className='chip-filter'>
