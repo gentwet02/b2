@@ -17,6 +17,7 @@ import {
     parseHero,
     splitList,
 } from '@/utils/format';
+import { heroImage } from '@/utils/assetOverrides';
 
 interface MatchFiltersProps {
     query: MatchesQuery;
@@ -115,10 +116,13 @@ export default function MatchFilters(props: MatchFiltersProps) {
                 <div className='match-filters__chips'>
                     {heroes.map((pick, index) => {
                         const option = options?.heroes.find((h) => h.base === pick.base);
-                        const portrait = (
+                        const variant =
                             option?.variants.find((v) => v.hero === pick.hero) ??
-                            option?.variants[0]
-                        )?.portrait;
+                            option?.variants[0];
+                        const portrait = heroImage(
+                            variant?.hero ?? pick.hero ?? pick.base,
+                            variant?.portrait,
+                        );
                         return (
                             <span key={pick.base} className='match-filters__hero-wrap'>
                                 {index > 0 && <span className='match-filters__vs'>vs</span>}

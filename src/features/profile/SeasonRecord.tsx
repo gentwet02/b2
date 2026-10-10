@@ -1,5 +1,6 @@
 import { ErrorState } from '@/components/status/Status';
 import useSeasonStats from '@/hooks/useSeasonStats';
+import { heroImage } from '@/utils/assetOverrides';
 import { formatHero, formatNumber, winRate } from '@/utils/format';
 
 /** Ranked record for the live season, from the matches our server recorded. */
@@ -33,6 +34,7 @@ export default function SeasonRecord({ userId }: { userId: string }) {
     const winShare = played > 0 ? (data.wins / played) * 100 : 0;
     const drawShare = played > 0 ? (data.draws / played) * 100 : 0;
     const topHero = data.heroes[0];
+    const topHeroPortrait = topHero ? heroImage(topHero.hero, topHero.portrait) : undefined;
 
     return (
         <section className='stats-panel stats-panel--accent'>
@@ -90,10 +92,10 @@ export default function SeasonRecord({ userId }: { userId: string }) {
                             <div className='stats-panel__detail'>
                                 <dt>Most played hero</dt>
                                 <dd className='stats-panel__hero'>
-                                    {topHero.portrait && (
+                                    {topHeroPortrait && (
                                         <img
                                             className='stats-panel__hero-img'
-                                            src={topHero.portrait}
+                                            src={topHeroPortrait}
                                             alt=''
                                         />
                                     )}

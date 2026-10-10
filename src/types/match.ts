@@ -1,4 +1,6 @@
 export type MatchResult = 'win' | 'lose' | 'draw' | 'cancelled' | 'lobbyDC' | 'opponentLobbyDC';
+export type Outcome = 'win' | 'lose' | 'neutral';
+export type MatchPick = { kind: 'hero' | 'tower' | 'map'; value: string };
 
 export interface MatchPlayer {
     displayName: string;
