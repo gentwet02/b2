@@ -124,12 +124,6 @@ export default function UserProfile({ userId }: UserProfileProps) {
                 )}
             </div>
 
-            <p className='profile__note'>
-                This season's record counts the ranked matches our server recorded: matches played
-                between two checks can be missing. Season finishes come from the leaderboards it
-                stored.
-            </p>
-
             <RecentMatches userId={userId} playerName={profile?.displayName ?? cachedName} />
 
             {profile && (

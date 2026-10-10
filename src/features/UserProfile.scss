@@ -5,12 +5,6 @@
     display: grid;
     gap: 1.5rem;
 
-    &__note {
-        margin-top: -0.75rem;
-        font-size: 0.8125rem;
-        color: colors.$ink-soft;
-    }
-
     // both stats cards always share one height
     &__stats {
         align-items: stretch !important;
