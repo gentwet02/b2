@@ -29,15 +29,17 @@ export default function MatchCard({ match, perspectiveId, onPick }: MatchCardPro
     if (perspectiveId && extractUserId(right.profileURL) === perspectiveId) {
         [left, right] = [right, left];
     }
-    const tone = perspectiveId ? outcome(left.result) : 'neutral';
-    const nobodyWon = outcome(left.result) === 'neutral' && outcome(right.result) === 'neutral';
+    const leftOutcome = outcome(left.result);
+    const rightOutcome = outcome(right.result);
+    const tone = perspectiveId ? leftOutcome : 'neutral';
+    const nobodyWon = leftOutcome === 'neutral' && rightOutcome === 'neutral';
     const middle = nobodyWon ? (NEUTRAL_TEXT[left.result] ?? formatLabel(left.result)) : 'vs';
     const seen = timeAgo(match.seenAt);
     const mapSrc = mapImage(match.map, match.mapURL);
 
     return (
         <article className={`match-card match-card--${tone}`}>
-            <PlayerSide player={left} align='left' outcome={outcome(left.result)} onPick={onPick} />
+            <PlayerSide player={left} align='left' outcome={leftOutcome} onPick={onPick} />
             <div className='match-card__center'>
                 {mapSrc && (
                     <img
@@ -70,12 +72,7 @@ export default function MatchCard({ match, perspectiveId, onPick }: MatchCardPro
                 )}
                 {nobodyWon && <span className='match-card__outcome'>{middle}</span>}
             </div>
-            <PlayerSide
-                player={right}
-                align='right'
-                outcome={outcome(right.result)}
-                onPick={onPick}
-            />
+            <PlayerSide player={right} align='right' outcome={rightOutcome} onPick={onPick} />
         </article>
     );
 }

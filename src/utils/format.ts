@@ -32,6 +32,10 @@ export function formatMap(map: string): string {
         .join(' ');
 }
 
+export function heroKey(name: string): string {
+    return name.toLowerCase().replace(/[_\s]/g, '');
+}
+
 /** "Quincy_Cyber" → "Cyber Quincy", the way the game names skins. */
 export function formatHero(hero: string | undefined): string {
     if (!hero) return '';

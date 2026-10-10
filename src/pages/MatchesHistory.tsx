@@ -1,11 +1,11 @@
-import MatchCard, { type MatchPick } from '@/components/match/MatchCard';
+import MatchCard from '@/components/match/MatchCard';
 import { ErrorState, Loading, StatusMessage } from '@/components/status/Status';
 import MatchFilters from '@/features/match/MatchFilters';
 import useDebouncedValue from '@/hooks/useDebouncedValue';
 import useMatchFilters from '@/hooks/useMatchFilters';
 import useMatchesHistory from '@/hooks/useMatchesHistory';
 import useSeasons from '@/hooks/useSeasons';
-import type { MatchesQuery } from '@/types/match';
+import type { MatchesQuery, MatchPick } from '@/types/match';
 import {
     formatNumber,
     joinList,

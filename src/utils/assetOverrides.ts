@@ -1,20 +1,17 @@
 import etienneBee from '@/assets/images/heroes/etienne_bee.png';
 import clubJammin from '@/assets/images/maps/club_jammin.png';
-
-const normalize = (name: string) => name.toLowerCase().replace(/[_\s]/g, '');
+import { heroKey, mapKey } from '@/utils/format';
 
 const HERO_IMAGES: Record<string, string> = {
-    [normalize('etienne_bee')]: etienneBee,
+    [heroKey('etienne_bee')]: etienneBee,
 };
 
 const MAP_IMAGES: Record<string, string> = {
-    [normalize('club_jammin')]: clubJammin,
+    [mapKey('club_jammin')]: clubJammin,
 };
 
-const mapKey = (map: string) => normalize(map.replace(/_(scene|map_01)$/i, ''));
-
 export function heroImage(hero: string | undefined, url?: string): string | undefined {
-    return (hero && HERO_IMAGES[normalize(hero)]) || url;
+    return (hero && HERO_IMAGES[heroKey(hero)]) || url;
 }
 
 export function mapImage(map: string | undefined, url?: string): string | undefined {
