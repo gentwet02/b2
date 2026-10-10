@@ -244,11 +244,6 @@ export default function MatchFilters(props: MatchFiltersProps) {
                 </div>
             </div>
 
-            <p className='match-filters__hint'>
-                Lists only show what exists together with your other filters, with the number of
-                matches.
-            </p>
-
             <div className='match-filters__row'>
                 <label className='match-filters__field match-filters__field--map'>
                     <span className='match-filters__label'>Map</span>
