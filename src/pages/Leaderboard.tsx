@@ -95,7 +95,7 @@ export default function Leaderboard() {
                             >
                                 {known.map((s) => (
                                     <option key={s.id} value={s.id}>
-                                        {s.name}
+                                        {seasonLabel(s.id)}
                                         {s.live ? ' (live)' : ''}
                                     </option>
                                 ))}
