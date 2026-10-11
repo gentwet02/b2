@@ -15,6 +15,7 @@ import {
     formatNumber,
     joinList,
     parseHero,
+    seasonLabel,
     splitList,
 } from '@/utils/format';
 import { heroImage } from '@/utils/assetOverrides';
@@ -100,7 +101,7 @@ export default function MatchFilters(props: MatchFiltersProps) {
                         >
                             {seasons.map((s) => (
                                 <option key={s.id} value={s.id}>
-                                    {s.name}
+                                    {seasonLabel(s.id)}
                                     {s.live ? ' (live)' : ''}
                                 </option>
                             ))}
