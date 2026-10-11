@@ -23,25 +23,9 @@
         display: flex;
         align-items: center;
         gap: 0.6rem;
-    }
 
-    // a red bloon with its knot
-    &__logo {
-        position: relative;
-        width: 1.4rem;
-        height: 1.65rem;
-        background: colors.$bloon;
-        border: 2px solid colors.$ink;
-        border-radius: 50% 50% 48% 48% / 55% 55% 45% 45%;
-
-        &::after {
-            content: '';
-            position: absolute;
-            left: 50%;
-            bottom: -0.4rem;
-            translate: -50% 0;
-            border: 0.25rem solid transparent;
-            border-top: 0.3rem solid colors.$ink;
+        > img {
+            width: 1.5rem;
         }
     }
 

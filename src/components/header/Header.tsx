@@ -5,7 +5,7 @@ export default function Header() {
         <header className='header'>
             <div className='header__inner'>
                 <Link to='/' className='header__brand' aria-label='BTDB2 home'>
-                    <span className='header__logo' aria-hidden='true' />
+                    <img src='bloon_red.png' alt='' />
                     BTDB2
                 </Link>
                 <nav className='header__nav' aria-label='Main'>
