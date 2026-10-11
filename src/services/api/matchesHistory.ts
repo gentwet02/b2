@@ -18,13 +18,12 @@ function toParams(query: MatchesQuery) {
 }
 
 export const matchesService = {
-    getMatchesRecentHistory: (query: MatchesQuery, offset = 0) => {
+    getMatchesRecentHistory: (query: MatchesQuery, offset = 0, limit = MATCHES_PAGE_SIZE) => {
         const params = toParams(query);
         params.set('offset', String(offset));
-        params.set('limit', String(MATCHES_PAGE_SIZE));
+        params.set('limit', String(limit));
         return getFromApi<MatchesResponse>(`matches-history?${params}`);
     },
-    /** Options counted within the other filters of `query`. */
     getFilterOptions: (query: MatchesQuery) => {
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
         const { sort: _sort, ...filters } = query;

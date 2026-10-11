@@ -1,29 +1,41 @@
 import MatchCard from '@/components/match/MatchCard';
 import { ErrorState, Loading } from '@/components/status/Status';
+import { PROFILE_MATCH_AMOUNTS, PROFILE_MATCH_DEFAULT } from '@/config/profile';
 import useMatchesHistory from '@/hooks/useMatchesHistory';
 import useUserMatches from '@/hooks/useUserMatches';
-import { Link } from '@tanstack/react-router';
+import { getRouteApi, Link } from '@tanstack/react-router';
 
-/**
- * The player's matches recorded this season (database: fast, paged).
- * Players we never recorded fall back to Ninja Kiwi's short live list.
- */
-export default function RecentMatches({
-    userId,
-    playerName,
-}: {
+const routeApi = getRouteApi('/user/$userId');
+
+interface RecentMatchesProps {
     userId: string;
     playerName?: string | undefined;
-}) {
-    const stored = useMatchesHistory({ playerId: userId });
+}
+
+export default function RecentMatches(props: RecentMatchesProps) {
+    const { userId, playerName } = props;
+
+    const search = routeApi.useSearch();
+    const navigate = routeApi.useNavigate();
+
+    const amount = search.matches ?? PROFILE_MATCH_DEFAULT;
+    const stored = useMatchesHistory({ playerId: userId }, amount);
     const page = stored.data?.pages[0]?.matches;
     const recorded = stored.data?.pages.flatMap((p) => p.matches.items) ?? [];
     const useLive = stored.isSuccess && page?.total === 0;
     const live = useUserMatches(userId, useLive);
-
-    const matches = useLive ? (live.data ?? []) : recorded;
+    const matches = useLive ? (live.data ?? []).slice(0, amount) : recorded;
     const isLoading = stored.isLoading || (useLive && live.isLoading);
     const error = stored.error ?? (useLive ? live.error : null);
+    const remaining = page ? page.total - recorded.length : 0;
+
+    function setAmount(n: number) {
+        navigate({
+            search: (prev) => ({ ...prev, matches: n === PROFILE_MATCH_DEFAULT ? undefined : n }),
+            replace: true,
+            resetScroll: false,
+        });
+    }
 
     return (
         <section className='profile-panel profile-panel--matches'>
@@ -35,6 +47,20 @@ export default function RecentMatches({
                 {useLive && matches.length > 0 && (
                     <span className='profile-panel__note'>Latest matches from Ninja Kiwi</span>
                 )}
+                <label className='recent-matches__amount'>
+                    <span>Show</span>
+                    <select
+                        className='select'
+                        value={amount}
+                        onChange={(e) => setAmount(Number(e.target.value))}
+                    >
+                        {PROFILE_MATCH_AMOUNTS.map((n) => (
+                            <option key={n} value={n}>
+                                {n}
+                            </option>
+                        ))}
+                    </select>
+                </label>
             </div>
             {isLoading && <Loading label='Loading matches…' />}
             {error && (
@@ -63,7 +89,9 @@ export default function RecentMatches({
                         onClick={() => stored.fetchNextPage()}
                         disabled={stored.isFetchingNextPage}
                     >
-                        {stored.isFetchingNextPage ? 'Loading…' : 'Show more'}
+                        {stored.isFetchingNextPage
+                            ? 'Loading…'
+                            : `Show ${Math.min(amount, remaining)} more`}
                     </button>
                 )}
                 {page && page.total > 0 && playerName && (

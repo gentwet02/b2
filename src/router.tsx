@@ -5,29 +5,31 @@ import {
     Outlet,
 } from '@tanstack/react-router';
 import type { QueryClient } from '@tanstack/react-query';
-import { leaderboardQueryOptions } from '@/hooks/useLeaderboard';
-import { profileQueryOptions } from '@/hooks/useProfile';
-import { seasonStatsQueryOptions } from '@/hooks/useSeasonStats';
-import { queryClient } from '@/queryClient';
+import Header from '@/components/header/Header';
+import Footer from '@/components/footer/Footer';
 import {
     LEADERBOARD_DEFAULT_SIZE,
     LEADERBOARD_MIN_GAMES,
     LEADERBOARD_PAGE_SIZES,
 } from '@/config/leaderboard';
-import Header from '@/components/header/Header';
-import Footer from '@/components/footer/Footer';
+import { PROFILE_MATCH_AMOUNTS, PROFILE_MATCH_DEFAULT } from '@/config/profile';
+import { leaderboardQueryOptions } from '@/hooks/useLeaderboard';
+import { profileQueryOptions } from '@/hooks/useProfile';
+import { seasonStatsQueryOptions } from '@/hooks/useSeasonStats';
 import Home from '@/pages/Home';
 import Leaderboard from '@/pages/Leaderboard';
 import LeaderboardIndex from '@/pages/LeaderboardIndex';
 import MatchesHistory from '@/pages/MatchesHistory';
 import NotFound from '@/pages/NotFound';
 import User from '@/pages/User';
-import { MATCH_SORTS, type MatchesQuery, type MatchSort } from '@/types/match';
+import { queryClient } from '@/queryClient';
 import {
     LEADERBOARD_SORTS,
     type LeaderboardSearch,
     type LeaderboardSort,
 } from '@/types/leaderboard';
+import { MATCH_SORTS, type MatchesQuery, type MatchSort } from '@/types/match';
+import type { UserSearch } from '@/types/profile';
 
 const rootRoute = createRootRouteWithContext<{ queryClient: QueryClient }>()({
     component: () => (
@@ -116,6 +118,15 @@ const matchesRoute = createRoute({
 const userRoute = createRoute({
     getParentRoute: () => rootRoute,
     path: '/user/$userId',
+    validateSearch: (search: Record<string, unknown>): UserSearch => {
+        const matches = Number(search.matches);
+        return {
+            matches:
+                PROFILE_MATCH_AMOUNTS.includes(matches) && matches !== PROFILE_MATCH_DEFAULT
+                    ? matches
+                    : undefined,
+        };
+    },
     loader: ({ context, params, preload }) => {
         void context.queryClient.prefetchQuery(profileQueryOptions(params.userId));
         if (!preload)

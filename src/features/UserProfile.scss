@@ -344,6 +344,19 @@
         max-width: 100%;
     }
 
+    &__amount {
+        margin-left: auto;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.4rem;
+        font-size: 0.8125rem;
+        color: colors.$ink-soft;
+
+        .select {
+            padding-block: 0.2rem;
+        }
+    }
+
     &__more {
         justify-self: center;
     }

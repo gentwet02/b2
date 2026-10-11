@@ -70,6 +70,10 @@ export interface UserProfileData {
     fetchedAt?: string;
 }
 
+export interface UserSearch {
+    matches?: number | undefined;
+}
+
 /** GET /users/:id/season: computed from the matches our server recorded. */
 export interface SeasonStats {
     seasonId: number;

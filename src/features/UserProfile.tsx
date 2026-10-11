@@ -19,7 +19,6 @@ interface UserProfileProps {
     userId: string;
 }
 
-/** The player's name from a leaderboard already in the cache, to title the page at once. */
 function useCachedName(userId: string) {
     const queryClient = useQueryClient();
     for (const [, data] of queryClient.getQueriesData<LeaderboardResponse>({
@@ -31,10 +30,6 @@ function useCachedName(userId: string) {
     return undefined;
 }
 
-/**
- * Every section loads on its own: the season record and the matches come from our
- * database and show right away, the Ninja Kiwi profile fills its parts when it arrives.
- */
 export default function UserProfile({ userId }: UserProfileProps) {
     const queryClient = useQueryClient();
     const { data, isLoading, error, refetch } = useProfile(userId);
