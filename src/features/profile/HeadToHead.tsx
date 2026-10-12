@@ -1,14 +1,17 @@
+import PlayerAvatar from '@/components/avatar/PlayerAvatar';
 import { ChevronDownIcon } from '@/components/icons';
 import { ErrorState } from '@/components/status/Status';
 import H2hHighlights from '@/features/compare/H2hHighlights';
 import OpponentSelect from '@/features/compare/OpponentSelect';
 import useHeadToHead from '@/hooks/useHeadToHead';
+import usePlayerAvatar from '@/hooks/usePlayerAvatar';
 import useOpponentSlots from '@/hooks/useOpponentSlots';
 import type { CompareSeason, H2hOpponent, HeadToHead as HeadToHeadData } from '@/types/compare';
 import {
     formatRate,
     formatRecord,
     gamesOf,
+    inScope,
     playerLabel,
     rateOf,
     recordTitle,
@@ -18,6 +21,8 @@ import { Link } from '@tanstack/react-router';
 import { useId, useMemo, useState, type ReactNode } from 'react';
 
 interface RowProps {
+    id: string;
+    name: string;
     opponent: H2hOpponent | undefined;
     data: HeadToHeadData;
     open: boolean;
@@ -25,19 +30,21 @@ interface RowProps {
     select: ReactNode;
 }
 
-function OpponentRow({ opponent, data, open, onToggle, select }: RowProps) {
+function OpponentRow({ id, name, opponent, data, open, onToggle, select }: RowProps) {
     const detailsId = useId();
+    const avatar = usePlayerAvatar(id);
     const games = gamesOf(opponent?.record);
     const rate = rateOf(opponent?.record);
 
     return (
         <li className={`h2h-row${open ? ' h2h-row--open' : ''}`}>
             <div className='h2h-row__main'>
+                <PlayerAvatar className='h2h-row__avatar' src={avatar} name={name} size={36} lazy />
                 {select}
                 {!opponent ? (
                     <span className='h2h-row__none'>Loading…</span>
                 ) : games === 0 ? (
-                    <span className='h2h-row__none'>Never met</span>
+                    <span className='h2h-row__none'>Never met {inScope(data)}</span>
                 ) : (
                     <>
                         <span className='h2h-row__record' title={recordTitle(opponent.record)}>
@@ -47,6 +54,12 @@ function OpponentRow({ opponent, data, open, onToggle, select }: RowProps) {
                             <span style={{ width: `${rate ?? 0}%` }} />
                         </span>
                         <span className='h2h-row__rate'>{formatRate(rate)}</span>
+                        <span className='h2h-row__meta'>
+                            {formatNumber(games)} {games === 1 ? 'game' : 'games'}
+                            {opponent.lastMet && (
+                                <span className='h2h-row__last'>{timeAgo(opponent.lastMet)}</span>
+                            )}
+                        </span>
                     </>
                 )}
                 <button
@@ -63,10 +76,6 @@ function OpponentRow({ opponent, data, open, onToggle, select }: RowProps) {
             </div>
             {open && opponent && games > 0 && (
                 <div id={detailsId} className='h2h-row__details'>
-                    <p className='h2h-row__meta'>
-                        {formatNumber(games)} {games === 1 ? 'game' : 'games'}
-                        {opponent.lastMet && <> · last met {timeAgo(opponent.lastMet)}</>}
-                    </p>
                     <H2hHighlights
                         summary={opponent}
                         labels={data.labels}
@@ -151,7 +160,7 @@ export default function HeadToHead({ userId }: { userId: string }) {
                 <span className='h2h-summary__rate'>{formatRate(rateOf(data.total.record))}</span>
                 <span className='h2h-summary__text'>
                     {totalGames === 0 ? (
-                        <>No game against these players in {data.seasonName.toLowerCase()}.</>
+                        <>No game against these players {inScope(data)}.</>
                     ) : (
                         <>
                             <strong title={recordTitle(data.total.record)}>
@@ -167,10 +176,15 @@ export default function HeadToHead({ userId }: { userId: string }) {
             <ol className='h2h-list'>
                 {slots.map((slot) => {
                     const opponent = byId.get(slot.id);
+                    const name =
+                        (opponent && playerLabel(opponent)) ||
+                        playerLabel(players.find((p) => p.id === slot.id) ?? {});
                     const taken = new Set([userId, ...ids.filter((id) => id !== slot.id)]);
                     return (
                         <OpponentRow
                             key={slot.index}
+                            id={slot.id}
+                            name={name}
                             opponent={opponent}
                             data={data}
                             open={openId === slot.id}
@@ -180,7 +194,7 @@ export default function HeadToHead({ userId }: { userId: string }) {
                                     slot={slot}
                                     players={players}
                                     taken={taken}
-                                    fallbackName={opponent ? playerLabel(opponent) : undefined}
+                                    fallbackName={opponent ? name : undefined}
                                     onChange={(id) => setSlot(slot.index, id)}
                                 />
                             }

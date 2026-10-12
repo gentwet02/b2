@@ -11,7 +11,11 @@
         min-width: 0;
     }
 
-    // a replaced slot reads differently from a top 10 one
+    // the open list must cover the slots below it
+    .dropdown--open {
+        z-index: 30;
+    }
+
     &--custom .dropdown__input {
         background: color-mix(in srgb, colors.$sky 45%, colors.$paper);
     }

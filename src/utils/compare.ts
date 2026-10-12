@@ -28,9 +28,16 @@ export function formatLoadout(key: string) {
     return { hero: formatHero(hero), towers: towers.map(formatLabel).join(', ') };
 }
 
-/** Red → green by win rate, for heat cells: 25% full red, 75% full green. */
+/**
+ * Heat cell background: red below 50%, green above, fading to the paper color at 50%
+ */
 export function rateColor(rate: number | null) {
     if (rate === null) return undefined;
-    const t = Math.max(0, Math.min(1, (rate - 25) / 50));
-    return `color-mix(in srgb, #2e9e62 ${Math.round(t * 100)}%, #e8364f)`;
+    const strength = Math.min(1, Math.abs(rate - 50) / 25);
+    const hue = rate >= 50 ? '#2e9e62' : '#e8364f';
+    return `color-mix(in srgb, ${hue} ${Math.round(12 + strength * 53)}%, #fffdf7)`;
 }
+
+/** "in Season 47" / "in any season", for sentences about the games counted. */
+export const inScope = (d: { season: number | 'all'; seasonName: string }) =>
+    d.season === 'all' ? 'in any season' : `in ${d.seasonName.replace(' Event', '')}`;

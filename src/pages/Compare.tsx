@@ -1,7 +1,12 @@
 import Dropdown from '@/components/dropdown/Dropdown';
 import { ErrorState, Loading } from '@/components/status/Status';
 import H2hHighlights from '@/features/compare/H2hHighlights';
-import { H2hMapGrid, H2hOverview } from '@/features/compare/H2hTables';
+import {
+    H2hLoadoutTable,
+    H2hMapGrid,
+    H2hRecordTable,
+    H2hSlots,
+} from '@/features/compare/H2hTables';
 import useHeadToHead from '@/hooks/useHeadToHead';
 import useOpponentSlots from '@/hooks/useOpponentSlots';
 import useSeasons from '@/hooks/useSeasons';
@@ -53,10 +58,10 @@ export default function Compare() {
                 <div>
                     <h1 className='page__title'>{name}, head to head</h1>
                     <p className='page__subtitle'>
-                        Only the games played against each opponent
-                        {data ? `, ${data.seasonName.replace(' Event', '')}` : ''}. Records are{' '}
-                        {name}
-                        &rsquo;s.
+                        {season === 'all'
+                            ? `Every game ${name} played against each opponent, all seasons together.`
+                            : `The games ${name} played against each opponent${data ? ` in ${data.seasonName}` : ''}.`}{' '}
+                        Records are from {name}&rsquo;s side.
                     </p>
                 </div>
                 <div className='page__actions'>
@@ -83,6 +88,32 @@ export default function Compare() {
                 <>
                     <section className='profile-panel'>
                         <div className='profile-panel__head'>
+                            <h2 className='profile-panel__title'>Opponents</h2>
+                            {hasCustom ? (
+                                <button
+                                    type='button'
+                                    className='text-link h2h-card__reset'
+                                    onClick={reset}
+                                >
+                                    Back to the top 10
+                                </button>
+                            ) : (
+                                <span className='profile-panel__note'>
+                                    The top 10 by default, replace anyone
+                                </span>
+                            )}
+                        </div>
+                        <H2hSlots
+                            data={data}
+                            userId={userId}
+                            slots={slots}
+                            players={players}
+                            onSlot={setSlot}
+                        />
+                    </section>
+
+                    <section className='profile-panel'>
+                        <div className='profile-panel__head'>
                             <h2 className='profile-panel__title'>Against all of them</h2>
                             {isFetching && <span className='profile-panel__note'>Updating…</span>}
                         </div>
@@ -104,28 +135,22 @@ export default function Compare() {
 
                     <section className='profile-panel'>
                         <div className='profile-panel__head'>
-                            <h2 className='profile-panel__title'>Opponents</h2>
-                            {hasCustom ? (
-                                <button
-                                    type='button'
-                                    className='text-link h2h-card__reset'
-                                    onClick={reset}
-                                >
-                                    Back to the top 10
-                                </button>
-                            ) : (
-                                <span className='profile-panel__note'>
-                                    Best and worst need {data.minGames.opponent}+ games
-                                </span>
-                            )}
+                            <h2 className='profile-panel__title'>Record</h2>
+                            <span className='profile-panel__note'>
+                                Best and worst need {data.minGames.opponent}+ games
+                            </span>
                         </div>
-                        <H2hOverview
-                            data={data}
-                            userId={userId}
-                            slots={slots}
-                            players={players}
-                            onSlot={setSlot}
-                        />
+                        <H2hRecordTable data={data} slots={slots} />
+                    </section>
+
+                    <section className='profile-panel'>
+                        <div className='profile-panel__head'>
+                            <h2 className='profile-panel__title'>Loadouts</h2>
+                            <span className='profile-panel__note'>
+                                Records are {name}&rsquo;s, with or against that loadout
+                            </span>
+                        </div>
+                        <H2hLoadoutTable data={data} slots={slots} />
                     </section>
 
                     <section className='profile-panel'>

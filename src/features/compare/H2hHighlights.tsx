@@ -86,13 +86,6 @@ export default function H2hHighlights({ summary, labels, min }: H2hHighlightsPro
                 empty={`${need} map`}
             />
             <H2hTile
-                label='Worst map'
-                kind='map'
-                pick={summary.worst.map}
-                labels={labels}
-                empty={`${need} more map`}
-            />
-            <H2hTile
                 label='Your best loadout'
                 kind='loadout'
                 pick={summary.best.mine}
@@ -100,18 +93,25 @@ export default function H2hHighlights({ summary, labels, min }: H2hHighlightsPro
                 empty={`${need} loadout`}
             />
             <H2hTile
-                label='Your worst loadout'
-                kind='loadout'
-                pick={summary.worst.mine}
-                labels={labels}
-                empty={`${need} more loadout`}
-            />
-            <H2hTile
                 label='Their loadout you beat most'
                 kind='loadout'
                 pick={summary.best.theirs}
                 labels={labels}
                 empty={`${need} loadout of theirs`}
+            />
+            <H2hTile
+                label='Worst map'
+                kind='map'
+                pick={summary.worst.map}
+                labels={labels}
+                empty={`${need} more map`}
+            />
+            <H2hTile
+                label='Your worst loadout'
+                kind='loadout'
+                pick={summary.worst.mine}
+                labels={labels}
+                empty={`${need} more loadout`}
             />
             <H2hTile
                 label='Their loadout that beats you'

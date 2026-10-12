@@ -85,26 +85,68 @@
 }
 
 .h2h-row {
+    max-width: none; // the reset caps li at 75ch for prose
     border-top: 1px solid colors.$line;
 
     &:first-child {
         border-top: none;
     }
 
+    // avatar | select | record | bar | rate | games + last met | toggle
     &__main {
         display: grid;
-        grid-template-columns: minmax(0, 18rem) 3.5rem minmax(3rem, 1fr) 3rem 2rem;
+        grid-template-columns:
+            2.25rem minmax(0, 17rem) 3.5rem minmax(3rem, 1fr) 3rem minmax(6.5rem, auto)
+            2rem;
         align-items: center;
         gap: 0.75rem;
         padding: 0.45rem 0;
 
+        @media (max-width: 800px) {
+            grid-template-columns: 2.25rem minmax(0, 1fr) 3.5rem minmax(3rem, 8rem) 3rem 2rem;
+
+            .h2h-row__meta {
+                display: none;
+            }
+        }
+
         @media (max-width: 560px) {
             grid-template-columns: minmax(0, 1fr) 3.2rem 2.8rem 2rem;
 
+            .h2h-row__avatar,
             .h2h-row__track {
                 display: none;
             }
         }
+    }
+
+    &__avatar {
+        width: 2.25rem;
+        height: 2.25rem;
+        border-radius: 50%;
+        border: 1.5px solid colors.$ink;
+        background: colors.$paper-dim;
+        object-fit: cover;
+
+        &--empty {
+            display: grid;
+            place-items: center;
+            font-family: $font-display;
+            color: colors.$ink-soft;
+        }
+    }
+
+    &__meta {
+        display: grid;
+        font-size: 0.8125rem;
+        font-weight: 600;
+        line-height: 1.25;
+        text-align: right;
+    }
+
+    &__last {
+        font-weight: 500;
+        color: colors.$ink-soft;
     }
 
     &__record {
@@ -133,9 +175,13 @@
     }
 
     &__none {
-        grid-column: span 3;
+        grid-column: span 4;
         font-size: 0.875rem;
         color: colors.$ink-soft;
+
+        @media (max-width: 800px) {
+            grid-column: span 3;
+        }
 
         @media (max-width: 560px) {
             grid-column: span 2;
@@ -167,10 +213,5 @@
         display: grid;
         gap: 0.6rem;
         padding: 0.25rem 0 1rem;
-    }
-
-    &__meta {
-        font-size: 0.8125rem;
-        color: colors.$ink-soft;
     }
 }
