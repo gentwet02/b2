@@ -14,6 +14,7 @@ import SeasonRecord from './profile/SeasonRecord';
 import SeasonStrip from './profile/SeasonStrip';
 import StatsPanel from './profile/StatsPanel';
 import TowerUsage from './profile/TowerUsage';
+import HeadToHead from './profile/HeadToHead';
 
 interface UserProfileProps {
     userId: string;
@@ -66,6 +67,8 @@ export default function UserProfile({ userId }: UserProfileProps) {
         queryClient.invalidateQueries({ queryKey: ['userProfile', userId] });
         queryClient.invalidateQueries({ queryKey: ['seasonStats', userId] });
         queryClient.invalidateQueries({ queryKey: ['matchesHistory', { playerId: userId }] });
+        queryClient.invalidateQueries({ queryKey: ['comparison', userId] });
+        queryClient.invalidateQueries({ queryKey: ['headToHead', userId] });
     };
 
     return (
@@ -118,6 +121,8 @@ export default function UserProfile({ userId }: UserProfileProps) {
                     </section>
                 )}
             </div>
+
+            <HeadToHead userId={userId} />
 
             <RecentMatches userId={userId} playerName={profile?.displayName ?? cachedName} />
 

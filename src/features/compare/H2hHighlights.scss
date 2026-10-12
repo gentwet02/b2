@@ -1,0 +1,75 @@
+@use '@/styles/colors';
+@use '@/styles/mixins' as *;
+
+.h2h-highlights {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(12rem, 1fr));
+    gap: 0.6rem;
+}
+
+.h2h-tile {
+    position: relative;
+    display: grid;
+    align-content: start;
+    gap: 0.2rem;
+    min-height: 6.25rem;
+    padding: 0.7rem 0.8rem;
+    background: colors.$paper-dim;
+    border: 1.5px solid colors.$ink;
+    border-radius: $radius-inner;
+    overflow: hidden;
+
+    &__img {
+        position: absolute;
+        top: 0.55rem;
+        right: 0.55rem;
+        width: 2.25rem;
+        height: 2.25rem;
+        object-fit: cover;
+        border: 1.5px solid colors.$ink;
+        border-radius: 0.4rem;
+        background: colors.$paper;
+    }
+
+    &--loadout &__img {
+        border-radius: 50%;
+    }
+
+    &__label {
+        padding-right: 2.75rem;
+        font-size: 0.6875rem;
+        font-weight: 700;
+        letter-spacing: 0.04em;
+        text-transform: uppercase;
+        color: colors.$ink-soft;
+    }
+
+    &__title {
+        @include display(1.1rem);
+        padding-right: 2.75rem;
+        overflow-wrap: anywhere;
+    }
+
+    &__towers {
+        display: block;
+        margin-top: 0.15rem;
+        font-family: $font-body;
+        font-size: 0.75rem;
+        font-weight: 500;
+        color: colors.$ink-soft;
+    }
+
+    &__line {
+        font-size: 0.8125rem;
+    }
+
+    &--empty {
+        background: transparent;
+        border-style: dashed;
+    }
+
+    &__none {
+        font-size: 0.8125rem;
+        color: colors.$ink-soft;
+    }
+}

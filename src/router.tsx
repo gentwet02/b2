@@ -16,6 +16,7 @@ import { PROFILE_MATCH_AMOUNTS, PROFILE_MATCH_DEFAULT } from '@/config/profile';
 import { leaderboardQueryOptions } from '@/hooks/useLeaderboard';
 import { profileQueryOptions } from '@/hooks/useProfile';
 import { seasonStatsQueryOptions } from '@/hooks/useSeasonStats';
+import Compare from '@/pages/Compare';
 import Home from '@/pages/Home';
 import Leaderboard from '@/pages/Leaderboard';
 import LeaderboardIndex from '@/pages/LeaderboardIndex';
@@ -23,6 +24,7 @@ import MatchesHistory from '@/pages/MatchesHistory';
 import NotFound from '@/pages/NotFound';
 import User from '@/pages/User';
 import { queryClient } from '@/queryClient';
+import type { CompareSearch } from '@/types/compare';
 import {
     LEADERBOARD_SORTS,
     type LeaderboardSearch,
@@ -135,12 +137,29 @@ const userRoute = createRoute({
     component: User,
 });
 
+const compareRoute = createRoute({
+    getParentRoute: () => rootRoute,
+    path: '/user/$userId/compare',
+    validateSearch: (search: Record<string, unknown>): CompareSearch => {
+        if (search.season === 'all') return { season: 'all' };
+        const season = Number(search.season);
+        return {
+            season:
+                search.season != null && Number.isInteger(season) && season >= 0
+                    ? season
+                    : undefined,
+        };
+    },
+    component: Compare,
+});
+
 const routeTree = rootRoute.addChildren([
     homeRoute,
     leaderboardIndexRoute,
     leaderboardRoute,
     matchesRoute,
     userRoute,
+    compareRoute,
 ]);
 
 export const router = createRouter({

@@ -1,0 +1,176 @@
+@use '@/styles/colors';
+@use '@/styles/mixins' as *;
+
+.h2h-card {
+    transition: opacity 120ms ease-out;
+
+    &--updating {
+        opacity: 0.7;
+    }
+
+    &__foot {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        justify-content: space-between;
+        gap: 0.75rem 1rem;
+        padding-top: 1rem;
+        border-top: 1px solid colors.$line;
+    }
+
+    &__reset {
+        background: none;
+        border: none;
+        padding: 0;
+        font: inherit;
+        font-weight: 600;
+        cursor: pointer;
+    }
+}
+
+// "This season / All seasons"
+.h2h-scope {
+    display: inline-flex;
+    border: 2px solid colors.$ink;
+    border-radius: 999px;
+    overflow: hidden;
+
+    &__option {
+        padding: 0.3rem 0.8rem;
+        font: inherit;
+        font-size: 0.8125rem;
+        font-weight: 600;
+        color: colors.$ink;
+        background: colors.$paper;
+        border: none;
+        cursor: pointer;
+
+        & + & {
+            border-left: 2px solid colors.$ink;
+        }
+
+        &[aria-pressed='true'] {
+            background: colors.$banana;
+        }
+    }
+}
+
+.h2h-summary {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 0.4rem 1rem;
+
+    &__rate {
+        @include display(2.4rem);
+    }
+
+    &__text {
+        color: colors.$ink-soft;
+        font-weight: 500;
+
+        strong {
+            color: colors.$ink;
+        }
+    }
+}
+
+// ---------- One row per opponent ----------
+
+.h2h-list {
+    display: grid;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+.h2h-row {
+    border-top: 1px solid colors.$line;
+
+    &:first-child {
+        border-top: none;
+    }
+
+    &__main {
+        display: grid;
+        grid-template-columns: minmax(0, 18rem) 3.5rem minmax(3rem, 1fr) 3rem 2rem;
+        align-items: center;
+        gap: 0.75rem;
+        padding: 0.45rem 0;
+
+        @media (max-width: 560px) {
+            grid-template-columns: minmax(0, 1fr) 3.2rem 2.8rem 2rem;
+
+            .h2h-row__track {
+                display: none;
+            }
+        }
+    }
+
+    &__record {
+        font-weight: 700;
+        text-align: right;
+        font-variant-numeric: tabular-nums;
+    }
+
+    &__track {
+        height: 0.45rem;
+        background: color-mix(in srgb, colors.$bloon 25%, colors.$paper-dim);
+        border-radius: 999px;
+        overflow: hidden;
+
+        span {
+            display: block;
+            height: 100%;
+            background: colors.$leaf;
+            border-radius: inherit;
+        }
+    }
+
+    &__rate {
+        font-weight: 700;
+        text-align: right;
+    }
+
+    &__none {
+        grid-column: span 3;
+        font-size: 0.875rem;
+        color: colors.$ink-soft;
+
+        @media (max-width: 560px) {
+            grid-column: span 2;
+        }
+    }
+
+    &__toggle {
+        display: grid;
+        place-items: center;
+        width: 2rem;
+        height: 2rem;
+        color: colors.$ink;
+        background: colors.$paper;
+        border: 1.5px solid colors.$ink;
+        border-radius: 50%;
+        cursor: pointer;
+
+        &:disabled {
+            opacity: 0.3;
+            cursor: default;
+        }
+    }
+
+    &--open &__toggle {
+        background: colors.$banana;
+    }
+
+    &__details {
+        display: grid;
+        gap: 0.6rem;
+        padding: 0.25rem 0 1rem;
+    }
+
+    &__meta {
+        font-size: 0.8125rem;
+        color: colors.$ink-soft;
+    }
+}

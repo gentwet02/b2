@@ -1,0 +1,38 @@
+@use '@/styles/colors';
+
+.opponent-select {
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+    min-width: 0;
+
+    &__dropdown {
+        flex: 1 1 auto;
+        min-width: 0;
+    }
+
+    // a replaced slot reads differently from a top 10 one
+    &--custom .dropdown__input {
+        background: color-mix(in srgb, colors.$sky 45%, colors.$paper);
+    }
+
+    &__reset {
+        flex: none;
+        display: grid;
+        place-items: center;
+        width: 1.75rem;
+        height: 1.75rem;
+        font-size: 1rem;
+        line-height: 1;
+        color: colors.$ink;
+        background: colors.$paper;
+        border: 1.5px solid colors.$ink;
+        border-radius: 50%;
+        cursor: pointer;
+
+        &:hover {
+            color: #fff;
+            background: colors.$bloon;
+        }
+    }
+}

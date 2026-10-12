@@ -248,6 +248,7 @@ export default function Dropdown<V extends DropdownValue>(props: DropdownProps<V
                         {noResultsText}
                     </li>
                 ) : (
+                    isOpen &&
                     filteredItems.map((item, index) => {
                         const isActive = index === activeIndex;
                         const isCurrent = item.value === value;

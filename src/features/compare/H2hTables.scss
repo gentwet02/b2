@@ -1,0 +1,124 @@
+@use '@/styles/colors';
+@use '@/styles/mixins' as *;
+
+// wide tables scroll inside their panel, never the page
+.h2h-table-wrap {
+    overflow-x: auto;
+    margin-inline: -0.5rem;
+    padding-inline: 0.5rem;
+}
+
+.h2h-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.875rem;
+
+    th,
+    td {
+        padding: 0.5rem 0.6rem;
+        text-align: left;
+        vertical-align: middle;
+        border-bottom: 1px solid colors.$line;
+        white-space: nowrap;
+    }
+
+    thead th {
+        font-size: 0.75rem;
+        font-weight: 700;
+        letter-spacing: 0.03em;
+        text-transform: uppercase;
+        color: colors.$ink-soft;
+        background: colors.$paper;
+    }
+
+    // first column stays put while scrolling sideways
+    tbody th,
+    thead th:first-child {
+        position: sticky;
+        left: 0;
+        z-index: 1;
+        background: colors.$paper;
+    }
+
+    .lb-rate {
+        min-width: 7rem;
+    }
+
+    &__opponent {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        width: 19rem;
+        font-weight: 400;
+    }
+
+    &__profile {
+        flex: none;
+        font-weight: 700;
+        color: colors.$ink-soft;
+
+        &:hover {
+            color: colors.$bloon;
+        }
+    }
+
+    &__soft {
+        color: colors.$ink-soft;
+    }
+}
+
+.h2h-pick {
+    display: grid;
+    gap: 0.1rem;
+
+    &__name {
+        font-weight: 600;
+    }
+
+    &__towers {
+        display: block;
+        font-size: 0.75rem;
+        font-weight: 500;
+        color: colors.$ink-soft;
+    }
+
+    &__stats {
+        font-size: 0.75rem;
+        color: colors.$ink-soft;
+    }
+}
+
+.h2h-grid {
+    &__player {
+        max-width: 6.5rem;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        text-transform: none !important;
+        letter-spacing: 0 !important;
+    }
+
+    &__games {
+        display: block;
+        font-size: 0.6875rem;
+        color: colors.$ink-soft;
+    }
+}
+
+.h2h-heat {
+    min-width: 3.25rem;
+    text-align: center !important;
+    font-weight: 700;
+    color: #fff;
+    border-left: 2px solid colors.$paper;
+    text-shadow: 0 1px 0 rgba(colors.$ink, 0.35);
+
+    &--small {
+        opacity: 0.55;
+    }
+
+    &--none {
+        color: colors.$ink-soft;
+        font-weight: 400;
+        text-shadow: none;
+    }
+}
