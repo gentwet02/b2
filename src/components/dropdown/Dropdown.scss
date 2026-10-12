@@ -1,0 +1,99 @@
+@use '@/styles/colors';
+@use '@/styles/mixins' as *;
+
+.dropdown {
+    position: relative;
+    min-width: 0;
+
+    &__input-wrapper {
+        position: relative;
+    }
+
+    &__input {
+        width: 100%;
+        padding: 0.5rem 2.25rem 0.5rem 0.75rem;
+        font-weight: 600;
+        text-overflow: ellipsis;
+        border: 2px solid colors.$ink;
+        border-radius: 0.75rem;
+
+        &::placeholder {
+            font-weight: 500;
+            color: colors.$ink-soft;
+        }
+
+        &:focus {
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(colors.$bloon, 0.35);
+        }
+
+        &:disabled {
+            opacity: 0.55;
+            cursor: not-allowed;
+        }
+    }
+
+    &--open &__input {
+        border-bottom-left-radius: 0;
+        border-bottom-right-radius: 0;
+    }
+
+    &__icon {
+        position: absolute;
+        top: 50%;
+        right: 0.85rem;
+        translate: 0 -50%; // separate from the icon's inline rotate transform
+        color: colors.$ink;
+        pointer-events: none;
+    }
+
+    &__list {
+        position: absolute;
+        top: 100%;
+        left: 0;
+        z-index: 10;
+        width: 100%;
+        max-height: 20rem;
+        margin-top: -2px; // merge with the input border
+        overflow-y: auto;
+        overscroll-behavior: contain;
+        background: colors.$paper;
+        border: 2px solid colors.$ink;
+        border-radius: 0 0 $radius-inner $radius-inner;
+        box-shadow: 4px 4px 0 colors.$ink;
+
+        &[hidden] {
+            display: none;
+        }
+    }
+
+    &__option {
+        padding: 0.5rem 0.75rem;
+        cursor: pointer;
+        overflow-wrap: anywhere;
+
+        & + & {
+            border-top: 1px solid colors.$line;
+        }
+
+        &--active {
+            background: rgba(colors.$sky, 0.6);
+        }
+
+        &--current {
+            font-weight: 700;
+            background: color-mix(in srgb, colors.$banana 30%, colors.$paper);
+        }
+
+        &--current.dropdown__option--active {
+            background: color-mix(in srgb, colors.$banana 55%, colors.$paper);
+        }
+    }
+
+    &__empty {
+        padding: 0.75rem;
+        font-style: italic;
+        color: colors.$ink-soft;
+        cursor: default;
+    }
+}

@@ -19,6 +19,7 @@ import {
     splitList,
 } from '@/utils/format';
 import { heroImage } from '@/utils/assetOverrides';
+import Dropdown from '@/components/dropdown/Dropdown';
 
 interface MatchFiltersProps {
     query: MatchesQuery;
@@ -86,7 +87,13 @@ export default function MatchFilters(props: MatchFiltersProps) {
                 {seasons.length > 1 && (
                     <label className='match-filters__field'>
                         <span className='match-filters__label'>Season</span>
-                        <select
+                        <Dropdown
+                            id='match-filters-season'
+                            className='match-filters-season'
+                            options={seasons.map((s) => s.name)}
+                            onSelect={(_s: string) => {}}
+                        />
+                        {/* <select
                             className='select'
                             value={seasonId ?? ''}
                             onChange={(e) => {
@@ -105,7 +112,7 @@ export default function MatchFilters(props: MatchFiltersProps) {
                                     {s.live ? ' (live)' : ''}
                                 </option>
                             ))}
-                        </select>
+                        </select> */}
                     </label>
                 )}
             </div>
