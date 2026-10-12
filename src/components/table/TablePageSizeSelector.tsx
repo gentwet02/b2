@@ -1,3 +1,5 @@
+import Dropdown from '@/components/dropdown/Dropdown';
+
 interface TablePageSizeSelectorProps {
     pageSize: number;
     onPageSizeChange: (value: number) => void;
@@ -6,24 +8,22 @@ interface TablePageSizeSelectorProps {
 
 export default function TablePageSizeSelector(props: TablePageSizeSelectorProps) {
     const { pageSize, onPageSizeChange, pageSizeOptions } = props;
+
     return (
         <div className='table__page-size'>
-            <label className='table__page-size-label'>
-                Shows{' '}
-                <select
-                    name='size-select'
+            <div className='table__page-size-label'>
+                <span aria-hidden='true'>Shows</span>
+                <Dropdown
+                    id='size-select'
                     className='table__page-size-select'
+                    aria-label='Entries per page'
+                    variant='compact'
+                    options={pageSizeOptions}
                     value={pageSize}
-                    onChange={(e) => onPageSizeChange(Number(e.target.value))}
-                >
-                    {pageSizeOptions.map((size) => (
-                        <option key={size} value={size}>
-                            {size}
-                        </option>
-                    ))}
-                </select>{' '}
-                entries
-            </label>
+                    onSelect={onPageSizeChange}
+                />
+                <span aria-hidden='true'>entries</span>
+            </div>
         </div>
     );
 }

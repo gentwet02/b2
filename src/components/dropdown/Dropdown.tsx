@@ -1,32 +1,54 @@
-import './Dropdown.scss';
 import { useCallback, useEffect, useId, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import type { ChangeEvent, KeyboardEvent, MouseEvent } from 'react';
 import { createPortal } from 'react-dom';
 import { ChevronDownIcon } from '@/components/icons';
 
-interface DropdownProps<T extends string> {
+export type DropdownValue = string | number;
+
+export interface DropdownItem<V extends DropdownValue> {
+    value: V;
+    label: string;
+}
+
+export type DropdownOption<V extends DropdownValue> = V | DropdownItem<V>;
+
+interface DropdownProps<V extends DropdownValue> {
+    options: readonly DropdownOption<V>[];
+    value: V | '';
+    onSelect: (value: V) => void;
     id?: string;
-    options: readonly T[];
-    value?: T | '';
-    onSelect?: (option: T) => void;
     className?: string;
+    inputClassName?: string;
     placeholder?: string;
     disabled?: boolean;
     autoFocus?: boolean;
+    searchable?: boolean;
+    variant?: 'default' | 'compact' | 'pill';
     noResultsText?: string;
+    'aria-label'?: string;
 }
 
-export default function Dropdown<T extends string>(props: DropdownProps<T>) {
+const SEARCH_THRESHOLD = 8;
+
+function isItem<V extends DropdownValue>(option: DropdownOption<V>): option is DropdownItem<V> {
+    return typeof option === 'object';
+}
+
+export default function Dropdown<V extends DropdownValue>(props: DropdownProps<V>) {
     const {
-        id,
         options,
-        value = '',
+        value,
         onSelect,
+        id,
         className,
+        inputClassName,
         placeholder,
         disabled = false,
         autoFocus = false,
+        searchable = options.length > SEARCH_THRESHOLD,
+        variant = 'default',
         noResultsText = 'No matches found',
+        'aria-label': ariaLabel,
     } = props;
 
     const generatedId = useId();
@@ -39,55 +61,49 @@ export default function Dropdown<T extends string>(props: DropdownProps<T>) {
     const shouldScrollRef = useRef(false);
 
     const [isOpen, setIsOpen] = useState(false);
-    const [selected, setSelected] = useState<T | ''>(value);
-    const [inputValue, setInputValue] = useState<string>(value);
+    const [query, setQuery] = useState('');
     const [isFiltering, setIsFiltering] = useState(false);
     const [activeIndex, setActiveIndex] = useState(-1);
     const [spacerTop, setSpacerTop] = useState(0);
 
-    const [prevValue, setPrevValue] = useState(value);
-    if (value !== prevValue) {
-        setPrevValue(value);
-        setSelected(value);
-        setInputValue(value);
-        setIsFiltering(false);
-    }
+    const items = useMemo(
+        () =>
+            options.map((option) =>
+                isItem(option) ? option : { value: option, label: String(option) },
+            ),
+        [options],
+    );
 
-    const filteredOptions = useMemo(() => {
-        const query = inputValue.trim().toLowerCase();
-        if (!isFiltering || !query) return options;
-        return options.filter((option) => option.toLowerCase().includes(query));
-    }, [options, inputValue, isFiltering]);
+    const selectedIndex = items.findIndex((item) => item.value === value);
+    const selectedLabel = items[selectedIndex]?.label ?? '';
+    const inputValue = isFiltering ? query : selectedLabel;
 
-    const activeOption: T | undefined = isOpen ? filteredOptions[activeIndex] : undefined;
+    const filteredItems = useMemo(() => {
+        const search = query.trim().toLowerCase();
+        if (!isFiltering || !search) return items;
+        return items.filter((item) => item.label.toLowerCase().includes(search));
+    }, [items, query, isFiltering]);
+
+    const activeItem: DropdownItem<V> | undefined = isOpen ? filteredItems[activeIndex] : undefined;
 
     const close = useCallback(() => {
         setIsOpen(false);
         setIsFiltering(false);
+        setQuery('');
         setActiveIndex(-1);
-        setInputValue(selected);
-    }, [selected]);
+    }, []);
 
     function open() {
         if (disabled) return;
         setIsOpen(true);
         setIsFiltering(false);
-        setActiveIndex(
-            Math.max(
-                options.findIndex((option) => option === selected),
-                0,
-            ),
-        );
+        setActiveIndex(Math.max(selectedIndex, 0));
         shouldScrollRef.current = true;
     }
 
-    function select(option: T) {
-        setIsOpen(false);
-        setIsFiltering(false);
-        setActiveIndex(-1);
-        setSelected(option);
-        setInputValue(option);
-        onSelect?.(option);
+    function select(item: DropdownItem<V>) {
+        close();
+        if (item.value !== value) onSelect(item.value);
     }
 
     function moveTo(index: number) {
@@ -117,10 +133,11 @@ export default function Dropdown<T extends string>(props: DropdownProps<T>) {
         if (!isOpen || !rootRef.current || !listRef.current) return;
         const { top, height } = rootRef.current.getBoundingClientRect();
         setSpacerTop(top + window.scrollY + height + listRef.current.offsetHeight);
-    }, [isOpen, filteredOptions.length]);
+    }, [isOpen, filteredItems.length]);
 
     function handleChange(event: ChangeEvent<HTMLInputElement>) {
-        setInputValue(event.target.value);
+        if (!searchable) return;
+        setQuery(event.target.value);
         setIsFiltering(true);
         setIsOpen(true);
         setActiveIndex(0);
@@ -133,7 +150,7 @@ export default function Dropdown<T extends string>(props: DropdownProps<T>) {
             return;
         }
         open();
-        if (inputValue) event.currentTarget.select();
+        if (searchable && inputValue) event.currentTarget.select();
     }
 
     function handleKeyDown(event: KeyboardEvent<HTMLInputElement>) {
@@ -145,7 +162,7 @@ export default function Dropdown<T extends string>(props: DropdownProps<T>) {
                     open();
                     return;
                 }
-                const last = filteredOptions.length - 1;
+                const last = filteredItems.length - 1;
                 if (last < 0) return;
                 if (event.key === 'ArrowDown') moveTo(activeIndex >= last ? 0 : activeIndex + 1);
                 else moveTo(activeIndex <= 0 ? last : activeIndex - 1);
@@ -154,7 +171,7 @@ export default function Dropdown<T extends string>(props: DropdownProps<T>) {
             case 'Enter':
                 if (!isOpen) return;
                 event.preventDefault();
-                if (activeOption !== undefined) select(activeOption);
+                if (activeItem) select(activeItem);
                 break;
             case 'Escape':
                 if (!isOpen) return;
@@ -167,31 +184,50 @@ export default function Dropdown<T extends string>(props: DropdownProps<T>) {
         }
     }
 
+    const rootClassName = [
+        'dropdown',
+        variant !== 'default' && `dropdown--${variant}`,
+        isOpen && 'dropdown--open',
+        className,
+    ]
+        .filter(Boolean)
+        .join(' ');
+
+    const iconSize = { default: 16, compact: 12, pill: 10 }[variant];
+
     return (
-        <div ref={rootRef} className={`dropdown${isOpen ? ' dropdown--open' : ''}`}>
+        <div ref={rootRef} className={rootClassName}>
             <div className='dropdown__input-wrapper'>
                 <input
                     id={inputId}
                     name={inputId}
                     type='text'
                     role='combobox'
+                    aria-label={ariaLabel}
                     aria-expanded={isOpen}
                     aria-controls={listboxId}
-                    aria-autocomplete='list'
-                    aria-activedescendant={
-                        activeOption !== undefined ? optionId(activeIndex) : undefined
-                    }
+                    aria-autocomplete={searchable ? 'list' : 'none'}
+                    aria-activedescendant={activeItem ? optionId(activeIndex) : undefined}
                     autoComplete='off'
                     autoFocus={autoFocus}
                     disabled={disabled}
+                    readOnly={!searchable}
                     placeholder={placeholder}
-                    className={className ? `dropdown__input ${className}` : 'dropdown__input'}
+                    className={
+                        inputClassName ? `dropdown__input ${inputClassName}` : 'dropdown__input'
+                    }
                     value={inputValue}
                     onChange={handleChange}
                     onClick={handleClick}
                     onKeyDown={handleKeyDown}
                 />
-                <ChevronDownIcon className='dropdown__icon' aria-hidden='true' rotate={isOpen} />
+                <ChevronDownIcon
+                    className='dropdown__icon'
+                    aria-hidden='true'
+                    width={iconSize}
+                    height={iconSize}
+                    rotate={isOpen}
+                />
             </div>
 
             <ul
@@ -200,8 +236,9 @@ export default function Dropdown<T extends string>(props: DropdownProps<T>) {
                 role='listbox'
                 className='dropdown__list'
                 hidden={!isOpen}
+                onClick={(event) => event.preventDefault()}
             >
-                {filteredOptions.length === 0 ? (
+                {filteredItems.length === 0 ? (
                     <li
                         className='dropdown__empty'
                         role='option'
@@ -211,12 +248,12 @@ export default function Dropdown<T extends string>(props: DropdownProps<T>) {
                         {noResultsText}
                     </li>
                 ) : (
-                    filteredOptions.map((option, index) => {
+                    filteredItems.map((item, index) => {
                         const isActive = index === activeIndex;
-                        const isCurrent = option === selected;
+                        const isCurrent = item.value === value;
                         return (
                             <li
-                                key={option}
+                                key={String(item.value)}
                                 id={optionId(index)}
                                 data-index={index}
                                 role='option'
@@ -232,9 +269,9 @@ export default function Dropdown<T extends string>(props: DropdownProps<T>) {
                                 onMouseMove={() => {
                                     if (!isActive) setActiveIndex(index);
                                 }}
-                                onClick={() => select(option)}
+                                onClick={() => select(item)}
                             >
-                                {option}
+                                {item.label}
                             </li>
                         );
                     })

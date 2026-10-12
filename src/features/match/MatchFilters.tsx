@@ -1,12 +1,14 @@
 import { SearchIcon } from '@/components/icons';
+import Dropdown from '@/components/dropdown/Dropdown';
+import type { SeasonSummary } from '@/types/info';
 import {
     type MatchFilterOptions,
     type MatchesQuery,
     type MatchSort,
     SORT_LABELS,
 } from '@/types/match';
-import type { SeasonSummary } from '@/types/info';
 import type { HeroPick } from '@/types/tower';
+import { heroImage } from '@/utils/assetOverrides';
 import {
     formatHero,
     formatHeroPick,
@@ -18,8 +20,11 @@ import {
     seasonLabel,
     splitList,
 } from '@/utils/format';
-import { heroImage } from '@/utils/assetOverrides';
-import Dropdown from '@/components/dropdown/Dropdown';
+
+const SORT_OPTIONS = (Object.keys(SORT_LABELS) as MatchSort[]).map((value) => ({
+    value,
+    label: SORT_LABELS[value],
+}));
 
 interface MatchFiltersProps {
     query: MatchesQuery;
@@ -35,6 +40,7 @@ interface MatchFiltersProps {
 export default function MatchFilters(props: MatchFiltersProps) {
     const { query, onChange, options, seasons, liveSeason, seasonId, playerText, onPlayerText } =
         props;
+
     const heroes = splitList(query.heroes).map(parseHero);
     const towers = splitList(query.towers);
     const maxHeroes = options?.maxHeroes ?? 2;
@@ -50,6 +56,37 @@ export default function MatchFilters(props: MatchFiltersProps) {
     ).length;
     const sameSideUseful = sameSidePossible && (parts >= 2 || towers.length >= 2);
 
+    const seasonOptions = seasons.map((s) => ({
+        value: s.id,
+        label: `${seasonLabel(s.id)}${s.live ? ' (live)' : ''}`,
+    }));
+
+    const heroAddOptions = (options?.heroes ?? [])
+        .filter((h) => h.count > 0 && !heroes.some((p) => p.base === h.base))
+        .map((h) => ({ value: h.base, label: `${formatHero(h.base)} (${formatNumber(h.count)})` }));
+
+    const towerAddOptions = (options?.towers ?? [])
+        .filter((t) => t.count > 0 && !towers.includes(t.tower))
+        .map((t) => ({
+            value: t.tower,
+            label: `${formatLabel(t.tower)} (${formatNumber(t.count)})`,
+        }));
+
+    const mapOptions = [
+        { value: '', label: 'Any map' },
+        // keep a map from the URL selectable even when it has no match in this season
+        ...(query.map && !options?.maps.some((m) => m.key === query.map)
+            ? [{ value: query.map, label: `${query.map} (0)` }]
+            : []),
+        ...(options?.maps ?? [])
+            .slice()
+            .sort((a, b) => formatMap(a.map).localeCompare(formatMap(b.map)))
+            .map((m) => ({
+                value: m.key,
+                label: `${formatMap(m.map)} (${formatNumber(m.count)})`,
+            })),
+    ];
+
     return (
         <section className='match-filters' aria-label='Filters'>
             <div className='match-filters__row'>
@@ -63,57 +100,39 @@ export default function MatchFilters(props: MatchFiltersProps) {
                         onChange={(e) => onPlayerText(e.target.value)}
                     />
                 </label>
-                <label className='match-filters__field'>
-                    <span className='match-filters__label'>Sort</span>
-                    <select
-                        className='select'
+                <div className='match-filters__field'>
+                    <label htmlFor='match-filters-sort' className='match-filters__label'>
+                        Sort
+                    </label>
+                    <Dropdown
+                        id='match-filters-sort'
+                        options={SORT_OPTIONS}
                         value={query.sort ?? 'newest'}
-                        onChange={(e) =>
-                            onChange({
-                                sort:
-                                    e.target.value === 'newest'
-                                        ? undefined
-                                        : (e.target.value as MatchSort),
-                            })
+                        onSelect={(sort) =>
+                            onChange({ sort: sort === 'newest' ? undefined : sort })
                         }
-                    >
-                        {(Object.keys(SORT_LABELS) as MatchSort[]).map((s) => (
-                            <option key={s} value={s}>
-                                {SORT_LABELS[s]}
-                            </option>
-                        ))}
-                    </select>
-                </label>
+                    />
+                </div>
                 {seasons.length > 1 && (
-                    <label className='match-filters__field'>
-                        <span className='match-filters__label'>Season</span>
+                    <div className='match-filters__field'>
+                        <label htmlFor='match-filters-season' className='match-filters__label'>
+                            Season
+                        </label>
                         <Dropdown
                             id='match-filters-season'
-                            className='match-filters-season'
-                            options={seasons.map((s) => s.name)}
-                            onSelect={(_s: string) => {}}
-                        />
-                        {/* <select
-                            className='select'
+                            options={seasonOptions}
                             value={seasonId ?? ''}
-                            onChange={(e) => {
-                                const id = Number(e.target.value);
+                            placeholder='Season'
+                            onSelect={(id) =>
                                 onChange({
                                     season: id === liveSeason ? undefined : id,
                                     heroes: undefined,
                                     towers: undefined,
                                     map: undefined,
-                                });
-                            }}
-                        >
-                            {seasons.map((s) => (
-                                <option key={s.id} value={s.id}>
-                                    {seasonLabel(s.id)}
-                                    {s.live ? ' (live)' : ''}
-                                </option>
-                            ))}
-                        </select> */}
-                    </label>
+                                })
+                            }
+                        />
+                    </div>
                 )}
             </div>
 
@@ -129,6 +148,19 @@ export default function MatchFilters(props: MatchFiltersProps) {
                             variant?.hero ?? pick.hero ?? pick.base,
                             variant?.portrait,
                         );
+                        const variantOptions = [
+                            {
+                                value: '',
+                                label: `Any variant${option ? ` (${formatNumber(option.count)})` : ''}`,
+                            },
+                            ...(pick.hero && !option?.variants.some((v) => v.hero === pick.hero)
+                                ? [{ value: pick.hero, label: `${formatHero(pick.hero)} (0)` }]
+                                : []),
+                            ...(option?.variants ?? []).map((v) => ({
+                                value: v.hero,
+                                label: `${v.hero === pick.base ? 'Classic' : formatHero(v.hero)} (${formatNumber(v.count)})`,
+                            })),
+                        ];
                         return (
                             <span key={pick.base} className='match-filters__hero-wrap'>
                                 {index > 0 && <span className='match-filters__vs'>vs</span>}
@@ -139,41 +171,24 @@ export default function MatchFilters(props: MatchFiltersProps) {
                                     <span className='chip-filter__name'>
                                         {formatHero(pick.base)}
                                     </span>
-                                    <select
+                                    <Dropdown
                                         className='chip-filter__variant'
                                         aria-label={`${formatHero(pick.base)} variant`}
+                                        variant='pill'
+                                        options={variantOptions}
                                         value={pick.hero ?? ''}
-                                        onChange={(e) =>
+                                        onSelect={(hero) =>
                                             setHeroes(
                                                 heroes.map((h) =>
                                                     h.base === pick.base
-                                                        ? e.target.value
-                                                            ? { base: h.base, hero: e.target.value }
+                                                        ? hero
+                                                            ? { base: h.base, hero }
                                                             : { base: h.base }
                                                         : h,
                                                 ),
                                             )
                                         }
-                                    >
-                                        <option value=''>
-                                            Any variant
-                                            {option ? ` (${formatNumber(option.count)})` : ''}
-                                        </option>
-                                        {pick.hero &&
-                                            !option?.variants.some((v) => v.hero === pick.hero) && (
-                                                <option value={pick.hero}>
-                                                    {formatHero(pick.hero)} (0)
-                                                </option>
-                                            )}
-                                        {option?.variants.map((v) => (
-                                            <option key={v.hero} value={v.hero}>
-                                                {v.hero === pick.base
-                                                    ? 'Classic'
-                                                    : formatHero(v.hero)}{' '}
-                                                ({formatNumber(v.count)})
-                                            </option>
-                                        ))}
-                                    </select>
+                                    />
                                     <button
                                         type='button'
                                         className='chip-filter__remove'
@@ -189,27 +204,14 @@ export default function MatchFilters(props: MatchFiltersProps) {
                         );
                     })}
                     {heroes.length < maxHeroes && (
-                        <select
-                            className='select match-filters__add'
-                            value=''
+                        <Dropdown
+                            className='match-filters__add'
                             aria-label='Add a hero'
-                            onChange={(e) =>
-                                e.target.value && setHeroes([...heroes, { base: e.target.value }])
-                            }
-                        >
-                            <option value=''>
-                                {heroes.length ? '+ Opponent hero' : '+ Add hero'}
-                            </option>
-                            {options?.heroes
-                                .filter(
-                                    (h) => h.count > 0 && !heroes.some((p) => p.base === h.base),
-                                )
-                                .map((h) => (
-                                    <option key={h.base} value={h.base}>
-                                        {formatHero(h.base)} ({formatNumber(h.count)})
-                                    </option>
-                                ))}
-                        </select>
+                            placeholder={heroes.length ? '+ Opponent hero' : '+ Add hero'}
+                            options={heroAddOptions}
+                            value=''
+                            onSelect={(base) => setHeroes([...heroes, { base }])}
+                        />
                     )}
                 </div>
             </div>
@@ -231,49 +233,30 @@ export default function MatchFilters(props: MatchFiltersProps) {
                         </span>
                     ))}
                     {towers.length < maxTowers && (
-                        <select
-                            className='select match-filters__add'
-                            value=''
+                        <Dropdown
+                            className='match-filters__add'
                             aria-label='Add a tower'
-                            onChange={(e) =>
-                                e.target.value && setTowers([...towers, e.target.value])
-                            }
-                        >
-                            <option value=''>+ Add tower</option>
-                            {options?.towers
-                                .filter((t) => t.count > 0 && !towers.includes(t.tower))
-                                .map((t) => (
-                                    <option key={t.tower} value={t.tower}>
-                                        {formatLabel(t.tower)} ({formatNumber(t.count)})
-                                    </option>
-                                ))}
-                        </select>
+                            placeholder='+ Add tower'
+                            options={towerAddOptions}
+                            value=''
+                            onSelect={(tower) => setTowers([...towers, tower])}
+                        />
                     )}
                 </div>
             </div>
 
             <div className='match-filters__row'>
-                <label className='match-filters__field match-filters__field--map'>
-                    <span className='match-filters__label'>Map</span>
-                    <select
-                        className='select'
+                <div className='match-filters__field match-filters__field--map'>
+                    <label htmlFor='match-filters-map' className='match-filters__label'>
+                        Map
+                    </label>
+                    <Dropdown
+                        id='match-filters-map'
+                        options={mapOptions}
                         value={query.map ?? ''}
-                        onChange={(e) => onChange({ map: e.target.value || undefined })}
-                    >
-                        <option value=''>Any map</option>
-                        {query.map && !options?.maps.some((m) => m.key === query.map) && (
-                            <option value={query.map}>{query.map} (0)</option>
-                        )}
-                        {options?.maps
-                            .slice()
-                            .sort((a, b) => formatMap(a.map).localeCompare(formatMap(b.map)))
-                            .map((m) => (
-                                <option key={m.key} value={m.key}>
-                                    {formatMap(m.map)} ({formatNumber(m.count)})
-                                </option>
-                            ))}
-                    </select>
-                </label>
+                        onSelect={(map) => onChange({ map: map || undefined })}
+                    />
+                </div>
                 <label
                     className={`match-filters__toggle${sameSideUseful ? '' : ' match-filters__toggle--off'}`}
                 >

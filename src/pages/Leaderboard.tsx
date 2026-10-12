@@ -1,3 +1,4 @@
+import Dropdown from '@/components/dropdown/Dropdown';
 import { LEADERBOARD_DEFAULT_SIZE } from '@/config/leaderboard';
 import LeaderboardFilters from '@/features/LeaderboardFilters';
 import LeaderboardScore from '@/features/LeaderboardScore';
@@ -81,26 +82,21 @@ export default function Leaderboard() {
                 </div>
                 <div className='page__actions'>
                     {known.length > 1 && (
-                        <label className='leaderboard__season'>
-                            <span className='visually-hidden'>Season</span>
-                            <select
-                                className='select'
-                                value={season}
-                                onChange={(e) =>
-                                    navigate({
-                                        params: { season: Number(e.target.value) },
-                                        search: (prev) => ({ ...prev, page: undefined }),
-                                    })
-                                }
-                            >
-                                {known.map((s) => (
-                                    <option key={s.id} value={s.id}>
-                                        {seasonLabel(s.id)}
-                                        {s.live ? ' (live)' : ''}
-                                    </option>
-                                ))}
-                            </select>
-                        </label>
+                        <Dropdown
+                            className='leaderboard__season'
+                            aria-label='Season'
+                            options={known.map((s) => ({
+                                value: s.id,
+                                label: `${seasonLabel(s.id)}${s.live ? ' (live)' : ''}`,
+                            }))}
+                            value={season}
+                            onSelect={(id) =>
+                                navigate({
+                                    params: { season: id },
+                                    search: (prev) => ({ ...prev, page: undefined }),
+                                })
+                            }
+                        />
                     )}
                     <button
                         type='button'

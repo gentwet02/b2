@@ -1,3 +1,4 @@
+import Dropdown from '@/components/dropdown/Dropdown';
 import MatchCard from '@/components/match/MatchCard';
 import { ErrorState, Loading } from '@/components/status/Status';
 import { PROFILE_MATCH_AMOUNTS, PROFILE_MATCH_DEFAULT } from '@/config/profile';
@@ -47,20 +48,17 @@ export default function RecentMatches(props: RecentMatchesProps) {
                 {useLive && matches.length > 0 && (
                     <span className='profile-panel__note'>Latest matches from Ninja Kiwi</span>
                 )}
-                <label className='recent-matches__amount'>
-                    <span>Show</span>
-                    <select
-                        className='select'
+                <div className='recent-matches__amount'>
+                    <span aria-hidden='true'>Show</span>
+                    <Dropdown
+                        variant='compact'
+                        className='recent-matches__amount-select'
+                        aria-label='Matches shown'
+                        options={PROFILE_MATCH_AMOUNTS}
                         value={amount}
-                        onChange={(e) => setAmount(Number(e.target.value))}
-                    >
-                        {PROFILE_MATCH_AMOUNTS.map((n) => (
-                            <option key={n} value={n}>
-                                {n}
-                            </option>
-                        ))}
-                    </select>
-                </label>
+                        onSelect={setAmount}
+                    />
+                </div>
             </div>
             {isLoading && <Loading label='Loading matches…' />}
             {error && (

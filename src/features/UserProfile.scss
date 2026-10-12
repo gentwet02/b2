@@ -352,8 +352,9 @@
         font-size: 0.8125rem;
         color: colors.$ink-soft;
 
-        .select {
-            padding-block: 0.2rem;
+        .recent-matches__amount-select {
+            width: 4.5rem;
+            font-size: 0.875rem;
         }
     }
 
@@ -531,7 +532,6 @@
     }
 }
 
-// the trophies strip sits inside a panel now
 .profile-panel .season-strip {
     border-width: 1.5px;
 }

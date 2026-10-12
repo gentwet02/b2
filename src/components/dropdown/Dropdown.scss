@@ -2,8 +2,13 @@
 @use '@/styles/mixins' as *;
 
 .dropdown {
+    // shared by the input and the list so the open dropdown reads as one block
+    --dropdown-shadow: 4px;
+    --dropdown-radius: 0.75rem;
+
     position: relative;
-    min-width: 0;
+    min-width: 10rem;
+    color: colors.$ink; // don't inherit a soft label color
 
     &__input-wrapper {
         position: relative;
@@ -12,10 +17,13 @@
     &__input {
         width: 100%;
         padding: 0.5rem 2.25rem 0.5rem 0.75rem;
+        font: inherit;
         font-weight: 600;
         text-overflow: ellipsis;
+        color: colors.$ink;
+        background-color: colors.$paper;
         border: 2px solid colors.$ink;
-        border-radius: 0.75rem;
+        border-radius: var(--dropdown-radius);
 
         &::placeholder {
             font-weight: 500;
@@ -27,15 +35,16 @@
             box-shadow: 0 0 0 3px rgba(colors.$bloon, 0.35);
         }
 
+        // non-searchable: behaves like a select
+        &:read-only:not(:disabled) {
+            cursor: pointer;
+            caret-color: transparent;
+        }
+
         &:disabled {
             opacity: 0.55;
             cursor: not-allowed;
         }
-    }
-
-    &--open &__input {
-        border-bottom-left-radius: 0;
-        border-bottom-right-radius: 0;
     }
 
     &__icon {
@@ -54,17 +63,26 @@
         z-index: 10;
         width: 100%;
         max-height: 20rem;
-        margin-top: -2px; // merge with the input border
+        margin-top: -2px; // overlap the input's bottom border
         overflow-y: auto;
         overscroll-behavior: contain;
         background: colors.$paper;
         border: 2px solid colors.$ink;
-        border-radius: 0 0 $radius-inner $radius-inner;
-        box-shadow: 4px 4px 0 colors.$ink;
+        border-radius: 0 0 var(--dropdown-radius) var(--dropdown-radius);
+        box-shadow: var(--dropdown-shadow) var(--dropdown-shadow) 0 colors.$ink;
 
         &[hidden] {
             display: none;
         }
+    }
+
+    // Open: square the input's bottom and swap the focus ring for the same hard
+    // shadow as the list; the list covers the bottom of it, only the right edge shows.
+    &--open &__input,
+    &--open &__input:focus {
+        border-bottom-left-radius: 0;
+        border-bottom-right-radius: 0;
+        box-shadow: var(--dropdown-shadow) var(--dropdown-shadow) 0 colors.$ink;
     }
 
     &__option {
@@ -95,5 +113,63 @@
         font-style: italic;
         color: colors.$ink-soft;
         cursor: default;
+    }
+
+    // ---------- Compact: small inline selectors (page size, match count) ----------
+
+    &--compact {
+        --dropdown-shadow: 3px;
+        --dropdown-radius: 0.5rem;
+        min-width: 0;
+
+        .dropdown__input {
+            padding: 0.3rem 1.75rem 0.3rem 0.6rem;
+        }
+
+        .dropdown__icon {
+            right: 0.6rem;
+        }
+
+        .dropdown__option {
+            padding: 0.4rem 0.6rem;
+        }
+    }
+
+    // ---------- Pill: inside a chip, the list opens as a detached menu ----------
+
+    &--pill {
+        min-width: 0;
+
+        .dropdown__input {
+            padding: 0.1rem 1.4rem 0.1rem 0.5rem;
+            font-size: 0.8125rem;
+            font-weight: 500;
+            border-width: 1.5px;
+            border-radius: 999px;
+        }
+
+        .dropdown__icon {
+            right: 0.45rem;
+        }
+
+        .dropdown__list {
+            width: max-content;
+            min-width: 100%;
+            max-width: min(18rem, calc(100vw - 2rem));
+            margin-top: 0.35rem;
+            font-size: 0.875rem;
+            border-radius: $radius-inner;
+            box-shadow: 3px 3px 0 colors.$ink;
+        }
+
+        .dropdown__option {
+            padding: 0.4rem 0.65rem;
+        }
+    }
+
+    &--pill.dropdown--open .dropdown__input {
+        border-radius: 999px;
+        box-shadow: none;
+        background-color: color-mix(in srgb, colors.$banana 35%, colors.$paper);
     }
 }
