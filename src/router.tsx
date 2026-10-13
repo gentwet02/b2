@@ -32,6 +32,7 @@ import {
 } from '@/types/leaderboard';
 import { MATCH_SORTS, type MatchesQuery, type MatchSort } from '@/types/match';
 import type { UserSearch } from '@/types/profile';
+import { COMPARE_TOP_DEFAULT, COMPARE_TOPS } from './config/compare';
 
 const rootRoute = createRootRouteWithContext<{ queryClient: QueryClient }>()({
     component: () => (
@@ -141,13 +142,18 @@ const compareRoute = createRoute({
     getParentRoute: () => rootRoute,
     path: '/user/$userId/compare',
     validateSearch: (search: Record<string, unknown>): CompareSearch => {
-        if (search.season === 'all') return { season: 'all' };
         const season = Number(search.season);
+        const top = Number(search.top);
+        const vs = typeof search.vs === 'string' && /^[a-z0-9]{8,64}$/i.test(search.vs);
         return {
             season:
-                search.season != null && Number.isInteger(season) && season >= 0
-                    ? season
-                    : undefined,
+                search.season === 'all'
+                    ? 'all'
+                    : search.season != null && Number.isInteger(season) && season >= 0
+                      ? season
+                      : undefined,
+            vs: vs ? (search.vs as string) : undefined,
+            top: !vs && COMPARE_TOPS.includes(top) && top !== COMPARE_TOP_DEFAULT ? top : undefined,
         };
     },
     component: Compare,

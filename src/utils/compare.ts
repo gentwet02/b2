@@ -28,16 +28,8 @@ export function formatLoadout(key: string) {
     return { hero: formatHero(hero), towers: towers.map(formatLabel).join(', ') };
 }
 
-/**
- * Heat cell background: red below 50%, green above, fading to the paper color at 50%
- */
-export function rateColor(rate: number | null) {
-    if (rate === null) return undefined;
-    const strength = Math.min(1, Math.abs(rate - 50) / 25);
-    const hue = rate >= 50 ? '#2e9e62' : '#e8364f';
-    return `color-mix(in srgb, ${hue} ${Math.round(12 + strength * 53)}%, #fffdf7)`;
-}
+export const seasonTitle = (name: string) => name.replace(' Event', '');
 
 /** "in Season 47" / "in any season", for sentences about the games counted. */
 export const inScope = (d: { season: number | 'all'; seasonName: string }) =>
-    d.season === 'all' ? 'in any season' : `in ${d.seasonName.replace(' Event', '')}`;
+    d.season === 'all' ? 'in any season' : `in ${seasonTitle(d.seasonName)}`;

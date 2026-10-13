@@ -1,0 +1,71 @@
+@use '@/styles/colors';
+@use '@/styles/mixins' as *;
+
+.versus {
+    display: grid;
+    gap: 2rem;
+    transition: opacity 120ms ease-out;
+
+    &--updating {
+        opacity: 0.6;
+    }
+}
+
+.versus-title {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.5rem;
+
+    &__vs {
+        font-size: 0.6em;
+        color: colors.$ink-soft;
+        margin-inline: 0.25rem;
+    }
+
+    a:hover {
+        color: colors.$bloon;
+    }
+}
+
+.versus-note {
+    max-width: none;
+    font-size: 0.875rem;
+    color: colors.$ink-soft;
+}
+
+// two loadout tables side by side
+.versus-pair {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 1.5rem;
+    align-items: start;
+
+    @media (max-width: 1000px) {
+        grid-template-columns: 1fr;
+    }
+}
+
+.versus-drill {
+    font-size: 0.8125rem;
+    font-weight: 600;
+    color: colors.$ink-soft;
+
+    &:hover {
+        color: colors.$bloon;
+    }
+}
+
+.versus-link-button {
+    background: none;
+    border: none;
+    padding: 0;
+    font: inherit;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.versus-prompt {
+    text-align: center;
+    padding: 2rem 0;
+}

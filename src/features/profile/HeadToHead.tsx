@@ -76,6 +76,14 @@ function OpponentRow({ id, name, opponent, data, open, onToggle, select }: RowPr
             </div>
             {open && opponent && games > 0 && (
                 <div id={detailsId} className='h2h-row__details'>
+                    <Link
+                        to='/user/$userId/compare'
+                        params={{ userId: data.userId }}
+                        search={{ season: data.season === 'all' ? 'all' : undefined, vs: id }}
+                        className='text-link h2h-row__more'
+                    >
+                        Every game against {name} →
+                    </Link>
                     <H2hHighlights
                         summary={opponent}
                         labels={data.labels}

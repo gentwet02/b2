@@ -1,0 +1,34 @@
+@use '@/styles/colors';
+
+.versus-controls {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-end;
+    gap: 1rem 1.75rem;
+
+    &__group {
+        display: grid;
+        gap: 0.35rem;
+
+        &--grow {
+            flex: 1 1 18rem;
+            max-width: 30rem;
+        }
+    }
+
+    &__label {
+        font-size: 0.75rem;
+        font-weight: 700;
+        letter-spacing: 0.04em;
+        text-transform: uppercase;
+        color: colors.$ink-soft;
+    }
+
+    &__season {
+        min-width: 11rem;
+    }
+
+    .dropdown--open {
+        z-index: 30;
+    }
+}

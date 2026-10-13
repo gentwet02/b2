@@ -1,0 +1,66 @@
+@use '@/styles/colors';
+@use '@/styles/mixins' as *;
+
+.cmp-label {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+
+    &__map {
+        flex: none;
+        width: 3.25rem;
+        height: 1.85rem;
+        object-fit: cover;
+        border: 1.5px solid colors.$ink;
+        border-radius: 0.35rem;
+        background: colors.$paper-dim;
+    }
+
+    &__hero {
+        flex: none;
+        width: 2rem;
+        height: 2rem;
+        object-fit: cover;
+        border: 1.5px solid colors.$ink;
+        border-radius: 50%;
+        background: colors.$paper-dim;
+    }
+
+    &__text {
+        display: grid;
+        min-width: 8rem;
+        max-width: 14rem;
+        font-weight: 600;
+        line-height: 1.25;
+        white-space: normal;
+    }
+
+    &__sub {
+        font-size: 0.75rem;
+        font-weight: 500;
+        color: colors.$ink-soft;
+    }
+}
+
+.cmp-avatar {
+    display: inline-block;
+    flex: none;
+
+    &__img {
+        display: block;
+        width: 100%;
+        height: 100%;
+        border-radius: 50%;
+        border: 1.5px solid colors.$ink;
+        background: colors.$paper-dim;
+        object-fit: cover;
+
+        &--empty {
+            display: grid;
+            place-items: center;
+            font-family: $font-display;
+            line-height: 1;
+            color: colors.$ink-soft;
+        }
+    }
+}

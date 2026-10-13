@@ -100,3 +100,50 @@
         color: colors.$ink-soft;
     }
 }
+
+// "This season / All seasons"
+.h2h-scope {
+    display: inline-flex;
+    border: 2px solid colors.$ink;
+    border-radius: 999px;
+    overflow: hidden;
+
+    &__option {
+        padding: 0.3rem 0.8rem;
+        font: inherit;
+        font-size: 0.8125rem;
+        font-weight: 600;
+        color: colors.$ink;
+        background: colors.$paper;
+        border: none;
+        cursor: pointer;
+
+        & + & {
+            border-left: 2px solid colors.$ink;
+        }
+
+        &[aria-pressed='true'] {
+            background: colors.$banana;
+        }
+    }
+}
+
+.h2h-summary {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 0.4rem 1rem;
+
+    &__rate {
+        @include display(2.4rem);
+    }
+
+    &__text {
+        color: colors.$ink-soft;
+        font-weight: 500;
+
+        strong {
+            color: colors.$ink;
+        }
+    }
+}

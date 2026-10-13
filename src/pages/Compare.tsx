@@ -1,56 +1,329 @@
-import Dropdown from '@/components/dropdown/Dropdown';
+import MatchCard from '@/components/match/MatchCard';
 import { ErrorState, Loading } from '@/components/status/Status';
 import H2hHighlights from '@/features/compare/H2hHighlights';
+import { Avatar, LoadoutLabel, MapLabel } from '@/features/compare/Labels';
+import RecordTable from '@/features/compare/RecordTable';
+import VersusControls from '@/features/compare/VersusControls';
+import { COMPARE_TOP_DEFAULT } from '@/config/compare';
+import useOpponentsMet from '@/hooks/useOpponentsMet';
+import useVersus from '@/hooks/useVersus';
+import type { CompareSearch, Versus, VersusOpponent } from '@/types/compare';
 import {
-    H2hLoadoutTable,
-    H2hMapGrid,
-    H2hRecordTable,
-    H2hSlots,
-} from '@/features/compare/H2hTables';
-import useHeadToHead from '@/hooks/useHeadToHead';
-import useOpponentSlots from '@/hooks/useOpponentSlots';
-import useSeasons from '@/hooks/useSeasons';
-import type { CompareSeason } from '@/types/compare';
-import { formatRate, formatRecord, gamesOf, playerLabel, rateOf } from '@/utils/compare';
-import { formatNumber, seasonLabel } from '@/utils/format';
+    formatRate,
+    formatRecord,
+    gamesOf,
+    inScope,
+    playerLabel,
+    rateOf,
+    recordTitle,
+    seasonTitle,
+} from '@/utils/compare';
+import { formatNumber, timeAgo } from '@/utils/format';
 import { getRouteApi, Link } from '@tanstack/react-router';
+import { useState } from 'react';
 
 const routeApi = getRouteApi('/user/$userId/compare');
 
+function Summary({ data, name }: { data: Versus; name: string }) {
+    const { total } = data;
+    const games = gamesOf(total.record);
+    const opponent = data.mode === 'player' ? data.opponents[0] : undefined;
+    const met = data.opponents.filter((o) => gamesOf(o.record) > 0).length;
+
+    let title: string;
+    if (opponent) title = `${name} vs ${playerLabel(opponent)}`;
+    else if (data.season === 'all') title = `Against the top ${data.top} of each season`;
+    else title = `Against the top ${data.top} of ${seasonTitle(data.seasonName)}`;
+
+    return (
+        <section className='profile-panel'>
+            <div className='profile-panel__head'>
+                {opponent ? (
+                    <h2 className='profile-panel__title versus-title'>
+                        <Avatar id={data.userId} name={name} size={40} />
+                        <span>{name}</span>
+                        <span className='versus-title__vs'>vs</span>
+                        <Avatar id={opponent.userId} name={playerLabel(opponent)} size={40} />
+                        <Link to='/user/$userId' params={{ userId: opponent.userId }}>
+                            {playerLabel(opponent)}
+                        </Link>
+                    </h2>
+                ) : (
+                    <h2 className='profile-panel__title'>{title}</h2>
+                )}
+                {opponent?.rank != null && (
+                    <span className='profile-panel__note'>
+                        {data.season === 'all' ? 'Best rank' : 'Rank'} #{opponent.rank}
+                    </span>
+                )}
+            </div>
+
+            {data.mode === 'top' && data.season === 'all' && (
+                <p className='versus-note'>
+                    Each season counts its own top {data.top}: the games of a season against that
+                    season&rsquo;s top {data.top}.
+                    {data.missingSeasons.length > 0 &&
+                        ` ${data.missingSeasons.length} season${data.missingSeasons.length > 1 ? 's are' : ' is'} skipped, their leaderboard isn't loaded yet.`}
+                </p>
+            )}
+
+            <div className='h2h-summary'>
+                <span className='h2h-summary__rate'>{formatRate(rateOf(total.record))}</span>
+                <span className='h2h-summary__text'>
+                    {games === 0 ? (
+                        <>No recorded game {inScope(data)}.</>
+                    ) : (
+                        <>
+                            <strong title={recordTitle(total.record)}>
+                                {formatRecord(total.record)}
+                            </strong>{' '}
+                            in {formatNumber(games)} {games === 1 ? 'game' : 'games'}
+                            {data.mode === 'top' &&
+                                `, met ${met} of ${data.opponents.length} players`}
+                            {total.lastMet && `, last ${timeAgo(total.lastMet)}`}
+                        </>
+                    )}
+                </span>
+            </div>
+
+            {games > 0 && (
+                <H2hHighlights
+                    summary={total}
+                    labels={data.labels}
+                    min={data.mode === 'player' ? data.minGames.opponent : data.minGames.total}
+                />
+            )}
+        </section>
+    );
+}
+
+function OpponentsSection({ data, search }: { data: Versus; search: CompareSearch }) {
+    const [showAll, setShowAll] = useState(false);
+    const all = data.season === 'all';
+    const neverMet = data.opponents.filter((o) => gamesOf(o.record) === 0).length;
+    const rows = showAll ? data.opponents : data.opponents.filter((o) => gamesOf(o.record) > 0);
+
+    return (
+        <section className='profile-panel'>
+            <div className='profile-panel__head'>
+                <h2 className='profile-panel__title'>Opponents</h2>
+                {neverMet > 0 && (
+                    <button
+                        type='button'
+                        className='text-link versus-link-button'
+                        onClick={() => setShowAll(!showAll)}
+                    >
+                        {showAll ? 'Hide' : 'Show'} the {neverMet} never met
+                    </button>
+                )}
+            </div>
+            <RecordTable<VersusOpponent>
+                rows={rows}
+                rowKey={(o) => o.userId}
+                empty={`No game against these players ${inScope(data)}.`}
+                label={{
+                    title: 'Player',
+                    render: (o) => (
+                        <span className='cmp-player'>
+                            <Avatar id={o.userId} name={playerLabel(o)} size={28} />
+                            <Link
+                                to='/user/$userId'
+                                params={{ userId: o.userId }}
+                                className='cmp-player__name'
+                                title={playerLabel(o)}
+                            >
+                                {playerLabel(o)}
+                            </Link>
+                        </span>
+                    ),
+                }}
+                columns={[
+                    {
+                        title: all ? 'Best rank' : 'Rank',
+                        numeric: true,
+                        render: (o) => (o.rank === null ? '–' : `#${o.rank}`),
+                        sort: (a, b) => (a.rank ?? Infinity) - (b.rank ?? Infinity),
+                    },
+                    ...(all
+                        ? [
+                              {
+                                  title: `Seasons in top ${data.top}`,
+                                  numeric: true,
+                                  render: (o: VersusOpponent) => o.seasons,
+                                  sort: (a: VersusOpponent, b: VersusOpponent) =>
+                                      b.seasons - a.seasons,
+                              },
+                          ]
+                        : []),
+                ]}
+                after={[
+                    {
+                        title: 'Last met',
+                        render: (o) => (
+                            <span className='cmp-table__soft'>{timeAgo(o.lastMet) ?? '–'}</span>
+                        ),
+                    },
+                    {
+                        title: '',
+                        render: (o) => (
+                            <Link
+                                from='/user/$userId/compare'
+                                search={{ season: search.season, vs: o.userId }}
+                                className='versus-drill'
+                            >
+                                Head to head →
+                            </Link>
+                        ),
+                    },
+                ]}
+            />
+        </section>
+    );
+}
+
+function SeasonsSection({ data }: { data: Versus }) {
+    const rows = data.seasons.filter((s) => gamesOf(s.record) > 0);
+    if (data.season !== 'all' || rows.length < 2) return null;
+    return (
+        <section className='profile-panel'>
+            <div className='profile-panel__head'>
+                <h2 className='profile-panel__title'>By season</h2>
+            </div>
+            <RecordTable
+                rows={rows}
+                rowKey={(s) => String(s.seasonId)}
+                label={{ title: 'Season', render: (s) => seasonTitle(s.name) }}
+                initialSort='none'
+                after={[
+                    {
+                        title: 'Last met',
+                        render: (s) => (
+                            <span className='cmp-table__soft'>{timeAgo(s.lastMet) ?? '–'}</span>
+                        ),
+                    },
+                ]}
+            />
+        </section>
+    );
+}
+
+function MapsSection({ data }: { data: Versus }) {
+    return (
+        <section className='profile-panel'>
+            <div className='profile-panel__head'>
+                <h2 className='profile-panel__title'>Maps</h2>
+            </div>
+            <RecordTable
+                rows={data.total.mapList}
+                rowKey={(m) => m.key}
+                label={{
+                    title: 'Map',
+                    render: (m) => <MapLabel mapKey={m.key} labels={data.labels} />,
+                }}
+            />
+        </section>
+    );
+}
+
+function LoadoutsSection({ data, name }: { data: Versus; name: string }) {
+    const opponent = data.mode === 'player' ? data.opponents[0] : undefined;
+    const them = opponent ? playerLabel(opponent) : 'them';
+    return (
+        <div className='versus-pair'>
+            <section className='profile-panel'>
+                <div className='profile-panel__head'>
+                    <h2 className='profile-panel__title'>{name}&rsquo;s loadouts</h2>
+                    <span className='profile-panel__note'>Record with each</span>
+                </div>
+                <RecordTable
+                    rows={data.total.mine}
+                    rowKey={(l) => l.key}
+                    label={{
+                        title: 'Loadout',
+                        render: (l) => <LoadoutLabel loadoutKey={l.key} labels={data.labels} />,
+                    }}
+                />
+            </section>
+            <section className='profile-panel'>
+                <div className='profile-panel__head'>
+                    <h2 className='profile-panel__title'>
+                        {opponent ? `${them}’s loadouts` : 'Their loadouts'}
+                    </h2>
+                    <span className='profile-panel__note'>{name}&rsquo;s record against each</span>
+                </div>
+                <RecordTable
+                    rows={data.total.theirs}
+                    rowKey={(l) => l.key}
+                    label={{
+                        title: 'Loadout',
+                        render: (l) => <LoadoutLabel loadoutKey={l.key} labels={data.labels} />,
+                    }}
+                />
+            </section>
+        </div>
+    );
+}
+
+function MatchesSection({ data }: { data: Versus }) {
+    if (!data.matches?.length) return null;
+    return (
+        <section className='profile-panel profile-panel--matches'>
+            <div className='profile-panel__head'>
+                <h2 className='profile-panel__title'>Their games</h2>
+                <span className='profile-panel__note'>
+                    {data.matches.length === 30 ? 'The latest 30' : 'Newest first'}
+                </span>
+            </div>
+            <ul className='recent-matches'>
+                {data.matches.map((match) => (
+                    <li key={match.id}>
+                        <MatchCard match={match} perspectiveId={data.userId} />
+                    </li>
+                ))}
+            </ul>
+        </section>
+    );
+}
+
 export default function Compare() {
     const { userId } = routeApi.useParams();
-    const { season } = routeApi.useSearch();
+    const search = routeApi.useSearch();
     const navigate = routeApi.useNavigate();
-    const seasons = useSeasons();
+    const [pickingPlayer, setPickingPlayer] = useState(false);
+    const met = useOpponentsMet(userId, search.season);
 
-    const { slots, ids, players, ready, setSlot, reset, hasCustom } = useOpponentSlots(
+    const playerMode = !!search.vs || pickingPlayer;
+    const top = search.top ?? COMPARE_TOP_DEFAULT;
+    const { data, isLoading, error, refetch, isPlaceholderData } = useVersus(
         userId,
-        season,
-    );
-    const { data, isLoading, error, refetch, isFetching } = useHeadToHead(
-        userId,
-        ids,
-        season,
-        ready,
+        { season: search.season, vs: search.vs, top },
+        !playerMode || !!search.vs,
     );
 
-    const liveSeason = seasons.data?.liveSeason;
-    const seasonOptions: { value: string; label: string }[] = [
-        { value: 'all', label: 'All seasons' },
-        ...(seasons.data?.seasons ?? []).map((s) => ({
-            value: String(s.id),
-            label: `${seasonLabel(s.id)}${s.live ? ' (live)' : ''}`,
-        })),
-    ];
-    const current = season === undefined ? String(liveSeason ?? '') : String(season);
-    const setSeason = (value: string) => {
-        const next: CompareSeason | undefined =
-            value === 'all' ? 'all' : Number(value) === liveSeason ? undefined : Number(value);
-        void navigate({ search: { season: next }, replace: true });
+    const update = (next: CompareSearch) => {
+        if ('vs' in next && !next.vs) setPickingPlayer(false);
+        void navigate({
+            search: (prev) => {
+                const merged = { ...prev, ...next };
+                return {
+                    season: merged.season,
+                    vs: merged.vs,
+                    top: merged.vs || merged.top === COMPARE_TOP_DEFAULT ? undefined : merged.top,
+                };
+            },
+            replace: true,
+            resetScroll: false,
+        });
+    };
+    const choosePlayerMode = () => {
+        const first = met.data?.[0]?.userId;
+        if (first) update({ vs: first });
+        else setPickingPlayer(true);
     };
 
     const name = data ? playerLabel(data, 'This player') : 'This player';
-    const total = data?.total;
+    const shown = data && (!playerMode || data.mode === 'player') ? data : undefined;
+    const hasGames = !!shown && gamesOf(shown.total.record) > 0;
 
     return (
         <main className='page compare'>
@@ -58,111 +331,57 @@ export default function Compare() {
                 <div>
                     <h1 className='page__title'>{name}, head to head</h1>
                     <p className='page__subtitle'>
-                        {season === 'all'
-                            ? `Every game ${name} played against each opponent, all seasons together.`
-                            : `The games ${name} played against each opponent${data ? ` in ${data.seasonName}` : ''}.`}{' '}
-                        Records are from {name}&rsquo;s side.
+                        Only the games {name} played against these players. Records are from {name}
+                        &rsquo;s side.
                     </p>
                 </div>
                 <div className='page__actions'>
-                    {current && (
-                        <Dropdown
-                            variant='compact'
-                            options={seasonOptions}
-                            value={current}
-                            aria-label='Season'
-                            onSelect={setSeason}
-                        />
-                    )}
                     <Link to='/user/$userId' params={{ userId }} className='button button--quiet'>
                         Back to profile
                     </Link>
                 </div>
             </div>
 
-            {isLoading || (!data && !ready) ? (
+            <section className='profile-panel'>
+                <VersusControls
+                    userId={userId}
+                    playerMode={playerMode}
+                    vs={search.vs}
+                    top={top}
+                    season={search.season}
+                    vsName={
+                        shown?.mode === 'player' && shown.opponents[0]
+                            ? playerLabel(shown.opponents[0])
+                            : undefined
+                    }
+                    onChange={update}
+                    onPlayerMode={choosePlayerMode}
+                />
+            </section>
+
+            {playerMode && !search.vs ? (
+                <p className='profile-panel__empty versus-prompt'>
+                    Pick a player above to see every game between them.
+                </p>
+            ) : isLoading ? (
                 <Loading label='Looking up the games…' />
-            ) : error || !data || !total ? (
+            ) : error || !data ? (
                 <ErrorState error={error} onRetry={() => refetch()} />
+            ) : shown ? (
+                <div className={`versus${isPlaceholderData ? ' versus--updating' : ''}`}>
+                    <Summary data={shown} name={name} />
+                    {shown.mode === 'top' && <OpponentsSection data={shown} search={search} />}
+                    {hasGames && (
+                        <>
+                            <SeasonsSection data={shown} />
+                            <MapsSection data={shown} />
+                            <LoadoutsSection data={shown} name={name} />
+                            <MatchesSection data={shown} />
+                        </>
+                    )}
+                </div>
             ) : (
-                <>
-                    <section className='profile-panel'>
-                        <div className='profile-panel__head'>
-                            <h2 className='profile-panel__title'>Opponents</h2>
-                            {hasCustom ? (
-                                <button
-                                    type='button'
-                                    className='text-link h2h-card__reset'
-                                    onClick={reset}
-                                >
-                                    Back to the top 10
-                                </button>
-                            ) : (
-                                <span className='profile-panel__note'>
-                                    The top 10 by default, replace anyone
-                                </span>
-                            )}
-                        </div>
-                        <H2hSlots
-                            data={data}
-                            userId={userId}
-                            slots={slots}
-                            players={players}
-                            onSlot={setSlot}
-                        />
-                    </section>
-
-                    <section className='profile-panel'>
-                        <div className='profile-panel__head'>
-                            <h2 className='profile-panel__title'>Against all of them</h2>
-                            {isFetching && <span className='profile-panel__note'>Updating…</span>}
-                        </div>
-                        <div className='h2h-summary'>
-                            <span className='h2h-summary__rate'>
-                                {formatRate(rateOf(total.record))}
-                            </span>
-                            <span className='h2h-summary__text'>
-                                <strong>{formatRecord(total.record)}</strong> in{' '}
-                                {formatNumber(gamesOf(total.record))} games
-                            </span>
-                        </div>
-                        <H2hHighlights
-                            summary={total}
-                            labels={data.labels}
-                            min={data.minGames.total}
-                        />
-                    </section>
-
-                    <section className='profile-panel'>
-                        <div className='profile-panel__head'>
-                            <h2 className='profile-panel__title'>Record</h2>
-                            <span className='profile-panel__note'>
-                                Best and worst need {data.minGames.opponent}+ games
-                            </span>
-                        </div>
-                        <H2hRecordTable data={data} slots={slots} />
-                    </section>
-
-                    <section className='profile-panel'>
-                        <div className='profile-panel__head'>
-                            <h2 className='profile-panel__title'>Loadouts</h2>
-                            <span className='profile-panel__note'>
-                                Records are {name}&rsquo;s, with or against that loadout
-                            </span>
-                        </div>
-                        <H2hLoadoutTable data={data} slots={slots} />
-                    </section>
-
-                    <section className='profile-panel'>
-                        <div className='profile-panel__head'>
-                            <h2 className='profile-panel__title'>By map</h2>
-                            <span className='profile-panel__note'>
-                                {name}&rsquo;s record on each map against each opponent
-                            </span>
-                        </div>
-                        <H2hMapGrid data={data} slots={slots} />
-                    </section>
-                </>
+                <Loading label='Looking up the games…' />
             )}
         </main>
     );

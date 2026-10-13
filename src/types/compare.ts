@@ -1,3 +1,5 @@
+import type { Match } from './match';
+
 /** wins, losses, draws, always from the profile player's side */
 export type Wld = [number, number, number];
 
@@ -55,6 +57,77 @@ export interface HeadToHead {
     error?: string | null;
 }
 
+export type VersusMode = 'player' | 'top';
+
+export interface VersusOpponent {
+    userId: string;
+    name: string | null;
+    realName: string | null;
+    /** best rank among the seasons counted */
+    rank: number | null;
+    /** seasons the player was in the group */
+    seasons: number;
+    record: Wld;
+    lastMet: string | null;
+}
+
+export interface VersusSeasonRow {
+    seasonId: number;
+    name: string;
+    /** opponents counted that season */
+    group: number;
+    record: Wld;
+    lastMet: string | null;
+}
+
+/** GET /users/:id/versus */
+export interface Versus {
+    userId: string;
+    name: string | null;
+    realName: string | null;
+    season: CompareSeason;
+    seasonName: string;
+    mode: VersusMode;
+    vs: string | null;
+    top: number | null;
+    missingSeasons: number[];
+    minGames: { opponent: number; total: number };
+    labels: HeadToHead['labels'];
+    total: H2hSummary & {
+        mapList: H2hPick[];
+        /** the profile player's loadouts, most played first */
+        mine: H2hPick[];
+        /** the opponents' loadouts */
+        theirs: H2hPick[];
+    };
+    /** never-met players have a 0–0 record */
+    opponents: VersusOpponent[];
+    /** newest first */
+    seasons: VersusSeasonRow[];
+    /** player mode: latest games between the two, newest first */
+    matches: Match[] | null;
+    message?: string | null;
+    error?: string | null;
+}
+
+export interface MetOpponent {
+    userId: string;
+    name: string | null;
+    realName: string | null;
+    record: Wld;
+}
+
+/** GET /users/:id/opponents */
+export interface OpponentsMet {
+    opponents: MetOpponent[];
+    message?: string | null;
+    error?: string | null;
+}
+
 export interface CompareSearch {
     season?: CompareSeason | undefined;
+    /** one opponent */
+    vs?: string | undefined;
+    /** or the top N of each season */
+    top?: number | undefined;
 }
