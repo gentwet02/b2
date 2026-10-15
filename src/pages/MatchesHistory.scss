@@ -1,3 +1,4 @@
+@use '@/styles/breakpoints';
 @use '@/styles/colors';
 
 .matches {
@@ -39,5 +40,12 @@
 
     &__more {
         justify-self: center;
+    }
+
+    @media (max-width: breakpoints.$small) {
+        &__summary,
+        &__crawl {
+            margin-inline: 1rem;
+        }
     }
 }

@@ -128,13 +128,23 @@ select {
         width: 100%;
         margin-inline: revert;
         padding-block: 1rem 2rem;
+    }
 
-        &__head {
-            margin-inline: 1rem;
-        }
+    @media (max-width: breakpoints.$small) {
+        .page {
+            width: 100%;
+            margin-inline: revert;
+            padding-block: 1rem 2rem;
+            gap: 1.5rem;
 
-        &__actions > .button {
-            font-size: 0.875rem;
+            &__head {
+                margin-inline: 1rem;
+            }
+
+            &__actions > .button {
+                padding: 0.375rem 0.875rem;
+                font-size: 0.875rem;
+            }
         }
     }
 }

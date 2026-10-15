@@ -29,181 +29,190 @@
         font-size: 0.8125rem;
         color: colors.$ink-soft;
     }
-}
 
-.lb-num {
-    font-weight: 600;
-
-    &--empty {
-        color: colors.$ink-soft;
-    }
-}
-
-.lb-rate {
-    display: grid;
-    grid-template-columns: 2.6rem 1fr;
-    align-items: center;
-    gap: 0.5rem;
-
-    &__value {
-        font-weight: 700;
-        text-align: right;
-    }
-
-    &__bar {
-        height: 0.4rem;
-        background: color-mix(in srgb, colors.$bloon 25%, colors.$paper-dim);
-        border-radius: 999px;
-        overflow: hidden;
-
-        span {
-            display: block;
-            height: 100%;
-            background: colors.$leaf;
-        }
-    }
-}
-
-.lb-rank {
-    display: inline-grid;
-    place-items: center;
-    min-width: 2.1rem;
-    height: 2.1rem;
-    padding-inline: 0.3rem;
-    font-family: variables.$font-display;
-    font-size: 1.05rem;
-    border-radius: 999px;
-
-    &--1,
-    &--2,
-    &--3 {
-        border: 2px solid colors.$ink;
-    }
-
-    &--1 {
-        background: colors.$banana;
-    }
-
-    &--2 {
-        background: #dfe4ee;
-    }
-
-    &--3 {
-        background: #eab18a;
-    }
-}
-
-.lb-player {
-    display: flex;
-    align-items: center;
-    gap: 0.7rem;
-    line-height: 1.25;
-
-    &__avatar {
-        flex: none;
-        @include size(2.25rem);
-        border-radius: 50%;
-        border: 1.5px solid colors.$ink;
-        background: colors.$paper-dim;
-        object-fit: cover;
+    .lb-num {
+        font-weight: 600;
 
         &--empty {
-            display: grid;
-            place-items: center;
-            font-family: variables.$font-display;
             color: colors.$ink-soft;
         }
     }
 
-    &__names {
+    .lb-rate {
         display: grid;
-        min-width: 0;
-    }
+        grid-template-columns: 2.6rem 1fr;
+        align-items: center;
+        gap: 0.5rem;
 
-    &__name {
-        font-weight: 600;
+        &__value {
+            font-weight: 700;
+            text-align: right;
+        }
 
-        &:hover {
-            color: colors.$bloon;
-            text-decoration: underline;
+        &__bar {
+            height: 0.4rem;
+            background: color-mix(in srgb, colors.$bloon 25%, colors.$paper-dim);
+            border-radius: 999px;
+            overflow: hidden;
+
+            span {
+                display: block;
+                height: 100%;
+                background: colors.$leaf;
+            }
         }
     }
 
-    &__alias {
-        font-size: 0.8125rem;
-        color: colors.$ink-soft;
+    .lb-rank {
+        @include size(2.1rem);
+        padding-inline: 0.3rem;
+        display: inline-grid;
+        place-items: center;
+        font-family: variables.$font-display;
+        font-size: 1.05rem;
+        border-radius: 999px;
+
+        &--1,
+        &--2,
+        &--3 {
+            border: 2px solid colors.$ink;
+        }
+
+        &--1 {
+            background: colors.$banana;
+        }
+
+        &--2 {
+            background: #dfe4ee;
+        }
+
+        &--3 {
+            background: #eab18a;
+        }
     }
-}
 
-.lb-score {
-    font-family: variables.$font-display;
-    font-size: 1.15rem;
-}
+    .lb-player {
+        display: flex;
+        align-items: center;
+        gap: 0.7rem;
+        line-height: 1.25;
 
-@media (max-width: breakpoints.$medium) {
-    .leaderboard-score {
+        &__avatar {
+            flex: none;
+            @include size(2.25rem);
+            border-radius: 50%;
+            border: 1.5px solid colors.$ink;
+            background: colors.$paper-dim;
+            object-fit: cover;
+
+            &--empty {
+                display: grid;
+                place-items: center;
+                font-family: variables.$font-display;
+                color: colors.$ink-soft;
+            }
+        }
+
+        &__names {
+            display: grid;
+            min-width: 0;
+        }
+
+        &__name {
+            font-weight: 600;
+
+            &:hover {
+                color: colors.$bloon;
+                text-decoration: underline;
+            }
+        }
+
+        &__alias {
+            font-size: 0.8125rem;
+            color: colors.$ink-soft;
+        }
+    }
+
+    .lb-score {
+        font-family: variables.$font-display;
+        font-size: 1.15rem;
+    }
+
+    @media (max-width: breakpoints.$medium) {
         .lb-player__avatar {
             @include size(2rem);
         }
     }
-}
 
-@media (max-width: breakpoints.$small) {
-    .leaderboard-score {
-        td,
-        th {
-            padding: 0.35rem 0.25rem;
-        }
-
-        td:not(:last-child),
-        th:not(:last-child):not(.table__head-title) {
-            padding-inline-end: 0;
-        }
-
-        td:not(:first-child),
-        th:not(:first-child):not(.table__head-title) {
-            padding-inline-start: 0;
-        }
-
-        th[data-category='rank'],
-        th[data-category='win-rate'] {
-            width: revert;
-        }
-    }
-    .table {
-        &__table {
-        }
-
-        &__cell {
-            [class^='lb-'] {
-                max-width: 100%;
-                overflow: hidden;
-                text-wrap: nowrap;
-                font-size: 0.9375rem;
-                text-overflow: ellipsis;
+    @media (max-width: breakpoints.$small) {
+        .table {
+            td,
+            th {
+                padding: 0.35rem 0.25rem;
             }
 
-            :not(.lb-score) {
+            td:not(:last-child),
+            th:not(:last-child):not(.table__head-title) {
+                padding-inline-end: 0;
+            }
+
+            td:not(:first-child),
+            th:not(:first-child):not(.table__head-title) {
+                padding-inline-start: 0;
+            }
+
+            th[data-category='rank'],
+            th[data-category='win-rate'] {
+                width: revert;
+            }
+
+            &__cell {
+                [class^='lb-'] {
+                    max-width: 100%;
+                    overflow: hidden;
+                    text-wrap: nowrap;
+                    font-size: 0.9375rem;
+                    text-overflow: ellipsis;
+                }
+
+                :not(.lb-score) {
+                    font-size: 0.875rem;
+                }
+
+                .lb-player {
+                    gap: 0;
+                }
+
+                [class*='avatar'] {
+                    width: 0;
+                    border: 0;
+                    visibility: hidden;
+                }
+
+                .lb-rate {
+                    grid-template-columns: 1fr;
+                    gap: 0;
+
+                    &__bar {
+                        @include size(0);
+                    }
+                }
+            }
+        }
+
+        .lb-rank {
+            @include size(1.8rem);
+        }
+    }
+
+    @media (max-width: breakpoints.$tiny) {
+        .table__cell {
+            [class^='lb-'] {
                 font-size: 0.875rem;
             }
 
-            .lb-player {
-                gap: 0;
-            }
-
-            [class*='avatar'] {
-                width: 0;
-                border: 0;
-                visibility: hidden;
-            }
-
-            .lb-rate {
-                grid-template-columns: 1fr;
-                gap: 0;
-
-                &__bar {
-                    @include size(0);
-                }
+            :not(.lb-score) {
+                font-size: 0.8125rem;
             }
         }
     }

@@ -4,10 +4,10 @@
 @use '@/styles/variables';
 
 .match-filters {
-    @include components.panel;
     display: grid;
     gap: 1rem;
     padding: 1rem 1.25rem;
+    @include components.panel;
 
     &__row {
         display: flex;

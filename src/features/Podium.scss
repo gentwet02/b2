@@ -58,7 +58,7 @@
     &__name {
         max-width: 100%;
         font-weight: 700;
-        font-size: --var(--fluid-15-20);
+        font-size: var(--fluid-15-20);
         overflow: hidden;
         text-overflow: ellipsis;
         white-space: nowrap;

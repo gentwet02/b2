@@ -15,9 +15,9 @@
     }
 
     &__scroll {
-        @include components.panel;
         overflow-x: auto;
         -webkit-overflow-scrolling: touch;
+        @include components.panel;
     }
 
     &__table {
@@ -68,5 +68,11 @@
         padding: 3rem 1rem;
         text-align: center;
         color: colors.$ink-soft;
+    }
+
+    @media (max-width: breakpoints.$small) {
+        &__controls {
+            margin-inline: 1rem;
+        }
     }
 }
