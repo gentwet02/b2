@@ -52,9 +52,6 @@ export default function Home() {
             {players.length > 3 && (
                 <section className='home__section' aria-labelledby='home-next'>
                     <div className='page__head'>
-                        <h2 id='home-next' className='home__section-title'>
-                            Ranks 4 to 13
-                        </h2>
                         <div className='page__actions'>
                             <Link to='/matches-history' className='button button--quiet'>
                                 Recent matches
@@ -68,7 +65,7 @@ export default function Home() {
                             </Link>
                         </div>
                     </div>
-                    <LeaderboardScore season={liveSeason} live range={[4, 13]} />
+                    <LeaderboardScore season={liveSeason} live range={[4, 25]} />
                 </section>
             )}
         </main>

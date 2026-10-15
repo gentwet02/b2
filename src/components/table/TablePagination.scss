@@ -1,5 +1,5 @@
 @use '@/styles/colors';
-@use '@/styles/mixins' as *;
+@use '@/styles/components';
 
 .table__pagination {
     display: flex;
@@ -22,7 +22,7 @@
     }
 
     &-button {
-        @include button(colors.$paper, colors.$ink);
+        @include components.button(colors.$paper, colors.$ink);
         font-size: 0.9rem;
         padding: 0.4rem 0.9rem;
     }

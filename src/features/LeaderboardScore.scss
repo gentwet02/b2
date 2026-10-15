@@ -1,5 +1,7 @@
+@use '@/styles/breakpoints';
 @use '@/styles/colors';
 @use '@/styles/mixins' as *;
+@use '@/styles/variables';
 
 .leaderboard-score {
     th[data-category='rank'] {
@@ -68,7 +70,7 @@
     min-width: 2.1rem;
     height: 2.1rem;
     padding-inline: 0.3rem;
-    font-family: $font-display;
+    font-family: variables.$font-display;
     font-size: 1.05rem;
     border-radius: 999px;
 
@@ -99,8 +101,7 @@
 
     &__avatar {
         flex: none;
-        width: 2.25rem;
-        height: 2.25rem;
+        @include size(2.25rem);
         border-radius: 50%;
         border: 1.5px solid colors.$ink;
         background: colors.$paper-dim;
@@ -109,7 +110,7 @@
         &--empty {
             display: grid;
             place-items: center;
-            font-family: $font-display;
+            font-family: variables.$font-display;
             color: colors.$ink-soft;
         }
     }
@@ -135,6 +136,75 @@
 }
 
 .lb-score {
-    font-family: $font-display;
+    font-family: variables.$font-display;
     font-size: 1.15rem;
+}
+
+@media (max-width: breakpoints.$medium) {
+    .leaderboard-score {
+        .lb-player__avatar {
+            @include size(2rem);
+        }
+    }
+}
+
+@media (max-width: breakpoints.$small) {
+    .leaderboard-score {
+        td,
+        th {
+            padding: 0.35rem 0.25rem;
+        }
+
+        td:not(:last-child),
+        th:not(:last-child):not(.table__head-title) {
+            padding-inline-end: 0;
+        }
+
+        td:not(:first-child),
+        th:not(:first-child):not(.table__head-title) {
+            padding-inline-start: 0;
+        }
+
+        th[data-category='rank'],
+        th[data-category='win-rate'] {
+            width: revert;
+        }
+    }
+    .table {
+        &__table {
+        }
+
+        &__cell {
+            [class^='lb-'] {
+                max-width: 100%;
+                overflow: hidden;
+                text-wrap: nowrap;
+                font-size: 0.9375rem;
+                text-overflow: ellipsis;
+            }
+
+            :not(.lb-score) {
+                font-size: 0.875rem;
+            }
+
+            .lb-player {
+                gap: 0;
+            }
+
+            [class*='avatar'] {
+                width: 0;
+                border: 0;
+                visibility: hidden;
+            }
+
+            .lb-rate {
+                grid-template-columns: 1fr;
+                gap: 0;
+
+                &__bar {
+                    @include size(0);
+                }
+            }
+        }
+    }
 }

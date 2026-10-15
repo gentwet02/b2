@@ -1,5 +1,6 @@
+@use '@/styles/breakpoints';
 @use '@/styles/colors';
-@use '@/styles/mixins' as *;
+@use '@/styles/components';
 
 .table {
     display: grid;
@@ -14,7 +15,7 @@
     }
 
     &__scroll {
-        @include panel;
+        @include components.panel;
         overflow-x: auto;
         -webkit-overflow-scrolling: touch;
     }

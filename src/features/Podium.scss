@@ -1,11 +1,13 @@
+@use '@/styles/breakpoints';
 @use '@/styles/colors';
 @use '@/styles/mixins' as *;
+@use '@/styles/variables';
 
 .podium {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
     align-items: end;
-    gap: 0.75rem;
+    gap: var(--fluid-6-14);
     max-width: 44rem;
     width: 100%;
     margin-inline: auto;
@@ -22,7 +24,7 @@
         gap: 0.1rem;
         padding: 0.5rem;
         text-align: center;
-        border-radius: $radius-inner;
+        border-radius: variables.$radius-inner;
 
         &:hover .podium__name {
             color: colors.$bloon;
@@ -31,8 +33,7 @@
     }
 
     &__avatar {
-        width: 4.5rem;
-        height: 4.5rem;
+        @include size(var(--fluid-48-72));
         margin-bottom: 0.35rem;
         border-radius: 50%;
         border: 2px solid colors.$ink;
@@ -42,15 +43,14 @@
         &--empty {
             display: grid;
             place-items: center;
-            font-family: $font-display;
+            font-family: variables.$font-display;
             font-size: 1.75rem;
             color: colors.$ink-soft;
         }
     }
 
     &__spot--1 &__avatar {
-        width: 5.5rem;
-        height: 5.5rem;
+        @include size(var(--fluid-56-88));
         border-color: colors.$banana;
         box-shadow: 0 0 0 2px colors.$ink;
     }
@@ -58,21 +58,21 @@
     &__name {
         max-width: 100%;
         font-weight: 700;
-        font-size: 1.05rem;
+        font-size: --var(--fluid-15-20);
         overflow: hidden;
         text-overflow: ellipsis;
         white-space: nowrap;
     }
 
     &__score {
-        @include display(1.6rem);
+        @include display(var(--fluid-18-24));
     }
 
     &__step {
         display: grid;
         place-items: start center;
         padding-top: 0.6rem;
-        @include display(3.5rem);
+        @include display(var(--fluid-36-52));
         color: colors.$ink;
         border: 2px solid colors.$ink;
         border-bottom: none;
@@ -81,41 +81,27 @@
     }
 
     &__spot--1 &__step {
-        height: 9.5rem;
+        height: var(--fluid-114-152);
         background: colors.$banana;
     }
 
     &__spot--2 &__step {
-        height: 7rem;
+        height: var(--fluid-84-112);
         background: #dfe4ee;
     }
 
     &__spot--3 &__step {
-        height: 5rem;
+        height: var(--fluid-60-80);
         background: #eab18a;
     }
 
     &__spot--1 &__score {
-        font-size: 2rem;
+        font-size: var(--fluid-20-30);
     }
 
-    @media (max-width: 520px) {
-        gap: 0.4rem;
-
+    @media (max-width: breakpoints.$small) {
         &__name {
-            font-size: 0.9rem;
-        }
-
-        &__score {
-            font-size: 1.2rem;
-        }
-
-        &__spot--1 &__score {
-            font-size: 1.4rem;
-        }
-
-        &__step {
-            font-size: 2.5rem;
+            font-weight: 600;
         }
     }
 }

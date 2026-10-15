@@ -1,11 +1,12 @@
 @use '@/styles/colors';
-@use '@/styles/mixins' as *;
+@use '@/styles/components';
+@use '@/styles/variables';
 
 .leaderboard {
     &__live {
-        @include chip(colors.$bloon, #fff);
+        @include components.chip(colors.$bloon, #fff);
         margin-left: 0.75rem;
-        font-family: $font-body;
+        font-family: variables.$font-body;
         font-size: 0.875rem;
         vertical-align: middle;
 

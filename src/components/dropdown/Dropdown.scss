@@ -1,5 +1,6 @@
 @use '@/styles/colors';
 @use '@/styles/mixins' as *;
+@use '@/styles/variables';
 
 .dropdown {
     // shared by the input and the list so the open dropdown reads as one block
@@ -158,7 +159,7 @@
             max-width: min(18rem, calc(100vw - 2rem));
             margin-top: 0.35rem;
             font-size: 0.875rem;
-            border-radius: $radius-inner;
+            border-radius: variables.$radius-inner;
             box-shadow: 3px 3px 0 colors.$ink;
         }
 

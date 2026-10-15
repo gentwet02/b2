@@ -1,5 +1,7 @@
 @use '@/styles/colors';
+@use '@/styles/components';
 @use '@/styles/mixins' as *;
+@use '@/styles/variables';
 
 .profile {
     display: grid;
@@ -26,7 +28,7 @@
 // ---------- Hero ----------
 
 .profile-hero {
-    @include panel(6px);
+    @include components.panel(6px);
     position: relative;
     overflow: hidden;
 
@@ -151,7 +153,7 @@
     }
 
     &__badge {
-        @include chip(colors.$paper-dim);
+        @include components.chip(colors.$paper-dim);
 
         &--vip {
             background: colors.$banana;
@@ -174,7 +176,7 @@
     display: grid;
     grid-template-columns: repeat(4, minmax(0, 1fr));
     border: 2px solid colors.$ink;
-    border-radius: $radius-panel;
+    border-radius: variables.$radius-panel;
     background: colors.$paper;
     overflow: hidden;
 
@@ -218,7 +220,7 @@
 // ---------- Ranked / casual ----------
 
 .stats-panel {
-    @include panel;
+    @include components.panel;
     display: grid;
     gap: 1rem;
     padding: 1.25rem 1.5rem 1.5rem;
@@ -302,7 +304,7 @@
 // ---------- Generic profile panel ----------
 
 .profile-panel {
-    @include panel;
+    @include components.panel;
     display: grid;
     gap: 1rem;
     padding: 1.25rem 1.5rem 1.5rem;
@@ -444,7 +446,7 @@
         align-content: start;
         padding: 0.85rem 1rem;
         background: colors.$paper-dim;
-        border-radius: $radius-inner;
+        border-radius: variables.$radius-inner;
     }
 
     &__value {
@@ -501,10 +503,10 @@
     }
 
     &__tag {
-        @include chip(colors.$paper);
+        @include components.chip(colors.$paper);
         vertical-align: middle;
         margin-left: 0.4rem;
-        font-family: $font-body;
+        font-family: variables.$font-body;
         font-size: 0.75rem;
     }
 

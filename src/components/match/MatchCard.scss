@@ -1,5 +1,7 @@
+@use '@/styles/breakpoints';
 @use '@/styles/colors';
-@use '@/styles/mixins' as *;
+@use '@/styles/components';
+@use '@/styles/variables';
 
 // [ left player | map and match info | right player ]: both players get equal room
 .match-card {
@@ -39,7 +41,7 @@
         object-fit: cover;
         margin-bottom: 0.3rem;
         border: 1.5px solid colors.$ink;
-        border-radius: $radius-inner;
+        border-radius: variables.$radius-inner;
         background: colors.$paper-dim;
     }
 
@@ -53,7 +55,7 @@
     }
 
     &__outcome {
-        @include chip(colors.$paper-dim);
+        @include components.chip(colors.$paper-dim);
         margin-top: 0.3rem;
         font-size: 0.75rem;
     }
@@ -66,7 +68,7 @@
         gap: 0.75rem;
         min-width: 0;
         padding: 0.6rem 0.75rem;
-        border-radius: $radius-inner;
+        border-radius: variables.$radius-inner;
 
         &--right {
             flex-direction: row-reverse;
@@ -239,7 +241,7 @@
         }
     }
 
-    @media (max-width: 480px) {
+    @media (max-width: breakpoints.$small) {
         grid-template-columns: minmax(0, 1fr);
 
         &__side--right {

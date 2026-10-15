@@ -3,7 +3,8 @@
 .table__search {
     position: relative;
     flex: 1 1 14rem;
-    max-width: 22rem;
+    max-width: min(66%, 22rem);
+    min-width: 15rem;
 
     &-input {
         width: 100%;

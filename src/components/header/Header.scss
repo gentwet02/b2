@@ -1,3 +1,4 @@
+@use '@/styles/breakpoints';
 @use '@/styles/colors';
 @use '@/styles/mixins' as *;
 
@@ -19,7 +20,8 @@
     }
 
     &__brand {
-        @include display(1.75rem);
+        @include display(var(--fluid-20-32));
+        padding-inline-end: 1rem;
         display: flex;
         align-items: center;
         gap: 0.6rem;
@@ -54,13 +56,26 @@
         }
     }
 
-    @media (max-width: 480px) {
-        &__brand {
-            font-size: 1.4rem;
-        }
-
+    @media (max-width: breakpoints.$small) {
         &__link {
             padding-inline: 0.6rem;
+        }
+    }
+
+    @media (max-width: 380px) {
+        padding-block: 1rem;
+
+        &__inner {
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        &__brand {
+            font-size: 2.5rem;
+
+            > img {
+                width: 2rem;
+            }
         }
     }
 }

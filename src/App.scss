@@ -1,6 +1,9 @@
 @use '@/styles/reset';
+@use '@/styles/breakpoints';
 @use '@/styles/colors';
+@use '@/styles/components';
 @use '@/styles/mixins' as *;
+@use '@/styles/variables';
 
 :root {
     color-scheme: light;
@@ -8,7 +11,7 @@
 
 body {
     min-height: 100dvh;
-    font-family: $font-body;
+    font-family: variables.$font-body;
     font-size: 1rem;
     color: colors.$ink;
     background-color: colors.$sky;
@@ -72,10 +75,10 @@ select {
 }
 
 .button {
-    @include button;
+    @include components.button;
 
     &--quiet {
-        @include button(colors.$paper, colors.$ink);
+        @include components.button(colors.$paper, colors.$ink);
     }
 }
 
@@ -118,4 +121,20 @@ select {
     font-size: 0.8125rem;
     color: colors.$ink-soft;
     border-top: 2px dashed rgba(colors.$ink, 0.2);
+}
+
+@media (max-width: breakpoints.$small) {
+    .page {
+        width: 100%;
+        margin-inline: revert;
+        padding-block: 1rem 2rem;
+
+        &__head {
+            margin-inline: 1rem;
+        }
+
+        &__actions > .button {
+            font-size: 0.875rem;
+        }
+    }
 }

@@ -1,11 +1,12 @@
 @use '@/styles/colors';
 @use '@/styles/mixins' as *;
+@use '@/styles/variables';
 
 .cmp-scroll {
     overflow: auto;
     max-height: min(70vh, 34rem);
     border: 1.5px solid colors.$line;
-    border-radius: $radius-inner;
+    border-radius: variables.$radius-inner;
     overscroll-behavior: contain;
 }
 
