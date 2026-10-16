@@ -23,6 +23,8 @@ interface RecordTableProps<T extends { record: Wld }> {
     empty?: ReactNode;
     /** 'none' keeps the rows' order until a header is clicked */
     initialSort?: 'games' | 'rate' | 'none';
+    /** rows shown at first, then this many more per click */
+    pageSize?: number;
 }
 
 type SortKey = 'games' | 'rate' | 'none' | `col:${number}`;
@@ -35,6 +37,7 @@ const byRate = (a: { record: Wld }, b: { record: Wld }) =>
 export default function RecordTable<T extends { record: Wld }>(props: RecordTableProps<T>) {
     const { rows, rowKey, label, columns = [], after = [], empty } = props;
     const [sort, setSort] = useState<SortKey>(props.initialSort ?? 'games');
+    const [shown, setShown] = useState(props.pageSize ?? Infinity);
 
     const extra = [...columns, ...after];
     const sorted = [...rows];
@@ -89,7 +92,7 @@ export default function RecordTable<T extends { record: Wld }>(props: RecordTabl
                     </tr>
                 </thead>
                 <tbody>
-                    {sorted.map((row) => {
+                    {sorted.slice(0, shown).map((row) => {
                         const games = gamesOf(row.record);
                         const rate = rateOf(row.record);
                         return (
@@ -136,6 +139,16 @@ export default function RecordTable<T extends { record: Wld }>(props: RecordTabl
                     })}
                 </tbody>
             </table>
+            {sorted.length > shown && (
+                <button
+                    type='button'
+                    className='cmp-table__more'
+                    onClick={() => setShown(shown + (props.pageSize ?? sorted.length))}
+                >
+                    Show {Math.min(props.pageSize ?? sorted.length, sorted.length - shown)} more (
+                    {formatNumber(sorted.length - shown)} left)
+                </button>
+            )}
         </div>
     );
 }

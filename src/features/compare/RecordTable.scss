@@ -130,6 +130,26 @@
     .lb-rate {
         min-width: 7rem;
     }
+
+    &__more {
+        position: sticky;
+        left: 0;
+        display: block;
+        width: 100%;
+        padding: 0.6rem;
+        font: inherit;
+        font-size: 0.875rem;
+        font-weight: 600;
+        color: colors.$ink;
+        background: colors.$paper-dim;
+        border: none;
+        border-top: 1px solid colors.$line;
+        cursor: pointer;
+
+        &:hover {
+            color: colors.$bloon;
+        }
+    }
 }
 
 .cmp-player {

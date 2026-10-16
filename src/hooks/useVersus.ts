@@ -6,14 +6,20 @@ import { keepPreviousData, queryOptions, useQuery } from '@tanstack/react-query'
 interface VersusParams {
     season?: CompareSeason | undefined;
     vs?: string | undefined;
-    top?: number | undefined;
+    range?: string | undefined;
+    band?: boolean | undefined;
 }
 
-export const versusQueryOptions = (userId: string, { season, vs, top }: VersusParams) =>
+export const versusQueryOptions = (userId: string, { season, vs, range, band }: VersusParams) =>
     queryOptions<Versus>({
-        queryKey: ['versus', userId, season ?? 'live', vs ? `vs:${vs}` : `top:${top}`],
+        queryKey: [
+            'versus',
+            userId,
+            season ?? 'live',
+            vs ? `vs:${vs}` : `range:${range}${band ? ':band' : ''}`,
+        ],
         queryFn: async () => {
-            const response = await compareService.getVersus(userId, { season, vs, top });
+            const response = await compareService.getVersus(userId, { season, vs, range, band });
             if (!response.success || !response.data) {
                 throw toError(response, 'Could not load the head to head');
             }

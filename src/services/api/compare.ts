@@ -15,17 +15,22 @@ export const compareService = {
         {
             season,
             vs,
-            top,
+            range,
+            band,
         }: {
             season?: CompareSeason | undefined;
             vs?: string | undefined;
-            top?: number | undefined;
+            range?: string | undefined;
+            band?: boolean | undefined;
         },
     ) => {
         const params = new URLSearchParams();
         if (season !== undefined) params.set('season', String(season));
         if (vs) params.set('vs', vs);
-        else if (top) params.set('top', String(top));
+        else {
+            if (range) params.set('range', range);
+            if (band) params.set('band', '1');
+        }
         const query = params.toString();
         return getFromApi<Versus>(`users/${userId}/versus${query ? `?${query}` : ''}`);
     },

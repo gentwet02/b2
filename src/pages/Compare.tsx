@@ -4,7 +4,7 @@ import H2hHighlights from '@/features/compare/H2hHighlights';
 import { Avatar, LoadoutLabel, MapLabel } from '@/features/compare/Labels';
 import RecordTable from '@/features/compare/RecordTable';
 import VersusControls from '@/features/compare/VersusControls';
-import { COMPARE_TOP_DEFAULT } from '@/config/compare';
+import { COMPARE_RANGE_DEFAULT, previousRange, rangeLabel } from '@/config/compare';
 import useOpponentsMet from '@/hooks/useOpponentsMet';
 import useVersus from '@/hooks/useVersus';
 import type { CompareSearch, Versus, VersusOpponent } from '@/types/compare';
@@ -24,16 +24,30 @@ import { useState } from 'react';
 
 const routeApi = getRouteApi('/user/$userId/compare');
 
+const lower = (label: string) => label.replace('Top', 'top').replace('All', 'all');
+
+function rangeTitle(data: Versus, bounds: Versus['seasons'][number]['bounds']) {
+    const range = data.range ?? COMPARE_RANGE_DEFAULT;
+    const where = data.season === 'all' ? 'each season' : seasonTitle(data.seasonName);
+    if (data.band && bounds) return `Against ranks ${bounds.from}–${bounds.to} of ${where}`;
+    const label = lower(rangeLabel(range));
+    if (data.band) {
+        const previous = previousRange(range);
+        return `Against the ${label} without the ${lower(previous?.label ?? '')}, in each season`;
+    }
+    return range === 'all'
+        ? `Against all HoM players of ${where}`
+        : `Against the ${label} of ${where}`;
+}
+
 function Summary({ data, name }: { data: Versus; name: string }) {
     const { total } = data;
     const games = gamesOf(total.record);
     const opponent = data.mode === 'player' ? data.opponents[0] : undefined;
     const met = data.opponents.filter((o) => gamesOf(o.record) > 0).length;
 
-    let title: string;
-    if (opponent) title = `${name} vs ${playerLabel(opponent)}`;
-    else if (data.season === 'all') title = `Against the top ${data.top} of each season`;
-    else title = `Against the top ${data.top} of ${seasonTitle(data.seasonName)}`;
+    const bounds = data.season === 'all' ? null : (data.seasons[0]?.bounds ?? null);
+    const title = opponent ? `${name} vs ${playerLabel(opponent)}` : rangeTitle(data, bounds);
 
     return (
         <section className='profile-panel'>
@@ -58,10 +72,11 @@ function Summary({ data, name }: { data: Versus; name: string }) {
                 )}
             </div>
 
-            {data.mode === 'top' && data.season === 'all' && (
+            {data.mode === 'top' && (
                 <p className='versus-note'>
-                    Each season counts its own top {data.top}: the games of a season against that
-                    season&rsquo;s top {data.top}.
+                    {bounds
+                        ? `Ranks ${formatNumber(bounds.from)}–${formatNumber(bounds.to)} of the ${formatNumber(bounds.size)} players in ${seasonTitle(data.seasonName)}'s leaderboard.`
+                        : 'Each season counts its own players in this range: the games of a season against that season’s ranks.'}
                     {data.missingSeasons.length > 0 &&
                         ` ${data.missingSeasons.length} season${data.missingSeasons.length > 1 ? 's are' : ' is'} skipped, their leaderboard isn't loaded yet.`}
                 </p>
@@ -147,7 +162,7 @@ function OpponentsSection({ data, search }: { data: Versus; search: CompareSearc
                     ...(all
                         ? [
                               {
-                                  title: `Seasons in top ${data.top}`,
+                                  title: `Seasons in range`,
                                   numeric: true,
                                   render: (o: VersusOpponent) => o.seasons,
                                   sort: (a: VersusOpponent, b: VersusOpponent) =>
@@ -176,6 +191,7 @@ function OpponentsSection({ data, search }: { data: Versus; search: CompareSearc
                         ),
                     },
                 ]}
+                pageSize={100}
             />
         </section>
     );
@@ -194,6 +210,20 @@ function SeasonsSection({ data }: { data: Versus }) {
                 rowKey={(s) => String(s.seasonId)}
                 label={{ title: 'Season', render: (s) => seasonTitle(s.name) }}
                 initialSort='none'
+                columns={
+                    data.mode === 'top'
+                        ? [
+                              {
+                                  title: 'Ranks',
+                                  numeric: true,
+                                  render: (s) =>
+                                      s.bounds
+                                          ? `${formatNumber(s.bounds.from)}–${formatNumber(s.bounds.to)}`
+                                          : '–',
+                              },
+                          ]
+                        : []
+                }
                 after={[
                     {
                         title: 'Last met',
@@ -293,10 +323,11 @@ export default function Compare() {
     const met = useOpponentsMet(userId, search.season);
 
     const playerMode = !!search.vs || pickingPlayer;
-    const top = search.top ?? COMPARE_TOP_DEFAULT;
+    const range = search.range ?? COMPARE_RANGE_DEFAULT;
+    const band = !!search.band;
     const { data, isLoading, error, refetch, isPlaceholderData } = useVersus(
         userId,
-        { season: search.season, vs: search.vs, top },
+        { season: search.season, vs: search.vs, range, band },
         !playerMode || !!search.vs,
     );
 
@@ -305,10 +336,13 @@ export default function Compare() {
         void navigate({
             search: (prev) => {
                 const merged = { ...prev, ...next };
+                const customRange =
+                    !merged.vs && merged.range && merged.range !== COMPARE_RANGE_DEFAULT;
                 return {
                     season: merged.season,
                     vs: merged.vs,
-                    top: merged.vs || merged.top === COMPARE_TOP_DEFAULT ? undefined : merged.top,
+                    range: customRange ? merged.range : undefined,
+                    band: customRange && merged.band ? true : undefined,
                 };
             },
             replace: true,
@@ -347,7 +381,8 @@ export default function Compare() {
                     userId={userId}
                     playerMode={playerMode}
                     vs={search.vs}
-                    top={top}
+                    range={range}
+                    band={band}
                     season={search.season}
                     vsName={
                         shown?.mode === 'player' && shown.opponents[0]

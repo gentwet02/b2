@@ -71,9 +71,18 @@ export interface VersusOpponent {
     lastMet: string | null;
 }
 
+export interface RankBounds {
+    from: number;
+    to: number;
+    /** players in that season's leaderboard */
+    size: number;
+}
+
 export interface VersusSeasonRow {
     seasonId: number;
     name: string;
+    /** range mode: ranks counted that season */
+    bounds: RankBounds | null;
     /** opponents counted that season */
     group: number;
     record: Wld;
@@ -89,7 +98,8 @@ export interface Versus {
     seasonName: string;
     mode: VersusMode;
     vs: string | null;
-    top: number | null;
+    range: string | null;
+    band: boolean;
     missingSeasons: number[];
     minGames: { opponent: number; total: number };
     labels: HeadToHead['labels'];
@@ -128,6 +138,8 @@ export interface CompareSearch {
     season?: CompareSeason | undefined;
     /** one opponent */
     vs?: string | undefined;
-    /** or the top N of each season */
-    top?: number | undefined;
+    /** or a range of each season's leaderboard */
+    range?: string | undefined;
+    /** only the ranks between the previous range and this one */
+    band?: boolean | undefined;
 }

@@ -1,5 +1,5 @@
 import Dropdown from '@/components/dropdown/Dropdown';
-import { COMPARE_TOPS } from '@/config/compare';
+import { COMPARE_RANGES, previousRange } from '@/config/compare';
 import useOpponentsMet from '@/hooks/useOpponentsMet';
 import useSeasons from '@/hooks/useSeasons';
 import type { CompareSearch, CompareSeason } from '@/types/compare';
@@ -11,7 +11,8 @@ interface VersusControlsProps {
     userId: string;
     playerMode: boolean;
     vs: string | undefined;
-    top: number;
+    range: string;
+    band: boolean;
     season: CompareSeason | undefined;
     /** name of the current opponent when they aren't in the list (never met) */
     vsName?: string | undefined;
@@ -20,10 +21,13 @@ interface VersusControlsProps {
 }
 
 export default function VersusControls(props: VersusControlsProps) {
-    const { userId, playerMode, vs, top, season, vsName, onChange, onPlayerMode } = props;
+    const { userId, playerMode, vs, range, band, season, vsName, onChange, onPlayerMode } = props;
+
     const seasons = useSeasons();
     const met = useOpponentsMet(userId, season);
+
     const liveSeason = seasons.data?.liveSeason;
+    const previous = previousRange(range);
 
     const seasonOptions = [
         { value: 'all', label: 'All seasons' },
@@ -99,24 +103,29 @@ export default function VersusControls(props: VersusControlsProps) {
                     />
                 </div>
             ) : (
-                <div className='versus-controls__group'>
-                    <span className='versus-controls__label' id='versus-top'>
-                        Top
-                    </span>
-                    <div className='h2h-scope' role='group' aria-labelledby='versus-top'>
-                        {COMPARE_TOPS.map((n) => (
-                            <button
-                                key={n}
-                                type='button'
-                                className='h2h-scope__option'
-                                aria-pressed={top === n}
-                                onClick={() => onChange({ top: n })}
-                            >
-                                {n}
-                            </button>
-                        ))}
+                <>
+                    <div className='versus-controls__group'>
+                        <span className='versus-controls__label'>Range</span>
+                        <Dropdown
+                            className='versus-controls__range'
+                            variant='compact'
+                            options={COMPARE_RANGES}
+                            value={range}
+                            aria-label='Players compared'
+                            onSelect={(next) => onChange({ range: next })}
+                        />
                     </div>
-                </div>
+                    {previous && (
+                        <label className='versus-controls__band'>
+                            <input
+                                type='checkbox'
+                                checked={band}
+                                onChange={(event) => onChange({ band: event.target.checked })}
+                            />
+                            Leave out the {previous.label.replace('Top', 'top')}
+                        </label>
+                    )}
+                </>
             )}
 
             <div className='versus-controls__group'>

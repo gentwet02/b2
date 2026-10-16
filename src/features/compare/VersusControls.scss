@@ -28,6 +28,27 @@
         min-width: 11rem;
     }
 
+    &__range {
+        min-width: 11rem;
+    }
+
+    &__band {
+        display: flex;
+        align-items: center;
+        gap: 0.45rem;
+        min-height: 2.4rem;
+        font-size: 0.875rem;
+        font-weight: 600;
+        cursor: pointer;
+
+        input {
+            width: 1.1rem;
+            height: 1.1rem;
+            accent-color: colors.$bloon;
+            cursor: pointer;
+        }
+    }
+
     .dropdown--open {
         z-index: 30;
     }
