@@ -155,6 +155,11 @@
             color: colors.$bloon;
             background: color-mix(in srgb, colors.$bloon 10%, colors.$paper);
         }
+
+        &--neutral {
+            color: colors.$banana;
+            background: color-mix(in srgb, colors.$banana 10%, colors.$paper);
+        }
     }
 
     &__hero {
