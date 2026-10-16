@@ -10,7 +10,7 @@ export interface MatchPlayer {
     towertwo: string;
     towerthree: string;
     currentUser?: boolean;
-    result: MatchResult | string;
+    result: MatchResult;
     profileURL: string;
     /** Stored matches: the player's known real name, when there is one. */
     realName?: string;

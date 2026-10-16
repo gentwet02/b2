@@ -14,13 +14,16 @@
     border: 2px solid colors.$ink;
     border-radius: 0.75rem;
 
-    // seen from a profile: the edge on the player's side carries their result
     &--win {
         box-shadow: inset 5px 0 0 colors.$leaf;
     }
 
     &--lose {
         box-shadow: inset 5px 0 0 colors.$bloon;
+    }
+
+    &--neutral {
+        box-shadow: inset 5px 0 0 colors.$banana;
     }
 
     // ---------- center ----------

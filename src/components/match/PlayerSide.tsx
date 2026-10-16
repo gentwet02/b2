@@ -1,10 +1,10 @@
-import type { MatchPick, MatchPlayer, Outcome } from '@/types/match';
+import type { MatchPick, MatchPlayer, MatchResult, Outcome } from '@/types/match';
 import { extractUserId, formatHero, formatLabel } from '@/utils/format';
 import Pickable from './Pickable';
 import { Link } from '@tanstack/react-router';
 import { heroImage } from '@/utils/assetOverrides';
 
-const RESULT_TEXT: Record<string, string> = {
+const RESULT_TEXT: Record<MatchResult, string> = {
     win: 'Won',
     lose: 'Lost',
     draw: 'Draw',
@@ -54,18 +54,11 @@ export default function PlayerSide({
                     >
                         {player.realName || player.displayName}
                     </Link>
-                    {outcome === 'win' ? (
-                        <span className='match-card__result match-card__result--win'>
-                            <span aria-hidden='true'>★ </span>
-                            {player.result === 'win' ? 'Winner' : RESULT_TEXT[player.result]}
-                        </span>
-                    ) : (
-                        outcome === 'lose' && (
-                            <span className='match-card__result match-card__result--lose'>
-                                {RESULT_TEXT[player.result] ?? formatLabel(player.result)}
-                            </span>
-                        )
-                    )}
+
+                    <span className={`match-card__result match-card__result--${player.result}`}>
+                        {outcome === 'win' && <span aria-hidden='true'>★ </span>}
+                        {RESULT_TEXT[player.result]}
+                    </span>
                 </div>
                 {alias && <div className='match-card__alias'>{alias}</div>}
                 <div>

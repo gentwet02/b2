@@ -13,9 +13,16 @@ interface MatchCardProps {
 }
 
 function outcome(result: string): Outcome {
-    if (result === 'win' || result === 'opponentLobbyDC') return 'win';
-    if (result === 'lose' || result === 'lobbyDC') return 'lose';
-    return 'neutral';
+    switch (result) {
+        case 'win':
+        case 'opponentLobbyDC':
+            return 'win';
+        case 'lose':
+        case 'lobbyDC':
+            return 'lose';
+        default:
+            return 'neutral';
+    }
 }
 
 /** What the middle of the card says when nobody won. */
