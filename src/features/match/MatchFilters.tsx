@@ -121,7 +121,7 @@ export default function MatchFilters(props: MatchFiltersProps) {
                     <PlayerSearch
                         value={playerText}
                         onChange={onPlayerText}
-                        label='Player name or id'
+                        label='Player name, alias or id'
                         placeholder='Player name, alias or id'
                     />
                 )}
