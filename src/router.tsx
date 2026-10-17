@@ -113,6 +113,9 @@ const matchesRoute = createRoute({
             map: text(search.map),
             sort: MATCH_SORTS.includes(sort) && sort !== 'newest' ? sort : undefined,
             sameSide: search.sameSide === true || search.sameSide === 'true' ? true : undefined,
+            player2: text(search.player2, 64),
+            heroes2: text(search.heroes2, 60),
+            towers2: text(search.towers2, 100),
         };
     },
     component: MatchesHistory,

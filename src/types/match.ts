@@ -53,8 +53,14 @@ export interface MatchesQuery {
     /** map key, see MatchFilterOptions.maps */
     map?: string | undefined;
     sort?: MatchSort | undefined;
-    /** player, hero and towers on the same side */
+    /**
+     * "Same player": filter each side separately. player, heroes (≤ 1) and towers (≤ 3)
+     * then describe one side, player2, heroes2 and towers2 the other; either may be empty.
+     */
     sameSide?: boolean | undefined;
+    player2?: string | undefined;
+    heroes2?: string | undefined;
+    towers2?: string | undefined;
 }
 
 /** One page of GET /matches-history (read from the database). */
@@ -86,15 +92,21 @@ export interface MatchesResponse {
     error: string | null;
 }
 
-/** GET /matches-history/filters: what the season's stored matches contain. */
-export interface MatchFilterOptions {
-    seasonId: number;
+/** Heroes and towers available for one side (or both sides when not split). */
+export interface SideFilterOptions {
     heroes: {
         base: string;
         count: number;
         variants: { hero: string; count: number; portrait?: string }[];
     }[];
     towers: { tower: string; count: number }[];
+}
+
+/** GET /matches-history/filters: what the season's stored matches contain. */
+export interface MatchFilterOptions extends SideFilterOptions {
+    seasonId: number;
+    /** same player mode: the options of side 1 and side 2 */
+    sides?: [SideFilterOptions, SideFilterOptions];
     maps: { key: string; map: string; count: number }[];
     sorts: MatchSort[];
     maxHeroes: number;

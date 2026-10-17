@@ -20,6 +20,22 @@ import { useEffect, useState } from 'react';
 
 const routeApi = getRouteApi('/matches-history');
 
+/** A name box that updates its URL param once typing pauses, and follows the URL. */
+function useParamText(value: string | undefined, set: (value: string | undefined) => void) {
+    const [text, setText] = useState(value ?? '');
+    const debounced = useDebouncedValue(text.trim(), 300);
+    useEffect(() => {
+        if (debounced !== (value ?? '')) set(debounced || undefined);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [debounced]);
+    useEffect(() => {
+        // the URL changed by itself (Back, Clear filters): show it in the box
+        if ((value ?? '') !== debounced) setText(value ?? '');
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [value]);
+    return [text, setText] as const;
+}
+
 export default function MatchesHistory() {
     const query = routeApi.useSearch();
     const navigate = routeApi.useNavigate();
@@ -27,18 +43,9 @@ export default function MatchesHistory() {
     const setQuery = (patch: Partial<MatchesQuery>) =>
         navigate({ search: (prev) => ({ ...prev, ...patch }), replace: true });
 
-    // the name box updates the URL once typing pauses
-    const [text, setText] = useState(query.player ?? '');
-    const debounced = useDebouncedValue(text.trim(), 300);
-    useEffect(() => {
-        if (debounced !== (query.player ?? '')) setQuery({ player: debounced || undefined });
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [debounced]);
-    useEffect(() => {
-        // the URL changed by itself (Back, Clear filters): show it in the box
-        if ((query.player ?? '') !== debounced) setText(query.player ?? '');
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [query.player]);
+    const [text, setText] = useParamText(query.player, (player) => setQuery({ player }));
+    // same player mode: the other side's name
+    const [text2, setText2] = useParamText(query.player2, (player2) => setQuery({ player2 }));
 
     const seasons = useSeasons();
     const filters = useMatchFilters(query);
@@ -58,24 +65,47 @@ export default function MatchesHistory() {
     const page = first?.matches;
     const crawl = first?.crawl ?? null;
     const matches = data?.pages.flatMap((p) => p.matches.items) ?? [];
-    const filtering = !!(query.player || query.heroes || query.towers || query.map);
+    const filtering = !!(
+        query.player ||
+        query.heroes ||
+        query.towers ||
+        query.map ||
+        (query.sameSide && (query.player2 || query.heroes2 || query.towers2))
+    );
     const seasonId = page?.seasonId ?? query.season ?? seasons.data?.liveSeason;
     const options = filters.data;
+
+    // a hero clicked on a card, as a filter item: any variant of its base
+    const heroItem = (hero: string) =>
+        options?.heroes.find((h) => h.variants.some((v) => v.hero === hero))?.base ??
+        (hero.includes('_') ? `${hero.split('_')[0]}:${hero}` : hero);
 
     // clicking a hero, tower or map on a card adds it to the filters
     const pick = ({ kind, value }: MatchPick) => {
         if (kind === 'map') {
             setQuery({ map: mapKey(value) });
+        } else if (query.sameSide) {
+            // same player mode: on the first side with room for it
+            const key = kind === 'tower' ? 'towers' : 'heroes';
+            const max = kind === 'tower' ? 3 : 1;
+            const item = kind === 'tower' ? value : heroItem(value);
+            const same = (a: string) =>
+                kind === 'tower' ? a === item : parseHero(a).base === parseHero(item).base;
+            for (const side of [key, `${key}2`] as const) {
+                const list = splitList(query[side]);
+                if (list.some(same)) return;
+                if (list.length < max) {
+                    setQuery({ [side]: joinList([...list, item]) });
+                    break;
+                }
+            }
         } else if (kind === 'tower') {
             const towers = splitList(query.towers);
             if (towers.includes(value) || towers.length >= (options?.maxTowers ?? 6)) return;
             setQuery({ towers: joinList([...towers, value]) });
         } else {
-            const base = options?.heroes.find((h) =>
-                h.variants.some((v) => v.hero === value),
-            )?.base;
             const heroes = splitList(query.heroes);
-            const item = base ?? (value.includes('_') ? `${value.split('_')[0]}:${value}` : value);
+            const item = heroItem(value);
             const itemBase = parseHero(item).base;
             if (
                 heroes.some((h) => parseHero(h).base === itemBase) ||
@@ -89,12 +119,16 @@ export default function MatchesHistory() {
 
     const clearFilters = () => {
         setText('');
+        setText2('');
         setQuery({
             player: undefined,
             heroes: undefined,
             towers: undefined,
             map: undefined,
             sameSide: undefined,
+            player2: undefined,
+            heroes2: undefined,
+            towers2: undefined,
         });
     };
 
@@ -122,6 +156,8 @@ export default function MatchesHistory() {
                 seasonId={seasonId}
                 playerText={text}
                 onPlayerText={setText}
+                player2Text={text2}
+                onPlayer2Text={setText2}
             />
 
             <div className='matches__summary'>
