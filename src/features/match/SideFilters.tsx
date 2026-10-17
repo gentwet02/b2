@@ -26,7 +26,7 @@ export default function SideFilters(props: SideFiltersProps) {
                 value={playerText}
                 onChange={onPlayerText}
                 label={`${title} name, alias or id`}
-                placeholder='Name, alias or alias'
+                placeholder='Name, alias or id'
             />
             <div className='match-filters__side-group'>
                 <span className='match-filters__label'>Hero</span>
