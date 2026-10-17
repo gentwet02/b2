@@ -73,7 +73,7 @@ const leaderboardRoute = createRoute({
         const min = Number(search.min);
         const q =
             typeof search.q === 'string' || typeof search.q === 'number'
-                ? String(search.q).slice(0, 40)
+                ? String(search.q).slice(0, 64)
                 : '';
         return {
             page: Number.isInteger(page) && page > 1 ? page : undefined,
@@ -107,7 +107,7 @@ const matchesRoute = createRoute({
                 search.season != null && Number.isInteger(season) && season >= 0
                     ? season
                     : undefined,
-            player: text(search.player),
+            player: text(search.player, 64),
             heroes: text(search.heroes, 120),
             towers: text(search.towers, 200),
             map: text(search.map),
