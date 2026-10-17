@@ -1,6 +1,6 @@
 export interface LeaderboardPlayer {
     id: string;
-    realName?: string;
+    alias?: string;
     name: string;
     score: number;
     currentlyInHoM: boolean;

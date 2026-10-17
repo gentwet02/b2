@@ -15,7 +15,7 @@ interface OpponentSelectProps {
 }
 
 const optionLabel = (p: RankedPlayer) =>
-    `#${p.rank} ${p.realName || p.name}${p.realName && p.realName !== p.name ? ` (${p.name})` : ''}`;
+    `#${p.rank} ${p.alias || p.name}${p.alias && p.alias !== p.name ? ` (${p.name})` : ''}`;
 
 /** One opponent slot: a searchable select, and a way back to the default player once replaced. */
 export default function OpponentSelect(props: OpponentSelectProps) {

@@ -13,9 +13,9 @@ export const formatRecord = ([w, l, d]: Wld) => (d ? `${w}–${l}–${d}` : `${w
 export const recordTitle = ([w, l, d]: Wld) => `${w} won, ${l} lost, ${d} drawn`;
 
 export const playerLabel = (
-    p: { realName?: string | null | undefined; name?: string | null | undefined },
+    p: { alias?: string | null | undefined; name?: string | null | undefined },
     fallback = 'Unknown player',
-) => p.realName || p.name || fallback;
+) => p.alias || p.name || fallback;
 
 /** "Quincy|Alchemist,Druid,Ninja" → { hero: "Quincy", towers: [...] } */
 export function parseLoadout(key: string) {

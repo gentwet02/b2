@@ -28,7 +28,7 @@ export function ProfileHeroPlaceholder({
 
 interface ProfileHeroProps {
     profile: UserProfile;
-    realName?: string | null | undefined;
+    alias?: string | null | undefined;
     actions?: ReactNode;
     /** e.g. "Updated 3 minutes ago" */
     note?: string | null;
@@ -68,9 +68,9 @@ function readBadges(raw: unknown[] | undefined): Badge[] {
     });
 }
 
-export default function ProfileHero({ profile, realName, actions, note }: ProfileHeroProps) {
+export default function ProfileHero({ profile, alias, actions, note }: ProfileHeroProps) {
     const badges = readBadges(profile.badges_equipped);
-    const knownAs = realName && realName !== profile.displayName ? realName : null;
+    const knownAs = alias && alias !== profile.displayName ? alias : null;
     const title =
         profile.equippedTitle && profile.equippedTitle !== 'None' ? profile.equippedTitle : null;
 

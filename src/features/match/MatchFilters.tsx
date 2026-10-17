@@ -91,12 +91,12 @@ export default function MatchFilters(props: MatchFiltersProps) {
         <section className='match-filters' aria-label='Filters'>
             <div className='match-filters__row'>
                 <label className='match-filters__search'>
-                    <span className='visually-hidden'>Player name</span>
+                    <span className='visually-hidden'>Player name or id</span>
                     <SearchIcon className='match-filters__search-icon' aria-hidden='true' />
                     <input
                         type='search'
                         value={playerText}
-                        placeholder='Player name or real name'
+                        placeholder='Player name, alias or id'
                         onChange={(e) => onPlayerText(e.target.value)}
                     />
                 </label>

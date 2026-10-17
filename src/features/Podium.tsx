@@ -31,12 +31,10 @@ export default function Podium({
                                 <PlayerAvatar
                                     className='podium__avatar'
                                     src={avatars[player.id]}
-                                    name={player.realName || player.name}
+                                    name={player.alias || player.name}
                                     size={72}
                                 />
-                                <span className='podium__name'>
-                                    {player.realName || player.name}
-                                </span>
+                                <span className='podium__name'>{player.alias || player.name}</span>
                                 <span className='podium__score'>{formatNumber(player.score)}</span>
                             </Link>
                             <div className='podium__step' aria-hidden='true'>

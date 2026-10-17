@@ -12,8 +12,8 @@ export interface MatchPlayer {
     currentUser?: boolean;
     result: MatchResult;
     profileURL: string;
-    /** Stored matches: the player's known real name, when there is one. */
-    realName?: string;
+    /** Stored matches: the player's known alias, when there is one. */
+    alias?: string;
 }
 
 export interface Match {

@@ -34,7 +34,7 @@ function useCachedName(userId: string) {
 export default function UserProfile({ userId }: UserProfileProps) {
     const queryClient = useQueryClient();
     const { data, isLoading, error, refetch } = useProfile(userId);
-    const { data: realName } = usePlayerName(userId);
+    const { data: alias } = usePlayerName(userId);
     const cachedName = useCachedName(userId);
     const { data: ranks } = useRankHistory(userId);
     const rankRows = [
@@ -76,7 +76,7 @@ export default function UserProfile({ userId }: UserProfileProps) {
             {profile ? (
                 <ProfileHero
                     profile={profile}
-                    realName={realName}
+                    alias={alias}
                     note={data?.fetchedAt ? `Updated ${timeAgo(data.fetchedAt)}` : null}
                     actions={
                         <button

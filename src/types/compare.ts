@@ -31,7 +31,7 @@ export interface H2hSummary {
 export interface H2hOpponent extends H2hSummary {
     userId: string;
     name: string | null;
-    realName: string | null;
+    alias: string | null;
     /** rank in the season's leaderboard (live one for "all seasons") */
     rank: number | null;
 }
@@ -49,7 +49,7 @@ export interface HeadToHead {
         heroes: Record<string, { hero: string; portrait: string | null }>;
     };
     name: string | null;
-    realName: string | null;
+    alias: string | null;
     /** against every opponent together */
     total: H2hSummary;
     opponents: H2hOpponent[];
@@ -62,7 +62,7 @@ export type VersusMode = 'player' | 'top';
 export interface VersusOpponent {
     userId: string;
     name: string | null;
-    realName: string | null;
+    alias: string | null;
     /** best rank among the seasons counted */
     rank: number | null;
     /** seasons the player was in the group */
@@ -93,7 +93,7 @@ export interface VersusSeasonRow {
 export interface Versus {
     userId: string;
     name: string | null;
-    realName: string | null;
+    alias: string | null;
     season: CompareSeason;
     seasonName: string;
     mode: VersusMode;
@@ -123,7 +123,7 @@ export interface Versus {
 export interface MetOpponent {
     userId: string;
     name: string | null;
-    realName: string | null;
+    alias: string | null;
     record: Wld;
 }
 

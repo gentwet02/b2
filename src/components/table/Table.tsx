@@ -19,6 +19,7 @@ interface TableProps {
     disablePageSize?: boolean;
     disableSorting?: boolean;
     searchText?: string[] | undefined;
+    searchExact?: (string | undefined)[] | undefined;
     state?: TableStateInput | undefined;
     onStateChange?: ((next: TableState, cause: TableStateCause) => void) | undefined;
 }
@@ -57,6 +58,7 @@ export default function Table(props: TableProps) {
         disablePageSize = false,
         disableSorting = false,
         searchText,
+        searchExact,
         state,
         onStateChange,
     } = props;
@@ -87,10 +89,12 @@ export default function Table(props: TableProps) {
     const filteredAndSortedData = useMemo(() => {
         const term = searchTerm.trim().toLowerCase();
         const processedData = term
-            ? data.filter((item, i) =>
-                  (searchText?.[i] ?? Object.values(item).map(nodeText).join(' '))
-                      .toLowerCase()
-                      .includes(term),
+            ? data.filter(
+                  (item, i) =>
+                      searchExact?.[i]?.toLowerCase() === term ||
+                      (searchText?.[i] ?? Object.values(item).map(nodeText).join(' '))
+                          .toLowerCase()
+                          .includes(term),
               )
             : [...data];
 
@@ -107,7 +111,7 @@ export default function Table(props: TableProps) {
         }
 
         return processedData;
-    }, [data, searchText, searchTerm, sortConfig]);
+    }, [data, searchText, searchExact, searchTerm, sortConfig]);
 
     const totalPages = Math.max(1, Math.ceil(filteredAndSortedData.length / pageSize));
     // keep the page in range when the data shrinks (search, page size, refetch)

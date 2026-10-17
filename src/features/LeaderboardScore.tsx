@@ -24,20 +24,20 @@ export function PlayerName(props: PlayerNameProps) {
     const { player, avatar, avatarReady = true } = props;
 
     const src = usePlayerAvatar(player.id, avatar, avatarReady);
-    const alias = player.realName && player.realName !== player.name ? player.name : null;
+    const alias = player.alias && player.alias !== player.name ? player.name : null;
 
     return (
         <span className='lb-player'>
             <PlayerAvatar
                 className='lb-player__avatar'
                 src={src}
-                name={player.realName || player.name}
+                name={player.alias || player.name}
                 size={36}
                 lazy
             />
             <span className='lb-player__names'>
                 <Link to='/user/$userId' params={{ userId: player.id }} className='lb-player__name'>
-                    {player.realName || player.name}
+                    {player.alias || player.name}
                 </Link>
                 {alias && <span className='lb-player__alias'>{alias}</span>}
             </span>
@@ -64,7 +64,7 @@ interface Line {
     rate: number | null;
 }
 
-const displayName = (p: LeaderboardPlayer) => p.realName || p.name;
+const displayName = (p: LeaderboardPlayer) => p.alias || p.name;
 
 function compare(sort: LeaderboardView['sort'], a: Line, b: Line) {
     const byRank = a.player.rank - b.player.rank;
@@ -163,9 +163,10 @@ export default function LeaderboardScore(props: LeaderboardScoreProps) {
     );
 
     const searchText = useMemo(
-        () => lines.map(({ player }) => [player.realName, player.name].filter(Boolean).join(' ')),
+        () => lines.map(({ player }) => [player.alias, player.name].filter(Boolean).join(' ')),
         [lines],
     );
+    const searchIds = useMemo(() => lines.map(({ player }) => player.id), [lines]);
 
     if (isLoading) {
         return (
@@ -205,8 +206,9 @@ export default function LeaderboardScore(props: LeaderboardScoreProps) {
                 itemsPerPage={range ? Math.max(1, rows.length) : itemsPerPage}
                 pageSizeOptions={[10, 25, 50, 100]}
                 searchPlaceHolder='Find a player'
-                searchAriaLabel='Find a player by name'
+                searchAriaLabel='Find a player by name or full id'
                 searchText={searchText}
+                searchExact={searchIds}
                 state={range ? undefined : tableState}
                 onStateChange={range ? undefined : onTableStateChange}
             />

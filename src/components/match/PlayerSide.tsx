@@ -26,8 +26,7 @@ export default function PlayerSide({
 }) {
     const userId = extractUserId(player.profileURL);
     const towers = [player.towerone, player.towertwo, player.towerthree];
-    const alias =
-        player.realName && player.realName !== player.displayName ? player.displayName : null;
+    const alias = player.alias && player.alias !== player.displayName ? player.displayName : null;
     const portrait = heroImage(player.hero, player.heroPortrait);
 
     return (
@@ -52,7 +51,7 @@ export default function PlayerSide({
                         className='match-card__name'
                         title={`Open ${player.displayName}'s profile`}
                     >
-                        {player.realName || player.displayName}
+                        {player.alias || player.displayName}
                     </Link>
 
                     <span className={`match-card__result match-card__result--${player.result}`}>
