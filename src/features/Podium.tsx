@@ -1,6 +1,6 @@
 import PlayerAvatar from '@/components/avatar/PlayerAvatar';
 import usePlayerAvatars from '@/hooks/usePlayerAvatars';
-import { formatNumber } from '@/utils/format';
+import { formatNumber, getAlias } from '@/utils/format';
 import { Link } from '@tanstack/react-router';
 import type { RankedPlayer } from './LeaderboardScore';
 
@@ -31,10 +31,11 @@ export default function Podium({
                                 <PlayerAvatar
                                     className='podium__avatar'
                                     src={avatars[player.id]}
-                                    name={player.alias || player.name}
+                                    name={player.name}
                                     size={72}
                                 />
-                                <span className='podium__name'>{player.alias || player.name}</span>
+                                <span className='podium__name'>{player.name}</span>
+                                <span className='podium__alias'>{getAlias(player)}</span>
                                 <span className='podium__score'>{formatNumber(player.score)}</span>
                             </Link>
                             <div className='podium__step' aria-hidden='true'>

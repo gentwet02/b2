@@ -18,7 +18,7 @@ import {
     recordTitle,
     seasonTitle,
 } from '@/utils/compare';
-import { formatNumber, timeAgo } from '@/utils/format';
+import { formatNumber, getAlias, timeAgo } from '@/utils/format';
 import { getRouteApi, Link } from '@tanstack/react-router';
 import { useState } from 'react';
 
@@ -147,7 +147,8 @@ function OpponentsSection({ data, search }: { data: Versus; search: CompareSearc
                                 className='cmp-player__name'
                                 title={playerLabel(o)}
                             >
-                                {playerLabel(o)}
+                                {o.name}
+                                {getAlias(o) && `(${getAlias(o)})`}
                             </Link>
                         </span>
                     ),
@@ -386,7 +387,12 @@ export default function Compare() {
                     season={search.season}
                     vsName={
                         shown?.mode === 'player' && shown.opponents[0]
-                            ? playerLabel(shown.opponents[0])
+                            ? shown.opponents[0].name
+                            : undefined
+                    }
+                    vsAlias={
+                        shown?.mode === 'player' && shown.opponents[0]
+                            ? getAlias(shown.opponents[0])
                             : undefined
                     }
                     onChange={update}

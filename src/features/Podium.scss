@@ -68,6 +68,13 @@
         @include transition((color, text-decoration-color), $duration-fast);
     }
 
+    &__alias {
+        font-size: var(--fluid-13-17);
+        font-weight: 500;
+        color: colors.$ink-soft;
+        margin-block: calc($space-2xs * -1) $space-4xs;
+    }
+
     &__score {
         @include display(var(--fluid-18-24));
     }

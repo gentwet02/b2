@@ -2,9 +2,9 @@ import Dropdown from '@/components/dropdown/Dropdown';
 import { COMPARE_RANGES, previousRange } from '@/config/compare';
 import useOpponentsMet from '@/hooks/useOpponentsMet';
 import useSeasons from '@/hooks/useSeasons';
-import type { CompareSearch, CompareSeason } from '@/types/compare';
-import { formatRecord, gamesOf, playerLabel } from '@/utils/compare';
-import { seasonLabel } from '@/utils/format';
+import type { CompareSearch, CompareSeason, MetOpponent } from '@/types/compare';
+import { formatRecord, gamesOf } from '@/utils/compare';
+import { getAlias, seasonLabel } from '@/utils/format';
 import { useMemo } from 'react';
 
 interface VersusControlsProps {
@@ -15,13 +15,15 @@ interface VersusControlsProps {
     band: boolean;
     season: CompareSeason | undefined;
     /** name of the current opponent when they aren't in the list (never met) */
-    vsName?: string | undefined;
+    vsName?: string | null | undefined;
+    vsAlias?: string | null | undefined;
     onChange: (next: CompareSearch) => void;
     onPlayerMode: () => void;
 }
 
 export default function VersusControls(props: VersusControlsProps) {
-    const { userId, playerMode, vs, range, band, season, vsName, onChange, onPlayerMode } = props;
+    const { userId, playerMode, vs, range, band, season, vsName, vsAlias, onChange, onPlayerMode } =
+        props;
 
     const seasons = useSeasons();
     const met = useOpponentsMet(userId, season);
@@ -43,16 +45,18 @@ export default function VersusControls(props: VersusControlsProps) {
                 value === 'all' ? 'all' : Number(value) === liveSeason ? undefined : Number(value),
         });
 
+    const vsLabel = `${vsName}${vsAlias ? ` (${vsAlias})` : ''}`;
+    const playerLabel = (o: MetOpponent) => `${o.name} ${getAlias(o) ? `(${getAlias(o)})` : ''}`;
     const playerOptions = useMemo(() => {
         const list = (met.data ?? []).map((o) => ({
             value: o.userId,
             label: `${playerLabel(o)} · ${gamesOf(o.record)} ${gamesOf(o.record) === 1 ? 'game' : 'games'} · ${formatRecord(o.record)}`,
         }));
         if (vs && !list.some((o) => o.value === vs)) {
-            list.unshift({ value: vs, label: `${vsName ?? 'Unknown player'} · never met` });
+            list.unshift({ value: vs, label: `${vsLabel ?? 'Unknown player'} · never met` });
         }
         return list;
-    }, [met.data, vs, vsName]);
+    }, [met.data, vs, vsLabel]);
 
     return (
         <div className='versus-controls'>

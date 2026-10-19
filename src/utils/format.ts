@@ -1,3 +1,7 @@
+import type { RankedPlayer } from '@/features/LeaderboardScore';
+import type { MetOpponent, VersusOpponent } from '@/types/compare';
+import type { LeaderboardPlayer } from '@/types/leaderboard';
+import type { MatchPlayer } from '@/types/match';
 import type { HeroPick } from '@/types/tower';
 
 const PROFILE_PREFIX = 'https://data.ninjakiwi.com/battles2/users/';
@@ -90,3 +94,15 @@ export function mapKey(map: string): string {
 /** Comma lists in the URL ("Druid,Alchemist") ⇄ arrays. */
 export const splitList = (value?: string) => (value ? value.split(',').filter(Boolean) : []);
 export const joinList = (items: string[]) => (items.length ? items.join(',') : undefined);
+
+function cleanStr(str: string) {
+    return str.replace(' ', '').toLowerCase();
+}
+
+export function getAlias(
+    player: MatchPlayer | LeaderboardPlayer | RankedPlayer | VersusOpponent | MetOpponent,
+): string | null {
+    const name = 'name' in player ? player.name : player.displayName;
+    if (!name) return null;
+    return player.alias && !cleanStr(player.alias).match(cleanStr(name)) ? player.alias : null;
+}

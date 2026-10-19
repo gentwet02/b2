@@ -1,5 +1,5 @@
 import type { MatchPick, MatchPlayer, MatchResult, Outcome } from '@/types/match';
-import { extractUserId, formatHero, formatLabel } from '@/utils/format';
+import { extractUserId, formatHero, formatLabel, getAlias } from '@/utils/format';
 import Pickable from './Pickable';
 import { Link } from '@tanstack/react-router';
 import { heroImage } from '@/utils/assetOverrides';
@@ -26,7 +26,7 @@ export default function PlayerSide({
 }) {
     const userId = extractUserId(player.profileURL);
     const towers = [player.towerone, player.towertwo, player.towerthree];
-    const alias = player.alias && player.alias !== player.displayName ? player.displayName : null;
+    const alias = getAlias(player);
     const portrait = heroImage(player.hero, player.heroPortrait);
 
     return (
@@ -51,7 +51,7 @@ export default function PlayerSide({
                         className='match-card__name'
                         title={`Open ${player.displayName}'s profile`}
                     >
-                        {player.alias || player.displayName}
+                        {player.displayName}
                     </Link>
 
                     <span className={`match-card__result match-card__result--${player.result}`}>

@@ -7,7 +7,7 @@ import usePlayerAvatars from '@/hooks/usePlayerAvatars';
 import { useRankedPlayers } from '@/hooks/useRankedPlayers';
 import type { LeaderboardPlayer, LeaderboardView } from '@/types/leaderboard';
 import type { Row, TableState, TableStateCause, TableStateInput } from '@/types/table';
-import { formatNumber } from '@/utils/format';
+import { formatNumber, getAlias } from '@/utils/format';
 import { Link } from '@tanstack/react-router';
 import { useMemo } from 'react';
 
@@ -24,20 +24,20 @@ export function PlayerName(props: PlayerNameProps) {
     const { player, avatar, avatarReady = true } = props;
 
     const src = usePlayerAvatar(player.id, avatar, avatarReady);
-    const alias = player.alias && player.alias !== player.name ? player.name : null;
+    const alias = getAlias(player);
 
     return (
         <span className='lb-player'>
             <PlayerAvatar
                 className='lb-player__avatar'
                 src={src}
-                name={player.alias || player.name}
+                name={player.name}
                 size={36}
                 lazy
             />
             <span className='lb-player__names'>
                 <Link to='/user/$userId' params={{ userId: player.id }} className='lb-player__name'>
-                    {player.alias || player.name}
+                    {player.name}
                 </Link>
                 {alias && <span className='lb-player__alias'>{alias}</span>}
             </span>

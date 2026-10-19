@@ -1,6 +1,7 @@
 import Dropdown from '@/components/dropdown/Dropdown';
 import type { RankedPlayer } from '@/features/LeaderboardScore';
 import type { OpponentSlot } from '@/hooks/useOpponentSlots';
+import { getAlias } from '@/utils/format';
 import { useMemo } from 'react';
 
 interface OpponentSelectProps {
@@ -15,7 +16,7 @@ interface OpponentSelectProps {
 }
 
 const optionLabel = (p: RankedPlayer) =>
-    `#${p.rank} ${p.alias || p.name}${p.alias && p.alias !== p.name ? ` (${p.name})` : ''}`;
+    `#${p.rank} ${p.name}${getAlias(p) ? ` (${p.alias})` : ''}`;
 
 /** One opponent slot: a searchable select, and a way back to the default player once replaced. */
 export default function OpponentSelect(props: OpponentSelectProps) {

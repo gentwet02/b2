@@ -14,6 +14,7 @@ $space-scale: (
         0.75,
         0.5,
         0.25,
+        0.125,
     ),
     'customSizes': (
         's-l',
@@ -26,6 +27,7 @@ $space-scale: (
     'relativeTo': 'viewport-width',
 );
 
+$space-4xs: var(--space-4xs); // 2px
 $space-3xs: var(--space-3xs); // 4px
 $space-2xs: var(--space-2xs); // 7 → 8px
 $space-xs: var(--space-xs); // 11 → 12px
