@@ -1,10 +1,10 @@
-@use '@/styles/colors';
-@use '@/styles/mixins' as *;
+@use '@/styles/utils/colors';
+@use '@/styles/utils' as *;
 
 .versus {
     display: grid;
-    gap: 2rem;
-    transition: opacity 120ms ease-out;
+    gap: $space-l;
+    @include transition(opacity, $duration-fast);
 
     &--updating {
         opacity: 0.6;
@@ -15,22 +15,26 @@
     display: flex;
     flex-wrap: wrap;
     align-items: center;
-    gap: 0.5rem;
+    gap: $space-2xs;
 
     &__vs {
         font-size: 0.6em;
         color: colors.$ink-soft;
-        margin-inline: 0.25rem;
+        margin-inline: $space-3xs;
     }
 
-    a:hover {
-        color: colors.$bloon;
+    a {
+        @include transition(color, $duration-fast);
+
+        @include when-hover {
+            color: colors.$bloon;
+        }
     }
 }
 
 .versus-note {
     max-width: none;
-    font-size: 0.875rem;
+    font-size: $text-md;
     color: colors.$ink-soft;
 }
 
@@ -38,34 +42,27 @@
 .versus-pair {
     display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 1.5rem;
     align-items: start;
+    gap: $space-m;
 
-    @media (max-width: 1000px) {
+    @include breakpoint-down(big) {
         grid-template-columns: 1fr;
     }
 }
 
 .versus-drill {
-    font-size: 0.8125rem;
+    font-size: $text-sm;
     font-weight: 600;
     color: colors.$ink-soft;
+    @include transition(color, $duration-fast);
 
-    &:hover {
+    @include when-hover {
         color: colors.$bloon;
     }
 }
 
-.versus-link-button {
-    background: none;
-    border: none;
-    padding: 0;
-    font: inherit;
-    font-weight: 600;
-    cursor: pointer;
-}
-
 .versus-prompt {
     text-align: center;
-    padding: 2rem 0;
+    padding: $space-l 0;
+    @include enter($anim-fade-up);
 }

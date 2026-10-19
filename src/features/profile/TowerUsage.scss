@@ -1,0 +1,50 @@
+@use '@/styles/utils/colors';
+@use '@/styles/utils' as *;
+
+.tower-usage {
+    display: grid;
+    gap: $space-xs;
+
+    &__item {
+        display: grid;
+        grid-template-columns: 1fr auto;
+        gap: $space-3xs $space-xs;
+    }
+
+    &__name {
+        font-weight: 600;
+    }
+
+    &__count {
+        color: colors.$ink-soft;
+        font-size: $text-md;
+    }
+
+    &__track {
+        grid-column: 1 / -1;
+        height: 0.55rem;
+        background: colors.$paper-dim;
+        border-radius: 999px;
+        overflow: hidden;
+    }
+
+    &__fill {
+        display: block;
+        height: 100%;
+        background: colors.$bloon;
+        border-radius: inherit;
+        @include grow-bar(150ms);
+    }
+
+    @for $i from 1 through 8 {
+        &__item:nth-child(#{$i}) &__fill {
+            @include when-motion-ok {
+                animation-delay: 150ms + 50ms * ($i - 1);
+            }
+        }
+    }
+
+    &__item:first-child &__fill {
+        background: colors.$ink;
+    }
+}

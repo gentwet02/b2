@@ -1,0 +1,28 @@
+@use '../utils/colors';
+@use '../utils' as *;
+
+@mixin button($bg: colors.$bloon, $fg: #fff) {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    min-height: 2.5rem;
+    padding: 0.55rem 1.1rem;
+    font-family: $font-display;
+    font-size: 1rem;
+    letter-spacing: 0.02em;
+    color: $fg;
+    background: $bg;
+    border: $border-width solid colors.$ink;
+    border-radius: $radius-control;
+    @include pressable($shadow-md);
+
+    &:disabled {
+        opacity: 0.55;
+        cursor: not-allowed;
+    }
+
+    @include breakpoint-down(small) {
+        box-shadow: $shadow-sm $shadow-sm 0 colors.$ink;
+    }
+}

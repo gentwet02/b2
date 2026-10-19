@@ -65,6 +65,10 @@ export default function Dropdown<V extends DropdownValue>(props: DropdownProps<V
     const [isFiltering, setIsFiltering] = useState(false);
     const [activeIndex, setActiveIndex] = useState(-1);
     const [spacerTop, setSpacerTop] = useState(0);
+    // after closing, the list stays rendered with its last options until its exit animation ends
+    const [exitItems, setExitItems] = useState<DropdownItem<V>[] | null>(null);
+    const openItemsRef = useRef<DropdownItem<V>[]>([]);
+    const wasOpenRef = useRef(false);
 
     const items = useMemo(
         () =>
@@ -85,6 +89,18 @@ export default function Dropdown<V extends DropdownValue>(props: DropdownProps<V
     }, [items, query, isFiltering]);
 
     const activeItem: DropdownItem<V> | undefined = isOpen ? filteredItems[activeIndex] : undefined;
+    const isClosing = !isOpen && exitItems !== null;
+    const shownItems = isOpen ? filteredItems : (exitItems ?? []);
+
+    useLayoutEffect(() => {
+        if (isOpen) openItemsRef.current = filteredItems;
+    }, [isOpen, filteredItems]);
+
+    useLayoutEffect(() => {
+        if (wasOpenRef.current && !isOpen) setExitItems(openItemsRef.current);
+        if (isOpen) setExitItems(null);
+        wasOpenRef.current = isOpen;
+    }, [isOpen]);
 
     const close = useCallback(() => {
         setIsOpen(false);
@@ -234,11 +250,14 @@ export default function Dropdown<V extends DropdownValue>(props: DropdownProps<V
                 ref={listRef}
                 id={listboxId}
                 role='listbox'
-                className='dropdown__list'
-                hidden={!isOpen}
+                className={isClosing ? 'dropdown__list dropdown__list--closing' : 'dropdown__list'}
+                hidden={!isOpen && !isClosing}
                 onClick={(event) => event.preventDefault()}
+                onAnimationEnd={(event) => {
+                    if (isClosing && event.target === event.currentTarget) setExitItems(null);
+                }}
             >
-                {filteredItems.length === 0 ? (
+                {isOpen && filteredItems.length === 0 ? (
                     <li
                         className='dropdown__empty'
                         role='option'
@@ -248,8 +267,7 @@ export default function Dropdown<V extends DropdownValue>(props: DropdownProps<V
                         {noResultsText}
                     </li>
                 ) : (
-                    isOpen &&
-                    filteredItems.map((item, index) => {
+                    shownItems.map((item, index) => {
                         const isActive = index === activeIndex;
                         const isCurrent = item.value === value;
                         return (

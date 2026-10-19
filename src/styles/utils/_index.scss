@@ -1,0 +1,12 @@
+// colors is not forwarded: use it namespaced (@use '@/styles/utils/colors')
+// so its helpers don't shadow Sass built-ins.
+@forward './variables';
+@forward './typography';
+@forward './spacing';
+@forward './breakpoints';
+@forward './capabilities';
+@forward './layout';
+@forward './transition';
+@forward './animation';
+@forward './mixins';
+@forward './placeholders';

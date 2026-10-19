@@ -1,0 +1,43 @@
+$font-display: 'Lilita One', 'Arial Rounded MT Bold', 'Trebuchet MS', sans-serif;
+$font-body:
+    'Rubik',
+    system-ui,
+    -apple-system,
+    'Segoe UI',
+    sans-serif;
+
+// small text stays fixed for legibility; from `lg` up sizes are fluid (px at 320 → 1440)
+$text-2xs: 0.6875rem;
+$text-xs: 0.75rem;
+$text-sm: 0.8125rem;
+$text-md: 0.875rem;
+$text-base: 1rem;
+
+$fluid-text-scale: (
+    'lg': (17, 18),
+    'xl': (18, 20),
+    '2xl': (20, 24),
+    '3xl': (22, 26),
+    '4xl': (28, 40),
+    '5xl': (32, 48),
+    'display': (32, 64),
+);
+
+$text-lg: var(--text-lg);
+$text-xl: var(--text-xl);
+$text-2xl: var(--text-2xl);
+$text-3xl: var(--text-3xl);
+$text-4xl: var(--text-4xl);
+$text-5xl: var(--text-5xl);
+$text-display: var(--text-display);
+
+$leading-tight: 1.05;
+$leading-snug: 1.25;
+
+@mixin display($size) {
+    font-family: $font-display;
+    font-weight: 400;
+    font-size: $size;
+    line-height: $leading-tight;
+    letter-spacing: 0.01em;
+}

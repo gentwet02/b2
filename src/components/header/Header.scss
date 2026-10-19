@@ -1,77 +1,90 @@
-@use '@/styles/breakpoints';
-@use '@/styles/colors';
-@use '@/styles/mixins' as *;
+@use '@/styles/utils/colors';
+@use '@/styles/utils' as *;
 
 .header {
     position: sticky;
     top: 0;
-    z-index: 10;
+    z-index: z('header'); // above open dropdown lists scrolling underneath
     background: colors.$paper;
-    border-bottom: 2px solid colors.$ink;
+    border-bottom: $border-width solid colors.$ink;
+    padding-top: env(safe-area-inset-top);
 
     &__inner {
-        width: min(72rem, 100% - 2rem);
-        margin-inline: auto;
+        @include container;
         display: flex;
         align-items: center;
         justify-content: space-between;
-        gap: 1rem;
-        min-height: 4rem;
+        gap: $space-s;
+        min-height: var(--fluid-56-64);
     }
 
     &__brand {
         @include display(var(--fluid-20-32));
-        padding-inline-end: 1rem;
+        padding-inline-end: $space-s;
         display: flex;
         align-items: center;
-        gap: 0.6rem;
+        gap: $space-2xs;
 
         > img {
             width: 1.5rem;
+            transform-origin: 50% 90%;
+        }
+
+        @include when-hover {
+            > img {
+                @include animate($anim-wiggle, $duration-slower, $ease-in-out);
+            }
         }
     }
 
     &__nav {
         display: flex;
-        gap: 0.25rem;
+        gap: $space-3xs;
     }
 
     &__link {
         padding: 0.45rem 0.9rem;
         font-weight: 600;
-        border: 2px solid transparent;
-        border-radius: 0.75rem;
+        border: $border-width solid transparent;
+        border-radius: $radius-control;
+        @include transition((background-color, border-color, transform), $duration-fast);
 
-        &:hover {
+        @include when-hover {
             background: colors.$paper-dim;
+        }
+
+        &:active {
+            transform: translateY(1px);
         }
 
         &--active {
             background: colors.$banana;
             border-color: colors.$ink;
+            @include animate($anim-pop-in, $duration-slow, $ease-spring);
 
-            &:hover {
+            @include when-hover {
                 background: colors.$banana;
             }
         }
     }
 
-    @media (max-width: breakpoints.$small) {
+    @include breakpoint-down(small) {
         &__link {
-            padding-inline: 0.6rem;
+            padding-inline: $space-2xs;
         }
     }
 
-    @media (max-width: 380px) {
-        padding-block: 1rem;
+    @include breakpoint-down(tiny) {
+        padding-block: $space-s;
 
         &__inner {
             flex-direction: column;
-            gap: 0.5rem;
+            gap: $space-2xs;
         }
 
         &__brand {
-            font-size: 2.5rem;
+            font-size: $text-4xl;
+            padding-inline-end: 0;
 
             > img {
                 width: 2rem;

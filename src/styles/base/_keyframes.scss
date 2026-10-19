@@ -1,0 +1,105 @@
+@keyframes fade-in {
+    from {
+        opacity: 0;
+    }
+}
+
+@keyframes fade-up {
+    from {
+        opacity: 0;
+        translate: 0 0.75rem;
+    }
+}
+
+@keyframes fade-down {
+    from {
+        opacity: 0;
+        translate: 0 -0.4rem;
+    }
+}
+
+@keyframes pop-in {
+    0% {
+        opacity: 0;
+        scale: 0.6;
+    }
+    70% {
+        opacity: 1;
+        scale: 1.06;
+    }
+}
+
+@keyframes grow-x {
+    from {
+        transform: scaleX(0);
+    }
+}
+
+@keyframes grow-y {
+    from {
+        transform: scaleY(0);
+    }
+}
+
+@keyframes bloon-bob {
+    0%,
+    100% {
+        transform: translateY(0) rotate(-4deg);
+    }
+    50% {
+        transform: translateY(-8px) rotate(4deg);
+    }
+}
+
+@keyframes live-pulse {
+    50% {
+        opacity: 0.25;
+        scale: 0.8;
+    }
+}
+
+@keyframes wiggle {
+    0%,
+    100% {
+        rotate: 0deg;
+    }
+    25% {
+        rotate: -10deg;
+    }
+    75% {
+        rotate: 8deg;
+    }
+}
+
+@keyframes shimmer {
+    to {
+        background-position-x: -200%;
+    }
+}
+
+@keyframes unfold {
+    from {
+        opacity: 0;
+        clip-path: inset(0 -8px 100% -8px);
+    }
+    to {
+        clip-path: inset(0 -8px -8px -8px);
+    }
+}
+
+@keyframes fold {
+    from {
+        clip-path: inset(0 -8px -8px -8px);
+    }
+    to {
+        opacity: 0;
+        clip-path: inset(0 -8px 100% -8px);
+    }
+}
+
+@keyframes pop-out {
+    to {
+        opacity: 0;
+        scale: 0.9;
+    }
+}

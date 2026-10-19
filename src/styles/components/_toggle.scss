@@ -1,0 +1,14 @@
+@use '../utils' as *;
+@use './checkbox';
+
+@mixin toggle($font-size: 1.125rem) {
+    display: grid;
+    grid-template-columns: 1rem auto;
+    align-items: center;
+    gap: 0.55rem;
+    font-size: $font-size;
+    font-weight: 500;
+    cursor: pointer;
+    @include transition(opacity, $duration-fast);
+    @include checkbox.checkbox();
+}

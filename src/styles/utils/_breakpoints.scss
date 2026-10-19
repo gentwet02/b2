@@ -1,0 +1,59 @@
+@use 'sass:map';
+@use 'sass:meta';
+
+$max: 1440px;
+$big: 1024px;
+$medium: 768px;
+$small: 480px;
+$tiny: 380px;
+$min: 320px;
+
+$breakpoints: (
+    'max': $max,
+    'big': $big,
+    'medium': $medium,
+    'small': $small,
+    'tiny': $tiny,
+    'min': $min,
+);
+
+// Accepts a breakpoint name ('small') or a raw length (720px) for one-off layouts.
+@function bp($value) {
+    @if meta.type-of($value) == 'string' {
+        @if not map.has-key($breakpoints, $value) {
+            @error 'Unknown breakpoint `#{$value}`. Expected one of #{map.keys($breakpoints)}.';
+        }
+        @return map.get($breakpoints, $value);
+    }
+    @return $value;
+}
+
+@mixin breakpoint-down($bp) {
+    $to: bp($bp);
+
+    @media (max-width: $to) {
+        @content;
+    }
+}
+
+// so breakpoint-up() and breakpoint-down() never overlap
+@function bp-above($value) {
+    @return bp($value) + 1px;
+}
+
+@mixin breakpoint-up($bp) {
+    $from: bp-above($bp);
+
+    @media (min-width: $from) {
+        @content;
+    }
+}
+
+@mixin breakpoint-between($from, $to) {
+    $min: bp-above($from);
+    $max: bp($to);
+
+    @media (min-width: $min) and (max-width: $max) {
+        @content;
+    }
+}

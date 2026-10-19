@@ -1,0 +1,32 @@
+@use 'sass:map';
+
+$radius-panel: 1rem;
+$radius-control: 0.75rem;
+$radius-inner: 0.5rem;
+$radius-pill: 999px;
+
+$border-width: 2px;
+$border-width-thin: 1.5px;
+
+$shadow-sm: 2px;
+$shadow-md: 3px;
+$shadow-lg: 4px;
+
+$content-width: 72rem;
+
+$tap-target: 2.5rem;
+
+$z-layers: (
+    'base': 1,
+    'sticky': 2,
+    'dropdown': 10,
+    'header': 20,
+    'popover': 30,
+);
+
+@function z($layer) {
+    @if not map.has-key($z-layers, $layer) {
+        @error 'Unknown z-layer `#{$layer}`. Expected one of #{map.keys($z-layers)}.';
+    }
+    @return map.get($z-layers, $layer);
+}

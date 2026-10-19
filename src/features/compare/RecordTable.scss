@@ -1,20 +1,21 @@
-@use '@/styles/colors';
-@use '@/styles/mixins' as *;
-@use '@/styles/variables';
+@use '@/styles/utils/colors';
+@use '@/styles/utils' as *;
 
 .cmp-scroll {
     overflow: auto;
     max-height: min(70vh, 34rem);
     border: 1.5px solid colors.$line;
-    border-radius: variables.$radius-inner;
+    border-radius: $radius-inner;
     overscroll-behavior: contain;
+    scrollbar-width: thin;
+    -webkit-overflow-scrolling: touch;
 }
 
 .cmp-table {
     width: 100%;
     border-collapse: separate;
     border-spacing: 0;
-    font-size: 0.875rem;
+    font-size: $text-md;
 
     th,
     td {
@@ -24,6 +25,13 @@
         border-bottom: 1px solid colors.$line;
         white-space: nowrap;
         background: colors.$paper;
+        @include transition(background-color, $duration-instant);
+    }
+
+    @include when-hover {
+        tbody tr:hover > * {
+            background: color-mix(in srgb, colors.$sky 35%, colors.$paper);
+        }
     }
 
     tbody tr:last-child > * {
@@ -34,7 +42,7 @@
         position: sticky;
         top: 0;
         z-index: 2;
-        font-size: 0.75rem;
+        font-size: $text-xs;
         font-weight: 700;
         letter-spacing: 0.03em;
         text-transform: uppercase;
@@ -71,21 +79,17 @@
     }
 
     &__sort {
-        padding: 0;
-        font: inherit;
+        @include bare-button;
         letter-spacing: inherit;
         text-transform: inherit;
-        color: inherit;
-        background: none;
-        border: none;
-        cursor: pointer;
+        @include transition(color, $duration-fast);
 
         &::after {
             content: ' ↕';
             opacity: 0.8;
         }
 
-        &:hover {
+        @include when-hover {
             color: colors.$ink;
         }
 
@@ -136,18 +140,20 @@
         left: 0;
         display: block;
         width: 100%;
-        padding: 0.6rem;
+        padding: $space-2xs;
         font: inherit;
-        font-size: 0.875rem;
+        font-size: $text-md;
         font-weight: 600;
         color: colors.$ink;
         background: colors.$paper-dim;
         border: none;
         border-top: 1px solid colors.$line;
         cursor: pointer;
+        @include transition((color, background-color), $duration-fast);
 
-        &:hover {
+        @include when-hover {
             color: colors.$bloon;
+            background: color-mix(in srgb, colors.$paper-dim 60%, colors.$sky);
         }
     }
 }
@@ -155,14 +161,15 @@
 .cmp-player {
     display: flex;
     align-items: center;
-    gap: 0.5rem;
+    gap: $space-2xs;
 
     &__name {
         max-width: 11rem;
         overflow: hidden;
         text-overflow: ellipsis;
+        @include transition(color, $duration-fast);
 
-        &:hover {
+        @include when-hover {
             color: colors.$bloon;
         }
     }
@@ -180,7 +187,7 @@
     }
 }
 
-@media (max-width: 600px) {
+@include breakpoint-down(600px) {
     .cmp-table {
         .lb-rate {
             display: block;

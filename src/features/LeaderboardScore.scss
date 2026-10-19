@@ -1,7 +1,6 @@
-@use '@/styles/breakpoints';
-@use '@/styles/colors';
-@use '@/styles/mixins' as *;
-@use '@/styles/variables';
+@use '@/styles/utils/colors';
+@use '@/styles/components';
+@use '@/styles/utils' as *;
 
 .leaderboard-score {
     th[data-category='rank'] {
@@ -25,8 +24,8 @@
     }
 
     &__note {
-        margin-top: 0.6rem;
-        font-size: 0.8125rem;
+        margin-top: $space-2xs;
+        font-size: $text-sm;
         color: colors.$ink-soft;
     }
 
@@ -42,7 +41,7 @@
         display: grid;
         grid-template-columns: 2.6rem 1fr;
         align-items: center;
-        gap: 0.5rem;
+        gap: $space-2xs;
 
         &__value {
             font-weight: 700;
@@ -59,6 +58,7 @@
                 display: block;
                 height: 100%;
                 background: colors.$leaf;
+                @include grow-bar(150ms);
             }
         }
     }
@@ -68,14 +68,15 @@
         padding-inline: 0.3rem;
         display: inline-grid;
         place-items: center;
-        font-family: variables.$font-display;
-        font-size: 1.05rem;
+        font-family: $font-display;
+        font-size: $text-base;
         border-radius: 999px;
 
         &--1,
         &--2,
         &--3 {
             border: 2px solid colors.$ink;
+            @include animate($anim-pop-in, $duration-slow, $ease-spring);
         }
 
         &--1 {
@@ -94,7 +95,7 @@
     .lb-player {
         display: flex;
         align-items: center;
-        gap: 0.7rem;
+        gap: $space-xs;
         line-height: 1.25;
 
         &__avatar {
@@ -104,12 +105,16 @@
             border: 1.5px solid colors.$ink;
             background: colors.$paper-dim;
             object-fit: cover;
+            @include components.avatar-pop;
 
             &--empty {
-                display: grid;
-                place-items: center;
-                font-family: variables.$font-display;
-                color: colors.$ink-soft;
+                @include components.avatar-fallback;
+            }
+        }
+
+        @include when-hover {
+            .lb-player__avatar {
+                @include components.avatar-popped;
             }
         }
 
@@ -120,31 +125,33 @@
 
         &__name {
             font-weight: 600;
+            text-decoration: underline transparent;
+            @include transition((color, text-decoration-color), $duration-fast);
 
-            &:hover {
+            @include when-hover {
                 color: colors.$bloon;
-                text-decoration: underline;
+                text-decoration-color: currentColor;
             }
         }
 
         &__alias {
-            font-size: 0.8125rem;
+            font-size: $text-sm;
             color: colors.$ink-soft;
         }
     }
 
     .lb-score {
-        font-family: variables.$font-display;
-        font-size: 1.15rem;
+        font-family: $font-display;
+        font-size: $text-lg;
     }
 
-    @media (max-width: breakpoints.$medium) {
+    @include breakpoint-down(medium) {
         .lb-player__avatar {
             @include size(2rem);
         }
     }
 
-    @media (max-width: breakpoints.$small) {
+    @include breakpoint-down(small) {
         .table {
             td,
             th {
@@ -171,12 +178,12 @@
                     max-width: 100%;
                     overflow: hidden;
                     text-wrap: nowrap;
-                    font-size: 0.9375rem;
+                    font-size: $text-md;
                     text-overflow: ellipsis;
                 }
 
                 :not(.lb-score) {
-                    font-size: 0.875rem;
+                    font-size: $text-md;
                 }
 
                 .lb-player {
@@ -205,14 +212,14 @@
         }
     }
 
-    @media (max-width: breakpoints.$tiny) {
+    @include breakpoint-down(tiny) {
         .table__cell {
             [class^='lb-'] {
-                font-size: 0.875rem;
+                font-size: $text-md;
             }
 
             :not(.lb-score) {
-                font-size: 0.8125rem;
+                font-size: $text-sm;
             }
         }
     }

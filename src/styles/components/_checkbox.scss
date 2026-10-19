@@ -1,0 +1,56 @@
+@use '../utils/colors';
+@use './checkmark';
+@use '../utils' as *;
+
+@mixin checkbox($size: 1.15rem, $bg: colors.$paper) {
+    input[type='checkbox'] {
+        -webkit-appearance: none;
+        appearance: none;
+        display: grid;
+        place-content: center;
+        margin: 0;
+        font: inherit;
+        color: currentColor;
+        background-color: $bg;
+        @include size($size);
+        border: 0.12rem solid currentColor;
+        border-radius: 0.3rem;
+        box-shadow: 1px 1px 0 colors.$ink;
+        transform: translateY(-0.075rem);
+        accent-color: colors.with-opacity('bloon', 0.6);
+        cursor: pointer;
+        @include transition((scale, background-color, border-color, opacity), $duration-fast);
+
+        @include when-hover {
+            scale: 1.08;
+        }
+
+        &:active {
+            scale: 0.92;
+        }
+
+        &:focus-visible {
+            outline-offset: 0;
+        }
+
+        &:checked {
+            background-color: colors.$bloon;
+            border-color: colors.$bloon;
+            opacity: 0.6;
+        }
+
+        &::before {
+            content: '';
+            @include size($size * 0.6);
+            background-color: $bg;
+            transform: scale(0);
+            transform-origin: bottom left;
+            transition: transform $duration-fast $ease-spring;
+            @include checkmark.checkmark;
+        }
+
+        &:checked::before {
+            transform: scale(1);
+        }
+    }
+}

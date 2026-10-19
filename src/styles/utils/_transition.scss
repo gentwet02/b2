@@ -1,0 +1,51 @@
+@use 'sass:list';
+@use 'sass:meta';
+@use './capabilities' as *;
+
+// debug: set to true to slow every transition and animation down (never commit it on)
+$slow-motion: false;
+$slow-motion-add-duration: 1s;
+
+@function motion($time) {
+    @if $slow-motion and meta.type-of($time) == 'number' {
+        @return $time + $slow-motion-add-duration;
+    }
+    @return $time;
+}
+
+$duration-instant: motion(80ms);
+$duration-fast: motion(120ms);
+$duration-base: motion(180ms);
+$duration-slow: motion(280ms);
+$duration-slower: motion(450ms);
+
+$ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+$ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
+$ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+$ease-linear: linear;
+
+@mixin transition($props: all, $duration: $duration-base, $ease: $ease-out, $delay: 0s) {
+    $list: ();
+    @each $prop in $props {
+        $list: list.append($list, $prop $duration $ease $delay, $separator: comma);
+    }
+    transition: $list;
+}
+
+// for elements toggled with [hidden]: fades in and out (exit keeps it displayed until the fade ends)
+@mixin pressable($shadow: 3px, $lift: 1px) {
+    box-shadow: $shadow $shadow 0 var(--ink);
+    @include transition((transform, box-shadow), $duration-instant, $ease-out);
+
+    &:not(:disabled) {
+        @include when-hover {
+            transform: translate(-$lift, -$lift);
+            box-shadow: ($shadow + $lift) ($shadow + $lift) 0 var(--ink);
+        }
+    }
+
+    &:active:not(:disabled) {
+        transform: translate($shadow, $shadow);
+        box-shadow: 0 0 0 var(--ink);
+    }
+}

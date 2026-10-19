@@ -1,0 +1,22 @@
+$sky: var(--sky);
+$sky-deep: var(--sky-deep);
+$paper: var(--paper);
+$paper-dim: var(--paper-dim);
+$ink: var(--ink);
+$ink-soft: var(--ink-soft);
+$line: var(--line);
+$bloon: var(--bloon);
+$banana: var(--banana);
+$leaf: var(--leaf);
+
+@function darken($color-name, $percentage) {
+    @return color-mix(in srgb, var(--#{$color-name}), black $percentage);
+}
+
+@function lighten($color-name, $percentage) {
+    @return color-mix(in srgb, var(--#{$color-name}), white $percentage);
+}
+
+@function with-opacity($color-name, $opacity) {
+    @return rgba(var(--#{$color-name}-rgb), $opacity);
+}

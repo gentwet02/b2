@@ -1,13 +1,13 @@
-@use '@/styles/breakpoints';
-@use '@/styles/colors';
+@use '@/styles/utils/colors';
 @use '@/styles/components';
-@use '@/styles/mixins' as *;
+@use '@/styles/utils' as *;
 
 .home {
     &__hero {
+        --hero-pad: #{$space-s-xl};
         display: grid;
-        gap: 1.5rem;
-        padding: clamp(1.5rem, 4vw, 2.5rem) clamp(1rem, 4vw, 2.5rem) 0;
+        gap: $space-m;
+        padding: $space-m-xl var(--hero-pad) 0;
         overflow: hidden;
         @include components.panel(6px);
     }
@@ -16,11 +16,12 @@
         text-align: center;
         display: grid;
         justify-items: center;
-        gap: 0.5rem;
+        gap: $space-2xs;
+        @include enter($anim-pop-in, $duration-slower);
     }
 
     &__title {
-        @include display(var(--fluid-32-64));
+        @include display($text-display);
         max-width: 18ch;
         color: colors.$paper;
         -webkit-text-stroke: 2px colors.$ink;
@@ -36,55 +37,39 @@
         display: grid;
         align-items: end;
         min-height: 12rem;
-        margin-inline: calc(-1 * clamp(1rem, 4vw, 2.5rem));
-        padding-inline: clamp(1rem, 4vw, 2.5rem);
+        margin-inline: calc(-1 * var(--hero-pad));
+        padding-inline: var(--hero-pad);
         background: linear-gradient(to top, colors.$sky-deep 0 0.9rem, transparent 0.9rem);
         border-top: 2px dashed colors.$line;
 
         .status--error {
-            margin-bottom: 1.5rem;
+            margin-bottom: $space-m;
         }
     }
 
     &__section {
         display: grid;
-        gap: 1rem;
+        gap: $space-s;
     }
 
-    @media (max-width: breakpoints.$medium) {
+    @include breakpoint-down(medium) {
         &__title {
             text-shadow: 2px 2px 0 colors.$ink;
         }
     }
 
-    @media (max-width: breakpoints.$small) {
-        gap: 1.5rem;
-
-        &__title {
+    @include breakpoint-down(small) {
+        &__title,
+        .page__title {
             text-shadow: 1.5px 1.5px 0 colors.$ink;
-        }
-
-        .page {
-            width: 100%;
-            margin-inline: revert;
-            padding-block: 1rem 2rem;
-
-            &__actions > .button {
-                padding: 0.375rem 0.875rem;
-                font-size: 0.875rem;
-            }
-
-            &__title {
-                text-shadow: 1.5px 1.5px 0 colors.$ink;
-            }
         }
     }
 
-    @media (max-width: breakpoints.$tiny) {
+    @include breakpoint-down(tiny) {
         .page__actions {
             width: 100%;
             justify-content: center;
-            gap: 1.5rem;
+            gap: $space-m;
         }
     }
 }

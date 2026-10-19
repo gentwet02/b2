@@ -1,40 +1,42 @@
-@use '@/styles/breakpoints';
-@use '@/styles/colors';
+@use '@/styles/utils/colors';
+@use '@/styles/utils' as *;
 
 .matches {
     &__summary {
         display: flex;
         align-items: center;
         justify-content: space-between;
-        gap: 1rem;
-        margin-top: -0.75rem;
+        gap: $space-s;
+        margin-top: calc(-1 * $space-xs);
         font-weight: 600;
     }
 
     &__clear {
-        border: none;
-        background: none;
-        cursor: pointer;
-        font-size: 0.9375rem;
+        font-size: $text-md;
+        @include enter($anim-fade-in, $duration-base);
     }
 
     &__crawl {
-        font-size: 0.875rem;
+        font-size: $text-md;
         color: colors.$ink-soft;
-        margin-top: -1.5rem;
+        margin-top: calc(-1 * $space-m);
     }
 
     &__list {
         display: grid;
-        gap: 0.75rem;
+        gap: $space-xs;
+
+        @include transition(opacity, $duration-base);
 
         > li {
             max-width: 100%;
+            @include enter($anim-fade-up, $duration-slow);
+            @include stagger(10, 35ms);
         }
 
         &--stale {
             opacity: 0.55;
-            transition: opacity 150ms;
+            pointer-events: none;
         }
     }
 
@@ -42,10 +44,39 @@
         justify-self: center;
     }
 
-    @media (max-width: breakpoints.$small) {
+    @include breakpoint-down(small) {
         &__summary,
         &__crawl {
-            margin-inline: 1rem;
+            margin-inline: $space-s;
         }
     }
+}
+
+// "filter sides separately": the panel resizes and what's below slides along.
+// Named only during that transition: a view-transition-name makes a stacking context,
+// which would otherwise trap the filter dropdowns under the match list.
+:active-view-transition-type(sides) {
+    .match-filters {
+        view-transition-name: match-filters;
+    }
+
+    .matches__summary {
+        view-transition-name: matches-summary;
+    }
+
+    .matches__list {
+        view-transition-name: matches-list;
+    }
+}
+
+::view-transition-group(match-filters),
+::view-transition-group(matches-summary),
+::view-transition-group(matches-list) {
+    animation-duration: $duration-slow;
+    animation-timing-function: $ease-out;
+}
+
+::view-transition-group(match-filters) {
+    overflow: clip;
+    overflow-clip-margin: $shadow-lg * 1.5;
 }

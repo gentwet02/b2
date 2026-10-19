@@ -1,0 +1,196 @@
+@use '@/styles/utils/colors';
+@use '@/styles/components';
+@use '@/styles/utils' as *;
+
+.profile-hero {
+    position: relative;
+    overflow: hidden;
+    @include components.panel(6px);
+
+    &__banner {
+        width: 100%;
+        height: var(--fluid-112-176);
+        object-fit: cover;
+        border-bottom: 2px solid colors.$ink;
+        background: colors.$sky-deep;
+        @include enter($anim-fade-in, $duration-slower);
+    }
+
+    &__body {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: flex-end;
+        gap: $space-s $space-m;
+        padding: 0 $space-s-l $space-m;
+    }
+
+    // without a banner, the avatar shouldn't climb out of the panel
+    &:not(:has(.profile-hero__banner)) &__body {
+        padding-top: $space-m;
+    }
+
+    &:not(:has(.profile-hero__banner)) &__avatar {
+        margin-top: 0;
+    }
+
+    &__avatar {
+        position: relative;
+        z-index: 1;
+        flex: none;
+        @include size(var(--fluid-88-112));
+        margin-top: calc(var(--fluid-88-112) / -2);
+        // keep it overlapping the banner however tall the name block gets
+        align-self: flex-start;
+        @include enter($anim-pop-in, $duration-slower, 120ms);
+    }
+
+    // plain round border; the equipped border frames the whole card instead
+    &__avatar-img {
+        @include cover;
+        border-radius: 50%;
+        object-fit: cover;
+        background: colors.$paper-dim;
+        border: 3px solid colors.$ink;
+        box-shadow: 0 0 0 4px colors.$paper;
+    }
+
+    &--framed {
+        // room so the frame doesn't cover the content
+        padding: $space-2xs;
+        background: colors.$paper;
+    }
+
+    &--framed &__banner {
+        border-radius: 0.6rem 0.6rem 0 0;
+    }
+
+    &__frame {
+        @include cover;
+        object-fit: fill;
+        pointer-events: none;
+        z-index: 2;
+    }
+
+    &__equipped {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: $space-2xs;
+        margin-top: $space-3xs;
+    }
+
+    &__equipped-item {
+        display: grid;
+        place-items: center;
+        min-width: 2.5rem;
+        height: 2.5rem;
+        padding: 0 0.4rem;
+        font-size: $text-xs;
+        font-weight: 600;
+        background: colors.$paper-dim;
+        border-radius: 0.5rem;
+
+        img {
+            height: 2.25rem;
+            width: auto;
+        }
+    }
+
+    &__info {
+        display: grid;
+        gap: $space-3xs;
+        flex: 1 1 16rem;
+        min-width: 0;
+    }
+
+    &__name {
+        @include display($text-5xl);
+        overflow-wrap: anywhere;
+    }
+
+    &__alias,
+    &__title {
+        color: colors.$ink-soft;
+        font-weight: 500;
+    }
+
+    &__badges {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: $space-2xs;
+        margin-top: 0.2rem;
+
+        &:empty {
+            display: none;
+        }
+    }
+
+    &__badge {
+        @include components.chip(colors.$paper-dim);
+        @include enter($anim-pop-in, $duration-base);
+        @include stagger(6, 50ms, 250ms);
+
+        &--vip {
+            background: colors.$banana;
+        }
+
+        &--club {
+            background: colors.$sky;
+        }
+    }
+
+    &__actions {
+        position: relative;
+        z-index: 3;
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: $space-xs;
+    }
+
+    @include breakpoint-down(small) {
+        &__body {
+            padding-inline: $gutter;
+            gap: $space-xs $space-s;
+        }
+
+        &__actions {
+            width: 100%;
+
+            > * {
+                flex: 1 1 auto;
+            }
+        }
+    }
+
+    &--placeholder &__name {
+        color: colors.$ink-soft;
+    }
+
+    &__banner--empty {
+        display: block;
+        background: colors.$paper-dim;
+    }
+
+    &__avatar-img--empty {
+        display: block;
+        border: 2px dashed colors.$line;
+    }
+
+    &__note {
+        align-self: center;
+        position: relative;
+        z-index: 3;
+        font-size: $text-sm;
+        color: colors.$ink-soft;
+    }
+
+    .status--error {
+        box-shadow: none;
+        border-width: 1.5px;
+        padding: $space-s-m;
+        justify-items: start;
+        text-align: left;
+    }
+}

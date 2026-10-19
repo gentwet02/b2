@@ -1,29 +1,34 @@
-@use '@/styles/breakpoints';
-@use '@/styles/colors';
+@use '@/styles/utils/colors';
+@use '@/styles/utils' as *;
 
 .leaderboard-filters {
     display: flex;
     flex-wrap: wrap;
     align-items: flex-end;
-    gap: 0.75rem 1.25rem;
-    margin-bottom: 1rem;
+    gap: $space-xs $space-s-m;
+    margin-bottom: $space-s;
 
     &__field {
         display: grid;
-        gap: 0.25rem;
+        gap: $space-3xs;
     }
 
     &__label {
-        font-size: 0.75rem;
+        font-size: $text-xs;
         font-weight: 600;
         color: colors.$ink-soft;
     }
 
     &__reset {
         min-height: 2.25rem;
+        @include enter($anim-pop-in, $duration-base);
     }
 
-    @media (max-width: breakpoints.$small) {
-        margin-inline-start: 1rem;
+    @include breakpoint-down(small) {
+        margin-inline: $gutter;
+
+        &__field {
+            flex: 1 1 10rem;
+        }
     }
 }

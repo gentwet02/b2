@@ -1,0 +1,28 @@
+@use './typography' as *;
+
+%visually-hidden {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+}
+
+%eyebrow {
+    font-size: $text-xs;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+}
+
+%flex-center {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+%grid-center {
+    display: grid;
+    place-items: center;
+}

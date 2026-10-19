@@ -1,0 +1,147 @@
+@use '@/styles/utils/colors';
+@use '@/styles/utils' as *;
+
+.match-card {
+    &__side {
+        display: flex;
+        align-items: center;
+        gap: $space-xs;
+        min-width: 0;
+        padding: $space-2xs $space-xs;
+        border-radius: $radius-inner;
+
+        &--right {
+            flex-direction: row-reverse;
+            text-align: right;
+
+            .match-card__name-row {
+                flex-direction: row-reverse;
+            }
+
+            .match-card__towers {
+                justify-content: flex-end;
+            }
+        }
+    }
+
+    &__hero-img {
+        flex: none;
+        @include size(var(--fluid-56-80));
+        border: 1.5px solid colors.$ink;
+        border-radius: 50%;
+        background: colors.$paper-dim;
+        @include transition((filter, transform), $duration-base);
+
+        &--empty {
+            display: block;
+        }
+    }
+
+    &__side--lose &__hero-img {
+        filter: saturate(0.25);
+    }
+
+    @include when-hover {
+        .match-card__side--lose .match-card__hero-img {
+            filter: saturate(0.5);
+        }
+    }
+
+    &__player {
+        display: grid;
+        gap: 0.2rem;
+        min-width: 0;
+        flex: 1;
+    }
+
+    &__name-row {
+        display: flex;
+        align-items: center;
+        gap: $space-2xs;
+        min-width: 0;
+    }
+
+    &__name {
+        font-size: $text-xl;
+        font-weight: 700;
+        @include truncate;
+        text-decoration: underline transparent;
+        text-decoration-thickness: 2px;
+        @include transition((color, text-decoration-color), $duration-fast);
+
+        @include when-hover {
+            color: colors.lighten('bloon', 15%);
+            text-decoration-color: currentColor;
+        }
+    }
+
+    &__alias {
+        font-size: $text-xs;
+        color: colors.$ink-soft;
+        @include truncate;
+    }
+
+    &__result {
+        flex: none;
+        font-size: $text-2xs;
+        font-weight: 700;
+        padding: 0.05rem 0.45rem;
+        border-radius: 999px;
+
+        &--win {
+            color: colors.$leaf;
+            background: color-mix(in srgb, colors.$leaf 14%, colors.$paper);
+        }
+
+        &--lose {
+            color: colors.$bloon;
+            background: color-mix(in srgb, colors.$bloon 10%, colors.$paper);
+        }
+
+        &--neutral {
+            color: colors.$banana;
+            background: color-mix(in srgb, colors.$banana 10%, colors.$paper);
+        }
+    }
+
+    &__hero {
+        font-size: $text-md;
+        color: colors.$ink-soft;
+    }
+
+    &__towers {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: $space-3xs;
+    }
+
+    &__tower {
+        display: inline-block;
+        font-size: $text-xs;
+        padding: 0.1rem 0.45rem;
+        background: colors.$paper-dim;
+        border-radius: 0.35rem;
+    }
+
+    @include breakpoint-down(medium) {
+        &__name {
+            font-size: $text-base;
+        }
+    }
+
+    @include breakpoint-down(small) {
+        &__side--right {
+            flex-direction: row;
+            text-align: left;
+
+            .match-card__name-row {
+                flex-direction: row;
+            }
+
+            .match-card__towers {
+                justify-content: flex-start;
+            }
+        }
+    }
+}

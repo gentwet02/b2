@@ -1,31 +1,32 @@
-@use '@/styles/colors';
+@use '@/styles/utils/colors';
 @use '@/styles/components';
+@use '@/styles/utils' as *;
 
 .table__pagination {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    gap: 1rem;
+    gap: $space-s;
 
-    @media (max-width: 640px) {
+    @include breakpoint-down(640px) {
         flex-direction: column;
     }
 
     &-info {
-        font-size: 0.875rem;
+        font-size: $text-md;
         color: colors.$ink-soft;
     }
 
     &-controls {
         display: flex;
-        gap: 0.5rem;
+        gap: $space-2xs;
     }
 
     &-button {
         @include components.button(colors.$paper, colors.$ink);
 
         & {
-            font-size: 0.9rem;
+            font-size: $text-md;
             padding: 0.4rem 0.9rem;
         }
     }

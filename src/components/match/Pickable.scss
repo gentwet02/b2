@@ -1,0 +1,46 @@
+@use '@/styles/utils/colors';
+@use '@/styles/utils' as *;
+
+.match-card {
+    // hero, tower or map that filters the list when clicked
+    &__pick {
+        font: inherit;
+        color: inherit;
+        text-align: inherit;
+        border: none;
+        background: none;
+        padding: 0;
+        cursor: pointer;
+        @include transition((color, background-color, transform), $duration-fast);
+
+        @include when-hover {
+            color: colors.$bloon;
+            text-decoration: underline;
+        }
+
+        &:active {
+            transform: scale(0.96);
+        }
+
+        &.match-card__tower {
+            padding: 0.1rem 0.45rem;
+            font-size: $text-xs;
+            background: colors.$paper-dim;
+
+            @include when-hover {
+                color: colors.$ink;
+                text-decoration: none;
+                background: colors.with-opacity('banana', 0.66);
+            }
+        }
+
+        &.match-card__hero {
+            font-size: $text-md;
+            color: colors.$ink-soft;
+        }
+
+        &.match-card__map-name {
+            font-weight: 700;
+        }
+    }
+}

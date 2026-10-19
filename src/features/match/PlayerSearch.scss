@@ -1,0 +1,27 @@
+@use '@/styles/utils/colors';
+@use '@/styles/utils' as *;
+
+.match-filters {
+    &__search {
+        position: relative;
+        flex: 2 1 16rem;
+
+        input {
+            width: 100%;
+            padding: 0.6rem 1rem 0.6rem 2.5rem;
+            font-weight: 500;
+            border: 2px solid colors.$ink;
+            border-radius: $radius-control;
+            @include field-focus;
+        }
+    }
+
+    &__search-icon {
+        position: absolute;
+        left: 0.85rem;
+        top: 50%;
+        translate: 0 -50%;
+        color: colors.$ink-soft;
+        pointer-events: none;
+    }
+}

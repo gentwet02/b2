@@ -1,0 +1,38 @@
+@use '@/styles/utils/colors';
+@use '@/styles/utils' as *;
+
+.match-filters {
+    &__side {
+        display: grid;
+        gap: $space-xs;
+        min-width: 0;
+        padding: $space-xs;
+        border: 2px dashed colors.$line;
+        border-radius: $radius-control;
+        @include transition((border-color, background-color), $duration-base);
+
+        &:focus-within {
+            border-color: colors.$sky-deep;
+            background-color: colors.with-opacity('sky', 0.15);
+        }
+
+        .match-filters__search {
+            flex: none;
+        }
+    }
+
+    &__side-title {
+        font-family: $font-display;
+        font-size: $text-base;
+    }
+
+    &__side-group {
+        display: grid;
+        gap: $space-2xs;
+    }
+
+    &__cap {
+        font-weight: 400;
+        margin-left: $space-3xs;
+    }
+}

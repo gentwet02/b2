@@ -15,7 +15,7 @@ import {
     splitList,
     timeAgo,
 } from '@/utils/format';
-import { getRouteApi } from '@tanstack/react-router';
+import { getRouteApi, type NavigateOptions } from '@tanstack/react-router';
 import { useEffect, useState } from 'react';
 
 const routeApi = getRouteApi('/matches-history');
@@ -40,8 +40,8 @@ export default function MatchesHistory() {
     const query = routeApi.useSearch();
     const navigate = routeApi.useNavigate();
 
-    const setQuery = (patch: Partial<MatchesQuery>) =>
-        navigate({ search: (prev) => ({ ...prev, ...patch }), replace: true });
+    const setQuery = (patch: Partial<MatchesQuery>, options?: Pick<NavigateOptions, 'viewTransition'>) =>
+        navigate({ search: (prev) => ({ ...prev, ...patch }), replace: true, ...options });
 
     const [text, setText] = useParamText(query.player, (player) => setQuery({ player }));
     // same player mode: the other side's name

@@ -1,0 +1,23 @@
+@use '@/styles/utils/colors';
+@use '@/styles/utils' as *;
+
+.table {
+    &__table tbody tr {
+        @include transition(background-color, $duration-fast);
+        @include enter($anim-fade-in, $duration-base);
+
+        @include when-hover {
+            background-color: colors.with-opacity('sky', 0.45);
+        }
+
+        &:last-child td {
+            border-bottom: none;
+        }
+    }
+
+    &__empty {
+        padding: $space-xl $space-s;
+        text-align: center;
+        color: colors.$ink-soft;
+    }
+}

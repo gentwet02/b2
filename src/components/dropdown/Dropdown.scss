@@ -1,6 +1,5 @@
-@use '@/styles/colors';
-@use '@/styles/mixins' as *;
-@use '@/styles/variables';
+@use '@/styles/utils/colors';
+@use '@/styles/utils' as *;
 
 .dropdown {
     // shared by the input and the list so the open dropdown reads as one block
@@ -25,6 +24,14 @@
         background-color: colors.$paper;
         border: 2px solid colors.$ink;
         border-radius: var(--dropdown-radius);
+        @include transition(
+            (border-color, border-radius, box-shadow, background-color),
+            $duration-fast
+        );
+
+        @include when-hover {
+            background-color: color-mix(in srgb, colors.$paper-dim 50%, colors.$paper);
+        }
 
         &::placeholder {
             font-weight: 500;
@@ -33,7 +40,7 @@
 
         &:focus {
             outline: none;
-            box-shadow: 0 0 0 3px rgba(colors.$bloon, 0.35);
+            box-shadow: 0 0 0 3px colors.with-opacity('bloon', 0.35);
         }
 
         // non-searchable: behaves like a select
@@ -61,7 +68,7 @@
         position: absolute;
         top: 100%;
         left: 0;
-        z-index: 10;
+        z-index: z('dropdown');
         width: 100%;
         max-height: 20rem;
         margin-top: -2px; // overlap the input's bottom border
@@ -71,14 +78,19 @@
         border: 2px solid colors.$ink;
         border-radius: 0 0 var(--dropdown-radius) var(--dropdown-radius);
         box-shadow: var(--dropdown-shadow) var(--dropdown-shadow) 0 colors.$ink;
+        transform-origin: top center;
+        scrollbar-width: thin;
 
-        &[hidden] {
-            display: none;
+        // replays each time `hidden` is removed
+        @include animate($anim-unfold, $duration-base);
+
+        // not gated on reduced motion: React waits for animationend to hide the list
+        &--closing {
+            pointer-events: none;
+            animation: $anim-fold $duration-fast $ease-out both;
         }
     }
 
-    // Open: square the input's bottom and swap the focus ring for the same hard
-    // shadow as the list; the list covers the bottom of it, only the right edge shows.
     &--open &__input,
     &--open &__input:focus {
         border-bottom-left-radius: 0;
@@ -90,13 +102,19 @@
         padding: 0.5rem 0.75rem;
         cursor: pointer;
         overflow-wrap: anywhere;
+        @include transition((background-color, padding-inline-start), $duration-instant);
+
+        @include when-touch {
+            padding-block: 0.7rem;
+        }
 
         & + & {
             border-top: 1px solid colors.$line;
         }
 
         &--active {
-            background: rgba(colors.$sky, 0.6);
+            padding-inline-start: 1rem;
+            background: colors.with-opacity('sky', 0.6);
         }
 
         &--current {
@@ -110,7 +128,7 @@
     }
 
     &__empty {
-        padding: 0.75rem;
+        padding: $space-xs;
         font-style: italic;
         color: colors.$ink-soft;
         cursor: default;
@@ -133,6 +151,10 @@
 
         .dropdown__option {
             padding: 0.4rem 0.6rem;
+
+            &--active {
+                padding-inline-start: 0.8rem;
+            }
         }
     }
 
@@ -143,7 +165,7 @@
 
         .dropdown__input {
             padding: 0.1rem 1.4rem 0.1rem 0.5rem;
-            font-size: 0.8125rem;
+            font-size: $text-sm;
             font-weight: 500;
             border-width: 1.5px;
             border-radius: 999px;
@@ -158,13 +180,26 @@
             min-width: 100%;
             max-width: min(18rem, calc(100vw - 2rem));
             margin-top: 0.35rem;
-            font-size: 0.875rem;
-            border-radius: variables.$radius-inner;
+            font-size: $text-md;
+            border-radius: $radius-inner;
             box-shadow: 3px 3px 0 colors.$ink;
+            transform-origin: top left;
+
+            animation-name: $anim-pop-in;
+            animation-timing-function: $ease-spring;
+        }
+
+        .dropdown__list--closing {
+            animation-name: $anim-pop-out;
+            animation-timing-function: $ease-out;
         }
 
         .dropdown__option {
             padding: 0.4rem 0.65rem;
+
+            &--active {
+                padding-inline-start: 0.85rem;
+            }
         }
     }
 

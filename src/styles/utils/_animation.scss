@@ -1,0 +1,49 @@
+@use './transition' as *;
+
+$anim-fade-in: fade-in;
+$anim-fade-up: fade-up;
+$anim-fade-down: fade-down;
+$anim-pop-in: pop-in;
+$anim-grow-x: grow-x;
+$anim-grow-y: grow-y;
+$anim-bob: bloon-bob;
+$anim-pulse: live-pulse;
+$anim-wiggle: wiggle;
+$anim-shimmer: shimmer;
+$anim-unfold: unfold;
+$anim-fold: fold;
+$anim-pop-out: pop-out;
+
+@mixin animate(
+    $name,
+    $duration: $duration-slow,
+    $ease: $ease-out,
+    $delay: 0s,
+    $fill: backwards,
+    $iterations: 1
+) {
+    @media (prefers-reduced-motion: no-preference) {
+        animation: $name $duration $ease motion($delay) $iterations $fill;
+    }
+}
+
+@mixin enter($name: $anim-fade-up, $duration: $duration-slow, $delay: 0s) {
+    @include animate($name, $duration, $ease-out, $delay);
+}
+
+// only the first $count children wait, so items appended later don't lag
+@mixin stagger($count: 8, $step: 40ms, $base: 0ms) {
+    @media (prefers-reduced-motion: no-preference) {
+        @for $i from 1 through $count {
+            &:nth-child(#{$i}) {
+                animation-delay: motion($base + $step * ($i - 1));
+            }
+        }
+    }
+}
+
+// for bars whose width is set inline
+@mixin grow-bar($delay: 0s, $origin: left) {
+    transform-origin: $origin center;
+    @include animate($anim-grow-x, $duration-slower, $ease-out, $delay);
+}

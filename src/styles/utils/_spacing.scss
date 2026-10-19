@@ -1,0 +1,53 @@
+$space-scale: (
+    'minWidth': 320,
+    'maxWidth': 1440,
+    'minSize': 14,
+    'maxSize': 16,
+    'positiveSteps': (
+        1.5,
+        2,
+        3,
+        4,
+        6,
+    ),
+    'negativeSteps': (
+        0.75,
+        0.5,
+        0.25,
+    ),
+    'customSizes': (
+        's-l',
+        'xs-m',
+        'm-xl',
+        's-xl',
+        'xl-3xl',
+    ),
+    'prefix': 'space-',
+    'relativeTo': 'viewport-width',
+);
+
+$space-3xs: var(--space-3xs); // 4px
+$space-2xs: var(--space-2xs); // 7 → 8px
+$space-xs: var(--space-xs); // 11 → 12px
+$space-s: var(--space-s); // 14 → 16px
+$space-m: var(--space-m); // 21 → 24px
+$space-l: var(--space-l); // 28 → 32px
+$space-xl: var(--space-xl); // 42 → 48px
+$space-2xl: var(--space-2xl); // 56 → 64px
+$space-3xl: var(--space-3xl); // 84 → 96px
+
+$space-3xs-2xs: var(--space-3xs-2xs);
+$space-2xs-xs: var(--space-2xs-xs);
+$space-xs-s: var(--space-xs-s);
+$space-s-m: var(--space-s-m);
+$space-m-l: var(--space-m-l);
+$space-l-xl: var(--space-l-xl);
+$space-xl-2xl: var(--space-xl-2xl);
+$space-2xl-3xl: var(--space-2xl-3xl);
+$space-s-l: var(--space-s-l);
+$space-xs-m: var(--space-xs-m);
+$space-m-xl: var(--space-m-xl);
+$space-s-xl: var(--space-s-xl);
+$space-xl-3xl: var(--space-xl-3xl);
+
+$gutter: $space-s;

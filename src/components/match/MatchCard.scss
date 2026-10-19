@@ -1,32 +1,41 @@
-@use '@/styles/breakpoints';
-@use '@/styles/colors';
+@use '@/styles/utils/colors';
 @use '@/styles/components';
-@use '@/styles/variables';
+@use '@/styles/utils' as *;
 
 // [ left player | map and match info | right player ]: both players get equal room
 .match-card {
     display: grid;
     grid-template-columns: minmax(0, 1fr) minmax(8.5rem, 10.5rem) minmax(0, 1fr);
     align-items: stretch;
-    gap: 0.75rem;
-    padding: 0.6rem;
+    gap: $space-xs;
+    padding: $space-2xs;
     background: colors.$paper;
     border: 2px solid colors.$ink;
-    border-radius: 0.75rem;
+    border-radius: $radius-control;
+    // result stripe + (on hover) the hard drop shadow, combined in one box-shadow
+    --accent: transparent;
+    --lift: 0px;
+    box-shadow:
+        inset 5px 0 0 var(--accent),
+        var(--lift) var(--lift) 0 colors.$ink;
+    @include transition((transform, box-shadow), $duration-fast);
+
+    @include when-hover {
+        --lift: #{$shadow-md};
+        transform: translate(-2px, -2px);
+    }
 
     &--win {
-        box-shadow: inset 5px 0 0 colors.$leaf;
+        --accent: #{colors.$leaf};
     }
 
     &--lose {
-        box-shadow: inset 5px 0 0 colors.$bloon;
+        --accent: #{colors.$bloon};
     }
 
     &--neutral {
-        box-shadow: inset 5px 0 0 colors.$banana;
+        --accent: #{colors.$banana};
     }
-
-    // ---------- center ----------
 
     &__center {
         display: grid;
@@ -34,7 +43,7 @@
         align-content: center;
         gap: 0.15rem;
         text-align: center;
-        line-height: 1.25;
+        line-height: $leading-snug;
     }
 
     &__map-img {
@@ -42,10 +51,17 @@
         aspect-ratio: 16 / 9;
         height: auto;
         object-fit: cover;
-        margin-bottom: 0.3rem;
+        margin-bottom: $space-3xs;
         border: 1.5px solid colors.$ink;
-        border-radius: variables.$radius-inner;
+        border-radius: $radius-inner;
         background: colors.$paper-dim;
+        @include transition(transform, $duration-base);
+    }
+
+    @include when-hover {
+        .match-card__map-img {
+            transform: scale(1.03);
+        }
     }
 
     &__map-name {
@@ -53,174 +69,18 @@
     }
 
     &__meta {
-        font-size: 0.8125rem;
+        font-size: $text-sm;
         color: colors.$ink-soft;
     }
 
     &__outcome {
         @include components.chip(colors.$paper-dim);
-        margin-top: 0.3rem;
-        font-size: 0.75rem;
+        margin-top: $space-3xs;
+        font-size: $text-xs;
     }
 
-    // ---------- players ----------
-
-    &__side {
-        display: flex;
-        align-items: center;
-        gap: 0.75rem;
-        min-width: 0;
-        padding: 0.6rem 0.75rem;
-        border-radius: variables.$radius-inner;
-
-        &--right {
-            flex-direction: row-reverse;
-            text-align: right;
-
-            .match-card__name-row {
-                flex-direction: row-reverse;
-            }
-
-            .match-card__towers {
-                justify-content: flex-end;
-            }
-        }
-    }
-
-    &__hero-img {
-        flex: none;
-        width: 5rem;
-        height: 5rem;
-        border: 1.5px solid colors.$ink;
-        border-radius: 50%;
-        background: colors.$paper-dim;
-
-        &--empty {
-            display: block;
-        }
-    }
-
-    &__side--lose &__hero-img {
-        filter: saturate(0.25);
-    }
-
-    &__player {
-        display: grid;
-        gap: 0.2rem;
-        min-width: 0;
-        flex: 1;
-    }
-
-    &__name-row {
-        display: flex;
-        align-items: center;
-        gap: 0.5rem;
-        min-width: 0;
-    }
-
-    &__name {
-        font-size: 1.2rem;
-        font-weight: 700;
-        overflow: hidden;
-        text-overflow: ellipsis;
-        white-space: nowrap;
-
-        &:hover {
-            color: colors.$bloon;
-            text-decoration: underline;
-        }
-    }
-
-    &__alias {
-        font-size: 0.75rem;
-        color: colors.$ink-soft;
-        overflow: hidden;
-        text-overflow: ellipsis;
-        white-space: nowrap;
-    }
-
-    &__result {
-        flex: none;
-        font-size: 0.6875rem;
-        font-weight: 700;
-        padding: 0.05rem 0.45rem;
-        border-radius: 999px;
-
-        &--win {
-            color: colors.$leaf;
-            background: color-mix(in srgb, colors.$leaf 14%, colors.$paper);
-        }
-
-        &--lose {
-            color: colors.$bloon;
-            background: color-mix(in srgb, colors.$bloon 10%, colors.$paper);
-        }
-
-        &--neutral {
-            color: colors.$banana;
-            background: color-mix(in srgb, colors.$banana 10%, colors.$paper);
-        }
-    }
-
-    &__hero {
-        font-size: 0.875rem;
-        color: colors.$ink-soft;
-    }
-
-    &__towers {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 0.25rem;
-    }
-
-    &__tower {
-        display: inline-block;
-        font-size: 0.75rem;
-        padding: 0.1rem 0.45rem;
-        background: colors.$paper-dim;
-        border-radius: 0.35rem;
-    }
-
-    // hero, tower or map that filters the list when clicked
-    &__pick {
-        font: inherit;
-        color: inherit;
-        text-align: inherit;
-        border: none;
-        background: none;
-        padding: 0;
-        cursor: pointer;
-
-        &:hover {
-            color: colors.$bloon;
-            text-decoration: underline;
-        }
-
-        &.match-card__tower {
-            padding: 0.1rem 0.45rem;
-            font-size: 0.75rem;
-            background: colors.$paper-dim;
-
-            &:hover {
-                color: colors.$ink;
-                text-decoration: none;
-                background: colors.$banana;
-            }
-        }
-
-        &.match-card__hero {
-            font-size: 0.875rem;
-            color: colors.$ink-soft;
-        }
-
-        &.match-card__map-name {
-            font-weight: 700;
-        }
-    }
-
-    // ---------- narrow screens: map on top, players below ----------
-
-    @media (max-width: 760px) {
+    // narrow screens: map on top, players below
+    @include breakpoint-down(medium) {
         grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
 
         &__center {
@@ -228,7 +88,7 @@
             grid-row: 1;
             grid-template-columns: auto auto;
             justify-content: center;
-            column-gap: 0.75rem;
+            column-gap: $space-xs;
             text-align: left;
             justify-items: start;
         }
@@ -238,31 +98,9 @@
             width: 7rem;
             margin-bottom: 0;
         }
-
-        &__hero-img {
-            width: 4rem;
-            height: 4rem;
-        }
-
-        &__name {
-            font-size: 1rem;
-        }
     }
 
-    @media (max-width: breakpoints.$small) {
+    @include breakpoint-down(small) {
         grid-template-columns: minmax(0, 1fr);
-
-        &__side--right {
-            flex-direction: row;
-            text-align: left;
-
-            .match-card__name-row {
-                flex-direction: row;
-            }
-
-            .match-card__towers {
-                justify-content: flex-start;
-            }
-        }
     }
 }

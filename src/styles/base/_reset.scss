@@ -95,10 +95,6 @@ select {
     -moz-appearance: textfield;
 }
 
-:-moz-focusring {
-    outline: auto;
-}
-
 :-moz-ui-invalid {
     box-shadow: none;
 }
@@ -154,8 +150,16 @@ textarea:not([rows]) {
 @media (prefers-reduced-motion: reduce) {
     * {
         animation-duration: 0.01ms !important;
+        animation-delay: 0s !important;
         animation-iteration-count: 1 !important;
         transition-duration: 0.01ms !important;
+        transition-delay: 0s !important;
         scroll-behavior: auto !important;
+    }
+
+    ::view-transition-group(*),
+    ::view-transition-old(*),
+    ::view-transition-new(*) {
+        animation: none !important;
     }
 }

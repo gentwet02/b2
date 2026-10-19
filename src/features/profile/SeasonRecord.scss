@@ -1,0 +1,37 @@
+@use '@/styles/utils/colors';
+@use '@/styles/components';
+@use '@/styles/utils' as *;
+
+.stats-panel {
+    &__tag {
+        @include components.chip(colors.$paper);
+        vertical-align: middle;
+        margin-left: 0.4rem;
+        font-family: $font-body;
+        font-size: $text-xs;
+    }
+
+    &__sub {
+        font-size: $text-sm;
+        font-weight: 500;
+        color: colors.$ink-soft;
+    }
+
+    &__note {
+        font-size: $text-xs;
+        color: colors.$ink-soft;
+    }
+
+    &__hero {
+        display: flex;
+        align-items: center;
+        gap: $space-2xs;
+    }
+
+    &__hero-img {
+        @include size(2rem);
+        border-radius: 50%;
+        border: 1.5px solid colors.$ink;
+        background: colors.$paper-dim;
+    }
+}

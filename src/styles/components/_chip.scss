@@ -1,0 +1,16 @@
+@use '../utils/colors';
+@use '../utils' as *;
+
+@mixin chip($bg, $fg: colors.$ink) {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    padding: 0.15rem 0.6rem;
+    font-size: 0.8125rem;
+    font-weight: 600;
+    color: $fg;
+    background: $bg;
+    border: $border-width-thin solid colors.$ink;
+    border-radius: $radius-pill;
+    white-space: nowrap;
+}

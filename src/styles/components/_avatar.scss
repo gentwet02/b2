@@ -1,0 +1,17 @@
+@use '../utils/colors';
+@use '../utils' as *;
+
+@mixin avatar-pop {
+    @include transition(transform, $duration-base, $ease-spring);
+}
+
+@mixin avatar-popped {
+    transform: scale(1.12) rotate(-4deg);
+}
+
+@mixin avatar-fallback {
+    display: grid;
+    place-items: center;
+    font-family: $font-display;
+    color: colors.$ink-soft;
+}

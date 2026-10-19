@@ -1,0 +1,23 @@
+:root {
+    --sky-rgb: 207, 230, 250;
+    --sky-deep-rgb: 169, 210, 243;
+    --paper-rgb: 255, 253, 247;
+    --paper-dim-rgb: 244, 239, 225;
+    --ink-rgb: 27, 35, 64;
+    --ink-soft-rgb: 91, 100, 133;
+    --line-rgb: 228, 223, 207;
+    --bloon-rgb: 232, 54, 79;
+    --banana-rgb: 255, 201, 60;
+    --leaf-rgb: 46, 158, 98;
+
+    --sky: rgb(var(--sky-rgb));
+    --sky-deep: rgb(var(--sky-deep-rgb));
+    --paper: rgb(var(--paper-rgb));
+    --paper-dim: rgb(var(--paper-dim-rgb));
+    --ink: rgb(var(--ink-rgb));
+    --ink-soft: rgb(var(--ink-soft-rgb));
+    --line: rgb(var(--line-rgb));
+    --bloon: rgb(var(--bloon-rgb));
+    --banana: rgb(var(--banana-rgb));
+    --leaf: rgb(var(--leaf-rgb));
+}

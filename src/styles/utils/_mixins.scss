@@ -1,0 +1,83 @@
+@use './colors';
+@use './capabilities' as *;
+@use './variables' as *;
+@use './transition' as *;
+
+@mixin size($size) {
+    width: $size;
+    height: $size;
+}
+
+@mixin truncate {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+@mixin bare-button {
+    padding: 0;
+    font: inherit;
+    color: inherit;
+    background: none;
+    border: none;
+    cursor: pointer;
+}
+
+@mixin field-focus($color: 'bloon', $opacity: 0.35) {
+    @include transition((border-color, box-shadow, background-color), $duration-fast);
+
+    &:focus {
+        outline: none;
+        box-shadow: 0 0 0 3px colors.with-opacity($color, $opacity);
+    }
+}
+
+@mixin icon-button($size: 1.75rem, $bg: colors.$paper, $hover-bg: colors.$ink, $hover-fg: #fff) {
+    display: grid;
+    place-items: center;
+    flex: none;
+    @include size($size);
+    line-height: 1;
+    color: colors.$ink;
+    background: $bg;
+    border-radius: 50%;
+    cursor: pointer;
+    @include transition((color, background-color, transform), $duration-fast);
+
+    &:not(:disabled) {
+        @include when-hover {
+            color: $hover-fg;
+            background: $hover-bg;
+        }
+    }
+
+    &:active:not(:disabled) {
+        transform: scale(0.9);
+    }
+
+    // keep the visual size, grow the hit area for fingers
+    @include when-touch {
+        position: relative;
+
+        &::after {
+            content: '';
+            position: absolute;
+            inset: 50%;
+            translate: -50% -50%;
+            @include size(max(100%, $tap-target));
+        }
+    }
+}
+
+@mixin link-underline($color: colors.$bloon) {
+    text-decoration: underline;
+    text-decoration-thickness: 2px;
+    text-underline-offset: 3px;
+    text-decoration-color: $color;
+    @include transition((color, text-decoration-color, text-underline-offset), $duration-fast);
+
+    @include when-hover {
+        color: $color;
+        text-underline-offset: 5px;
+    }
+}

@@ -1,0 +1,21 @@
+@mixin checkmark {
+    clip-path: polygon(14% 44%, 0 65%, 50% 100%, 100% 16%, 80% 0%, 43% 62%);
+    @supports (clip-path: shape(from 0 0, line to 0 0)) {
+        clip-path: shape(
+            from 7.9% 53.2%,
+            line to 6.1% 55.9%,
+            curve to 9% 71.3% with 0% 65%,
+            line to 41% 93.7%,
+            curve to 55.6% 90.6% with 50% 100%,
+            line to 94.4% 25.5%,
+            curve to 91.4% 9.1% with 100% 16%,
+            line to 88.6% 6.9%,
+            curve to 74.4% 9.5% with 80% 0%,
+            line to 48.6% 52.6%,
+            curve to 33.7% 56.2% with 43% 62%,
+            line to 23.4% 49.8%,
+            curve to 7.9% 53.2% with 14% 44%,
+            close
+        );
+    }
+}

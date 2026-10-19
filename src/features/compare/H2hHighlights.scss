@@ -1,13 +1,12 @@
-@use '@/styles/colors';
-@use '@/styles/mixins' as *;
-@use '@/styles/variables';
+@use '@/styles/utils/colors';
+@use '@/styles/utils' as *;
 
 .h2h-highlights {
     display: grid;
     grid-template-columns: repeat(3, minmax(0, 1fr));
-    gap: 0.6rem;
+    gap: $space-2xs;
 
-    @media (max-width: 900px) {
+    @include breakpoint-down(900px) {
         grid-template-columns: repeat(2, minmax(0, 1fr));
 
         > :nth-child(1) {
@@ -30,7 +29,7 @@
         }
     }
 
-    @media (max-width: 520px) {
+    @include breakpoint-down(520px) {
         grid-template-columns: 1fr;
     }
 }
@@ -41,11 +40,19 @@
     align-content: start;
     gap: 0.2rem;
     min-height: 6.25rem;
-    padding: 0.7rem 0.8rem;
+    padding: $space-xs $space-xs;
     background: colors.$paper-dim;
     border: 1.5px solid colors.$ink;
-    border-radius: variables.$radius-inner;
+    border-radius: $radius-inner;
     overflow: hidden;
+    @include transition((transform, box-shadow), $duration-fast);
+    @include enter($anim-pop-in, $duration-slow);
+    @include stagger(6, 50ms);
+
+    @include when-hover {
+        transform: translate(-2px, -2px);
+        box-shadow: $shadow-md $shadow-md 0 colors.$ink;
+    }
 
     &__img {
         position: absolute;
@@ -57,6 +64,13 @@
         border: 1.5px solid colors.$ink;
         border-radius: 0.4rem;
         background: colors.$paper;
+        @include transition(transform, $duration-base, $ease-spring);
+    }
+
+    @include when-hover {
+        .h2h-tile__img {
+            transform: rotate(6deg) scale(1.08);
+        }
     }
 
     &--loadout &__img {
@@ -64,87 +78,43 @@
     }
 
     &__label {
-        padding-right: 2.75rem;
-        font-size: 0.6875rem;
-        font-weight: 700;
-        letter-spacing: 0.04em;
-        text-transform: uppercase;
+        @extend %eyebrow;
+        padding-right: $space-xl;
+        font-size: $text-2xs;
         color: colors.$ink-soft;
     }
 
     &__title {
-        @include display(1.1rem);
-        padding-right: 2.75rem;
+        @include display($text-lg);
+        padding-right: $space-xl;
         overflow-wrap: anywhere;
     }
 
     &__towers {
         display: block;
         margin-top: 0.15rem;
-        font-family: variables.$font-body;
-        font-size: 0.75rem;
+        font-family: $font-body;
+        font-size: $text-xs;
         font-weight: 500;
         color: colors.$ink-soft;
     }
 
     &__line {
-        font-size: 0.8125rem;
+        font-size: $text-sm;
     }
 
     &--empty {
         background: transparent;
         border-style: dashed;
+
+        @include when-hover {
+            transform: none;
+            box-shadow: none;
+        }
     }
 
     &__none {
-        font-size: 0.8125rem;
+        font-size: $text-sm;
         color: colors.$ink-soft;
-    }
-}
-
-// "This season / All seasons"
-.h2h-scope {
-    display: inline-flex;
-    border: 2px solid colors.$ink;
-    border-radius: 999px;
-    overflow: hidden;
-
-    &__option {
-        padding: 0.3rem 0.8rem;
-        font: inherit;
-        font-size: 0.8125rem;
-        font-weight: 600;
-        color: colors.$ink;
-        background: colors.$paper;
-        border: none;
-        cursor: pointer;
-
-        & + & {
-            border-left: 2px solid colors.$ink;
-        }
-
-        &[aria-pressed='true'] {
-            background: colors.$banana;
-        }
-    }
-}
-
-.h2h-summary {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: baseline;
-    gap: 0.4rem 1rem;
-
-    &__rate {
-        @include display(2.4rem);
-    }
-
-    &__text {
-        color: colors.$ink-soft;
-        font-weight: 500;
-
-        strong {
-            color: colors.$ink;
-        }
     }
 }

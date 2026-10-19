@@ -1,9 +1,9 @@
-@use '@/styles/colors';
-@use '@/styles/mixins' as *;
-@use '@/styles/variables';
+@use '@/styles/utils/colors';
+@use '@/styles/components';
+@use '@/styles/utils' as *;
 
 .h2h-card {
-    transition: opacity 120ms ease-out;
+    @include transition(opacity, $duration-fast);
 
     &--updating {
         opacity: 0.7;
@@ -14,22 +14,11 @@
         flex-wrap: wrap;
         align-items: center;
         justify-content: space-between;
-        gap: 0.75rem 1rem;
-        padding-top: 1rem;
+        gap: $space-xs $space-s;
+        padding-top: $space-s;
         border-top: 1px solid colors.$line;
     }
-
-    &__reset {
-        background: none;
-        border: none;
-        padding: 0;
-        font: inherit;
-        font-weight: 600;
-        cursor: pointer;
-    }
 }
-
-// ---------- One row per opponent ----------
 
 .h2h-list {
     display: grid;
@@ -41,6 +30,8 @@
 .h2h-row {
     max-width: none; // the reset caps li at 75ch for prose
     border-top: 1px solid colors.$line;
+    @include enter($anim-fade-up, $duration-slow);
+    @include stagger(10, 35ms);
 
     &:first-child {
         border-top: none;
@@ -53,10 +44,10 @@
             2.25rem minmax(0, 17rem) 3.5rem minmax(3rem, 1fr) 3rem minmax(6.5rem, auto)
             2rem;
         align-items: center;
-        gap: 0.75rem;
-        padding: 0.45rem 0;
+        gap: $space-xs;
+        padding: $space-2xs 0;
 
-        @media (max-width: 800px) {
+        @include breakpoint-down(800px) {
             grid-template-columns: 2.25rem minmax(0, 1fr) 3.5rem minmax(3rem, 8rem) 3rem 2rem;
 
             .h2h-row__meta {
@@ -64,7 +55,7 @@
             }
         }
 
-        @media (max-width: 560px) {
+        @include breakpoint-down(560px) {
             grid-template-columns: minmax(0, 1fr) 3.2rem 2.8rem 2rem;
 
             .h2h-row__avatar,
@@ -83,16 +74,13 @@
         object-fit: cover;
 
         &--empty {
-            display: grid;
-            place-items: center;
-            font-family: variables.$font-display;
-            color: colors.$ink-soft;
+            @include components.avatar-fallback;
         }
     }
 
     &__meta {
         display: grid;
-        font-size: 0.8125rem;
+        font-size: $text-sm;
         font-weight: 600;
         line-height: 1.25;
         text-align: right;
@@ -120,6 +108,7 @@
             height: 100%;
             background: colors.$leaf;
             border-radius: inherit;
+            @include grow-bar(200ms);
         }
     }
 
@@ -130,28 +119,21 @@
 
     &__none {
         grid-column: span 4;
-        font-size: 0.875rem;
+        font-size: $text-md;
         color: colors.$ink-soft;
 
-        @media (max-width: 800px) {
+        @include breakpoint-down(800px) {
             grid-column: span 3;
         }
 
-        @media (max-width: 560px) {
+        @include breakpoint-down(560px) {
             grid-column: span 2;
         }
     }
 
     &__toggle {
-        display: grid;
-        place-items: center;
-        width: 2rem;
-        height: 2rem;
-        color: colors.$ink;
-        background: colors.$paper;
         border: 1.5px solid colors.$ink;
-        border-radius: 50%;
-        cursor: pointer;
+        @include icon-button(2rem, colors.$paper, colors.$banana, colors.$ink);
 
         &:disabled {
             opacity: 0.3;
@@ -165,12 +147,70 @@
 
     &__details {
         display: grid;
-        gap: 0.6rem;
-        padding: 0.25rem 0 1rem;
+        gap: $space-2xs;
+        padding: $space-3xs 0 $space-s;
+        @include enter($anim-fade-down, $duration-base);
     }
 
     &__more {
         justify-self: end;
-        font-size: 0.875rem;
+        font-size: $text-md;
+    }
+}
+
+// "This season / All seasons"
+.h2h-scope {
+    display: inline-flex;
+    border: 2px solid colors.$ink;
+    border-radius: 999px;
+    overflow: hidden;
+
+    &__option {
+        padding: 0.3rem 0.8rem;
+        font: inherit;
+        font-size: $text-sm;
+        font-weight: 600;
+        color: colors.$ink;
+        background: colors.$paper;
+        border: none;
+        cursor: pointer;
+        @include transition((background-color, color), $duration-fast);
+
+        @include when-hover {
+            background: color-mix(in srgb, colors.$banana 35%, colors.$paper);
+        }
+
+        & + & {
+            border-left: 2px solid colors.$ink;
+        }
+
+        @include when-touch {
+            padding-block: 0.5rem;
+        }
+
+        &[aria-pressed='true'] {
+            background: colors.$banana;
+        }
+    }
+}
+
+.h2h-summary {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: $space-2xs $space-s;
+
+    &__rate {
+        @include display($text-4xl);
+        @include enter($anim-pop-in, $duration-slower);
+    }
+
+    &__text {
+        color: colors.$ink-soft;
+        font-weight: 500;
+
+        strong {
+            color: colors.$ink;
+        }
     }
 }

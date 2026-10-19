@@ -1,26 +1,42 @@
-@use '@/styles/reset';
-@use '@/styles/breakpoints';
-@use '@/styles/colors';
+@use '@/styles/base';
+@use '@/styles/utils/colors';
 @use '@/styles/components';
-@use '@/styles/mixins' as *;
-@use '@/styles/variables';
+@use '@/styles/utils' as *;
 
 :root {
     color-scheme: light;
 }
 
 body {
+    --bloon-bg-clr-rgb: 255, 255, 255;
     min-height: 100dvh;
-    font-family: variables.$font-body;
-    font-size: 1rem;
+    font-family: $font-body;
+    font-size: $text-base;
     color: colors.$ink;
     background-color: colors.$sky;
     background-image:
-        radial-gradient(circle at 12% 18%, rgba(255, 255, 255, 0.55) 0 3.5rem, transparent 3.6rem),
-        radial-gradient(circle at 88% 8%, rgba(255, 255, 255, 0.45) 0 2.5rem, transparent 2.6rem),
-        radial-gradient(circle at 78% 72%, rgba(255, 255, 255, 0.35) 0 4.5rem, transparent 4.6rem);
+        radial-gradient(
+            circle at 12% 18%,
+            rgba(var(--bloon-bg-clr-rgb), 0.55) 0 3.5rem,
+            transparent 3.6rem
+        ),
+        radial-gradient(
+            circle at 88% 8%,
+            rgba(var(--bloon-bg-clr-rgb), 0.45) 0 2.5rem,
+            transparent 2.6rem
+        ),
+        radial-gradient(
+            circle at 78% 72%,
+            rgba(var(--bloon-bg-clr-rgb), 0.35) 0 4.5rem,
+            transparent 4.6rem
+        );
     background-attachment: fixed;
     font-variant-numeric: tabular-nums;
+
+    // fixed backgrounds repaint badly on mobile scroll
+    @include when-touch {
+        background-attachment: scroll;
+    }
 }
 
 #root {
@@ -36,41 +52,69 @@ select {
 }
 
 :focus-visible {
-    outline: 3px solid colors.$bloon;
-    outline-offset: 2px;
+    outline: 2.5px solid colors.with-opacity('bloon', 0.4);
+    outline-offset: 1.75px;
     border-radius: 4px;
+
+    @include when-motion-ok {
+        transition: outline-offset $duration-fast $ease-out;
+    }
+}
+
+::selection {
+    color: colors.$ink;
+    background: colors.with-opacity('banana', 0.6);
 }
 
 .page {
-    width: min(72rem, 100% - 2rem);
-    margin-inline: auto;
-    padding-block: 2rem 4rem;
+    @include container;
+    padding-block: $space-s-l $space-l-xl;
     display: grid;
-    gap: 2rem;
+    gap: $space-m-l;
     flex: 1;
+
+    > * {
+        @include enter($anim-fade-up, $duration-slow);
+        @include stagger(6, 60ms);
+    }
 
     &__head {
         display: flex;
         flex-wrap: wrap;
         align-items: flex-end;
         justify-content: space-between;
-        gap: 1rem;
+        gap: $space-s;
     }
 
     &__title {
-        @include display(clamp(2rem, 5vw, 3rem));
+        @include display($text-5xl);
     }
 
     &__subtitle {
         color: colors.$ink-soft;
-        margin-top: 0.35rem;
+        margin-top: $space-3xs;
     }
 
     &__actions {
         display: flex;
         flex-wrap: wrap;
         align-items: center;
-        gap: 0.75rem;
+        gap: $space-xs;
+    }
+
+    @include breakpoint-down(small) {
+        width: 100%;
+        margin-inline: revert;
+
+        &__head {
+            margin-inline: $gutter;
+        }
+
+        &__actions > .button {
+            min-height: 2.25rem;
+            padding: $space-2xs $space-s;
+            font-size: $text-md;
+        }
     }
 }
 
@@ -83,24 +127,13 @@ select {
 }
 
 .text-link {
+    @include bare-button; // also used on <button>
     font-weight: 600;
-    text-decoration: underline;
-    text-decoration-thickness: 2px;
-    text-underline-offset: 3px;
-    text-decoration-color: colors.$bloon;
-
-    &:hover {
-        color: colors.$bloon;
-    }
+    @include link-underline;
 }
 
 .visually-hidden {
-    position: absolute;
-    width: 1px;
-    height: 1px;
-    overflow: hidden;
-    clip-path: inset(50%);
-    white-space: nowrap;
+    @extend %visually-hidden;
 }
 
 .site-main {
@@ -111,40 +144,5 @@ select {
     > .status--loading {
         flex: 1;
         align-content: center;
-    }
-}
-
-.site-footer {
-    width: min(72rem, 100% - 2rem);
-    margin-inline: auto;
-    padding-block: 1.5rem 2rem;
-    font-size: 0.8125rem;
-    color: colors.$ink-soft;
-    border-top: 2px dashed rgba(colors.$ink, 0.2);
-}
-
-@media (max-width: breakpoints.$small) {
-    .page {
-        width: 100%;
-        margin-inline: revert;
-        padding-block: 1rem 2rem;
-    }
-
-    @media (max-width: breakpoints.$small) {
-        .page {
-            width: 100%;
-            margin-inline: revert;
-            padding-block: 1rem 2rem;
-            gap: 1.5rem;
-
-            &__head {
-                margin-inline: 1rem;
-            }
-
-            &__actions > .button {
-                padding: 0.375rem 0.875rem;
-                font-size: 0.875rem;
-            }
-        }
     }
 }

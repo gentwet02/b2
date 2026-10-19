@@ -1,9 +1,10 @@
-@use '@/styles/colors';
+@use '@/styles/utils/colors';
+@use '@/styles/utils' as *;
 
 .opponent-select {
     display: flex;
     align-items: center;
-    gap: 0.35rem;
+    gap: $space-3xs;
     min-width: 0;
 
     &__dropdown {
@@ -13,7 +14,7 @@
 
     // the open list must cover the slots below it
     .dropdown--open {
-        z-index: 30;
+        z-index: z('popover');
     }
 
     &--custom .dropdown__input {
@@ -21,22 +22,9 @@
     }
 
     &__reset {
-        flex: none;
-        display: grid;
-        place-items: center;
-        width: 1.75rem;
-        height: 1.75rem;
-        font-size: 1rem;
-        line-height: 1;
-        color: colors.$ink;
-        background: colors.$paper;
+        font-size: $text-base;
         border: 1.5px solid colors.$ink;
-        border-radius: 50%;
-        cursor: pointer;
-
-        &:hover {
-            color: #fff;
-            background: colors.$bloon;
-        }
+        @include icon-button(1.75rem, colors.$paper, colors.$bloon);
+        @include enter($anim-pop-in, $duration-base);
     }
 }

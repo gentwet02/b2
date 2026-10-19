@@ -1,0 +1,15 @@
+@use '../utils/colors';
+@use '../utils' as *;
+
+@mixin panel($shadow: $shadow-lg) {
+    background: colors.$paper;
+    border: $border-width solid colors.$ink;
+    border-radius: $radius-panel;
+    box-shadow: $shadow $shadow 0 colors.$ink;
+
+    // edge-to-edge on phones: square corners, shadow only underneath
+    @include breakpoint-down(small) {
+        border-radius: revert;
+        box-shadow: 0 calc($shadow / 2) 0 colors.$ink;
+    }
+}

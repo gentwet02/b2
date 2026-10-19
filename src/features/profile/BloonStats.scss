@@ -1,0 +1,41 @@
+@use '@/styles/utils/colors';
+@use '@/styles/utils' as *;
+
+.bloon-stats {
+    width: 100%;
+    border-collapse: collapse;
+
+    th,
+    td {
+        padding: $space-2xs 0;
+        text-align: right;
+        border-bottom: 1px solid colors.$line;
+    }
+
+    th:first-child {
+        text-align: left;
+    }
+
+    thead th {
+        font-size: $text-sm;
+        font-weight: 600;
+        color: colors.$ink-soft;
+        border-bottom: 2px solid colors.$ink;
+    }
+
+    tbody th {
+        font-weight: 600;
+    }
+
+    tbody tr {
+        @include transition(background-color, $duration-instant);
+
+        @include when-hover {
+            background: colors.with-opacity('sky', 0.3);
+        }
+    }
+
+    tbody tr:last-child > * {
+        border-bottom: none;
+    }
+}

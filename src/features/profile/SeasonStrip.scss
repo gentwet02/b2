@@ -1,0 +1,58 @@
+@use '@/styles/utils/colors';
+@use '@/styles/utils' as *;
+
+.season-strip {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    border: 2px solid colors.$ink;
+    border-radius: $radius-panel;
+    background: colors.$paper;
+    overflow: hidden;
+
+    @include breakpoint-down(800px) {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    @include breakpoint-down(small) {
+        border-radius: revert;
+        border-inline: none;
+    }
+
+    &__tile {
+        display: grid;
+        gap: 0.2rem;
+        align-content: start;
+        padding: $space-s $space-s-m;
+        border-right: 1px solid colors.$line;
+        @include enter($anim-fade-up, $duration-slow);
+        @include stagger(4, 60ms);
+
+        &:last-child {
+            border-right: none;
+        }
+
+        @include breakpoint-down(small) {
+            padding: $space-xs $gutter;
+        }
+
+        @include breakpoint-down(800px) {
+            &:nth-child(2) {
+                border-right: none;
+            }
+
+            &:nth-child(-n + 2) {
+                border-bottom: 1px solid colors.$line;
+            }
+        }
+    }
+
+    &__label {
+        font-size: $text-md;
+        color: colors.$ink-soft;
+    }
+
+    &__value {
+        @include display($text-3xl);
+        overflow-wrap: anywhere;
+    }
+}

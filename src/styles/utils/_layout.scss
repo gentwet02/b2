@@ -1,0 +1,14 @@
+@use './spacing' as *;
+@use './variables' as *;
+
+@mixin container($width: $content-width, $gutter: $gutter) {
+    width: min($width, 100% - 2 * $gutter);
+    margin-inline: auto;
+}
+
+@mixin cover($position: absolute) {
+    position: $position;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+}

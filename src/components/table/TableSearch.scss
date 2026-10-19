@@ -1,10 +1,15 @@
-@use '@/styles/colors';
+@use '@/styles/utils/colors';
+@use '@/styles/utils' as *;
 
 .table__search {
     position: relative;
     flex: 1 1 14rem;
     max-width: min(66%, 22rem);
-    min-width: 15rem;
+    min-width: min(15rem, 100%);
+
+    @include breakpoint-down(small) {
+        max-width: none;
+    }
 
     &-input {
         width: 100%;
@@ -12,11 +17,12 @@
         font-weight: 500;
         background: colors.$paper;
         border: 2px solid colors.$ink;
-        border-radius: 0.75rem;
+        border-radius: $radius-control;
+        @include field-focus;
 
-        &:focus {
-            outline: none;
-            box-shadow: 0 0 0 3px rgba(colors.$bloon, 0.35);
+        &:focus + .table__search-icon,
+        &:not(:placeholder-shown) + .table__search-icon {
+            color: colors.$ink;
         }
     }
 
@@ -27,5 +33,6 @@
         transform: translateY(-50%);
         color: colors.$ink-soft;
         pointer-events: none;
+        @include transition(color, $duration-fast);
     }
 }

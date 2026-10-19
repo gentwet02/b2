@@ -1,0 +1,38 @@
+@use '@/styles/utils/colors';
+@use '@/styles/utils' as *;
+
+.accolades {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(min(11rem, 100%), 1fr));
+    gap: $space-xs;
+
+    &__item {
+        display: grid;
+        gap: 0.15rem;
+        align-content: start;
+        padding: $space-xs $space-s;
+        background: colors.$paper-dim;
+        border-radius: $radius-inner;
+        @include transition((transform, background-color), $duration-fast);
+        @include enter($anim-pop-in, $duration-slow);
+        @include stagger(12, 30ms);
+
+        @include when-hover {
+            transform: translateY(-2px);
+            background: color-mix(in srgb, colors.$banana 25%, colors.$paper-dim);
+        }
+    }
+
+    &__value {
+        @include display($text-3xl);
+    }
+
+    &__type {
+        font-weight: 600;
+    }
+
+    &__subtype {
+        font-size: $text-sm;
+        color: colors.$ink-soft;
+    }
+}

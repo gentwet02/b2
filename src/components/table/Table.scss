@@ -1,22 +1,24 @@
-@use '@/styles/breakpoints';
-@use '@/styles/colors';
+@use '@/styles/utils/colors';
 @use '@/styles/components';
+@use '@/styles/utils' as *;
 
 .table {
     display: grid;
-    gap: 1rem;
+    gap: $space-s;
 
     &__controls {
         display: flex;
         flex-wrap: wrap;
-        justify-content: space-between;
         align-items: center;
-        gap: 1rem;
+        justify-content: space-between;
+        gap: $space-s;
     }
 
     &__scroll {
         overflow-x: auto;
         -webkit-overflow-scrolling: touch;
+        overscroll-behavior-x: contain;
+        scrollbar-width: thin;
         @include components.panel;
     }
 
@@ -26,53 +28,15 @@
 
         th,
         td {
-            padding: 0.7rem 1rem;
+            padding: $space-xs $space-s;
             text-align: left;
             border-bottom: 1px solid colors.$line;
         }
-
-        th {
-            font-weight: 600;
-            font-size: 0.875rem;
-            color: colors.$ink-soft;
-            background-color: colors.$paper-dim;
-            border-bottom: 2px solid colors.$ink;
-            white-space: nowrap;
-            user-select: none;
-        }
-
-        tbody tr {
-            transition: background-color 120ms;
-
-            &:hover {
-                background-color: rgba(colors.$sky, 0.45);
-            }
-
-            &:last-child td {
-                border-bottom: none;
-            }
-        }
-
-        &__header-cell-content {
-            display: flex;
-            align-items: center;
-            gap: 0.4rem;
-        }
-
-        &__header-cell-icon {
-            color: colors.$bloon;
-        }
     }
 
-    &__empty {
-        padding: 3rem 1rem;
-        text-align: center;
-        color: colors.$ink-soft;
-    }
-
-    @media (max-width: breakpoints.$small) {
+    @include breakpoint-down(small) {
         &__controls {
-            margin-inline: 1rem;
+            margin-inline: $gutter;
         }
     }
 }

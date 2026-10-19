@@ -1,0 +1,10 @@
+@use '@/styles/utils/colors';
+@use '@/styles/utils' as *;
+
+.site-footer {
+    @include container;
+    padding-block: $space-m max($space-l, env(safe-area-inset-bottom));
+    font-size: $text-sm;
+    color: colors.$ink-soft;
+    border-top: 2px dashed colors.with-opacity('ink', 0.2);
+}

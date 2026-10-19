@@ -1,15 +1,15 @@
-@use '@/styles/breakpoints';
-@use '@/styles/colors';
+@use '@/styles/utils/colors';
 @use '@/styles/components';
-@use '@/styles/variables';
+@use '@/styles/utils' as *;
 
 .leaderboard {
     &__live {
         @include components.chip(colors.$bloon, #fff);
-        margin-left: 0.75rem;
-        font-family: variables.$font-body;
-        font-size: 0.875rem;
+        margin-left: $space-xs;
+        font-family: $font-body;
+        font-size: $text-md;
         vertical-align: middle;
+        @include animate($anim-pop-in, $duration-slow, $ease-spring, 200ms);
 
         &::before {
             content: '';
@@ -17,13 +17,10 @@
             height: 0.5rem;
             border-radius: 50%;
             background: #fff;
-            animation: live-pulse 1.6s ease-in-out infinite;
-        }
-    }
-}
 
-@keyframes live-pulse {
-    50% {
-        opacity: 0.25;
+            @include when-motion-ok {
+                animation: $anim-pulse 1.6s $ease-in-out infinite;
+            }
+        }
     }
 }

@@ -1,0 +1,20 @@
+// no sticky hover after a tap on touch screens
+@mixin when-hover {
+    @media (hover: hover) and (pointer: fine) {
+        &:hover {
+            @content;
+        }
+    }
+}
+
+@mixin when-touch {
+    @media (pointer: coarse) {
+        @content;
+    }
+}
+
+@mixin when-motion-ok {
+    @media (prefers-reduced-motion: no-preference) {
+        @content;
+    }
+}

@@ -1,4 +1,5 @@
 import Dropdown from '@/components/dropdown/Dropdown';
+import type { NavigateOptions } from '@tanstack/react-router';
 import { SIDE_MAX_HEROES, SIDE_MAX_TOWERS } from '@/config/match';
 import type { SeasonSummary } from '@/types/info';
 import {
@@ -29,7 +30,10 @@ const SORT_OPTIONS = (Object.keys(SORT_LABELS) as MatchSort[]).map((value) => ({
 
 interface MatchFiltersProps {
     query: MatchesQuery;
-    onChange: (patch: Partial<MatchesQuery>) => void;
+    onChange: (
+        patch: Partial<MatchesQuery>,
+        options?: Pick<NavigateOptions, 'viewTransition'>,
+    ) => void;
     options?: MatchFilterOptions | undefined;
     seasons: SeasonSummary[];
     liveSeason?: number | undefined;
@@ -66,32 +70,38 @@ export default function MatchFilters(props: MatchFiltersProps) {
 
     // turning "same player" on: the first hero and 3 towers go to side 1, the rest to side 2
     const splitSides = () =>
-        onChange({
-            sameSide: true,
-            heroes: heroList(heroes.slice(0, SIDE_MAX_HEROES)),
-            heroes2: heroList(heroes.slice(SIDE_MAX_HEROES, 2 * SIDE_MAX_HEROES)),
-            towers: joinList(towers.slice(0, SIDE_MAX_TOWERS)),
-            towers2: joinList(towers.slice(SIDE_MAX_TOWERS, 2 * SIDE_MAX_TOWERS)),
-            player2: undefined,
-        });
+        onChange(
+            {
+                sameSide: true,
+                heroes: heroList(heroes.slice(0, SIDE_MAX_HEROES)),
+                heroes2: heroList(heroes.slice(SIDE_MAX_HEROES, 2 * SIDE_MAX_HEROES)),
+                towers: joinList(towers.slice(0, SIDE_MAX_TOWERS)),
+                towers2: joinList(towers.slice(SIDE_MAX_TOWERS, 2 * SIDE_MAX_TOWERS)),
+                player2: undefined,
+            },
+            { viewTransition: { types: ['sides'] } },
+        );
 
     // turning it off: both sides go back into the shared filters
     const mergeSides = () => {
         const name = playerText.trim() || player2Text.trim();
-        onChange({
-            sameSide: undefined,
-            player: name || undefined,
-            heroes: heroList(
-                [...heroes, ...heroes2.filter((h) => !heroes.some((p) => p.base === h.base))].slice(
-                    0,
-                    maxHeroes,
+        onChange(
+            {
+                sameSide: undefined,
+                player: name || undefined,
+                heroes: heroList(
+                    [...heroes, ...heroes2.filter((h) => !heroes.some((p) => p.base === h.base))].slice(
+                        0,
+                        maxHeroes,
+                    ),
                 ),
-            ),
-            towers: joinList([...new Set([...towers, ...towers2])].slice(0, maxTowers)),
-            player2: undefined,
-            heroes2: undefined,
-            towers2: undefined,
-        });
+                towers: joinList([...new Set([...towers, ...towers2])].slice(0, maxTowers)),
+                player2: undefined,
+                heroes2: undefined,
+                towers2: undefined,
+            },
+            { viewTransition: { types: ['sides'] } },
+        );
     };
 
     const seasonOptions = seasons.map((s) => ({
