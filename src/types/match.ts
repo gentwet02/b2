@@ -115,16 +115,12 @@ export interface MatchFilterOptions extends SideFilterOptions {
     error?: string | null;
 }
 
-/** GET /users/:id/matches — Ninja Kiwi's answer, passed through by the server. */
+/** GET /users/:id/matches — Ninja Kiwi's latest matches, through the server (rate limited). */
 export interface UserMatchesResponse {
     success: boolean;
     error: string | null;
     message?: string | null;
     body: Match[];
-}
-
-export interface MatchesUpdateResponse {
-    message: string;
 }
 
 export const SORT_LABELS: Record<MatchSort, string> = {

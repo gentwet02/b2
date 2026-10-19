@@ -60,13 +60,40 @@ export interface UserProfile {
     _towers: Tower[];
 }
 
-/** GET /users/:id — Ninja Kiwi's answer, passed through by the server. */
+/**
+ * One season of a player, from the profile readings our server stores (NK's ranked stats are
+ * lifetime numbers: a season is the difference between two readings).
+ */
+export interface ProfileSeason {
+    seasonId: number;
+    wins: number;
+    draws: number;
+    losses: number;
+    /** current streak at the last reading of the season */
+    winStreak: number;
+    bestWinStreak: number;
+    /** false: counted from our first reading in that season, earlier games are missing */
+    complete: boolean;
+    equipped: {
+        avatar: string | null;
+        banner: string | null;
+        border: string | null;
+        title: string | null;
+        badges: { season: number | null; name: string; iconURL: string | null }[];
+    };
+    firstSeen: string;
+    lastSeen: string;
+}
+
+/** GET /users/:id — the stored profile, in Ninja Kiwi's shape, plus our season records. */
 export interface UserProfileData {
     body: UserProfile;
     error: string | null;
     message?: string | null;
     success: boolean;
-    /** when our server got this copy from Ninja Kiwi */
+    /** season records, newest first */
+    seasons?: ProfileSeason[];
+    /** when our server last read this profile from Ninja Kiwi */
     fetchedAt?: string;
 }
 
@@ -74,7 +101,7 @@ export interface UserSearch {
     matches?: number | undefined;
 }
 
-/** GET /users/:id/season: computed from the matches our server recorded. */
+/** GET /users/:id/season: heroes and counts from the matches our server recorded, record and streaks from the stored profile. */
 export interface SeasonStats {
     seasonId: number;
     seasonName: string;
@@ -84,8 +111,11 @@ export interface SeasonStats {
     draws: number;
     /** cancelled games and lobby disconnects */
     other: number;
-    winStreak: number;
-    bestWinStreak: number;
+    /** from the stored profile readings; null when we have none this season */
+    winStreak: number | null;
+    bestWinStreak: number | null;
+    /** the season from the profile readings (W/D/L, streaks), null when we have none */
+    record: ProfileSeason | null;
     heroes: { hero: string; played: number; wins: number; portrait?: string }[];
     firstSeen: string | null;
     lastSeen: string | null;

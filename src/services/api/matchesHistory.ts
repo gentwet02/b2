@@ -1,9 +1,4 @@
-import type {
-    MatchFilterOptions,
-    MatchesQuery,
-    MatchesResponse,
-    MatchesUpdateResponse,
-} from '@/types/match';
+import type { MatchFilterOptions, MatchesQuery, MatchesResponse } from '@/types/match';
 import { getFromApi } from '@/services/api/utils';
 
 export const MATCHES_PAGE_SIZE = 20;
@@ -29,6 +24,4 @@ export const matchesService = {
         const { sort: _sort, ...filters } = query;
         return getFromApi<MatchFilterOptions>(`matches-history/filters?${toParams(filters)}`);
     },
-    matchesRecentHistoryForceUpdate: () =>
-        getFromApi<MatchesUpdateResponse>('matches-history/force-update'),
 };

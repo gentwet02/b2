@@ -3,7 +3,7 @@ import { userService } from '@/services/api/user';
 import type { UserProfileData } from '@/types/profile';
 import { queryOptions, useQuery } from '@tanstack/react-query';
 
-/** Goes through our server (/users/:id): Ninja Kiwi's API sends no CORS headers. */
+/** The profile our server stored (/users/:id); the server reads Ninja Kiwi in the background. */
 export const profileQueryOptions = (userId: string) =>
     queryOptions<UserProfileData>({
         queryKey: ['userProfile', userId],
@@ -15,13 +15,7 @@ export const profileQueryOptions = (userId: string) =>
             return response.data;
         },
         staleTime: 60_000,
-        retry: (count, error) => count < 2 && !/not found|invalid/i.test(error.message),
-        // the server answered with its stored copy and is fetching a fresh one: pick it up
-        refetchInterval: (query) => {
-            const fetchedAt = query.state.data?.fetchedAt;
-            const old = fetchedAt && Date.now() - new Date(fetchedAt).getTime() > 2 * 60_000;
-            return old && query.state.dataUpdateCount < 3 ? 4_000 : false;
-        },
+        retry: (count, error) => count < 2 && !/not found|invalid|no profile/i.test(error.message),
     });
 
 export default function useProfile(userId: string) {

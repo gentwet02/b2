@@ -1,0 +1,57 @@
+@use '@/styles/utils/colors';
+@use '@/styles/utils' as *;
+
+.season-history {
+    overflow-x: auto;
+    border: 1.5px solid colors.$line;
+    border-radius: $radius-inner;
+    scrollbar-width: thin;
+
+    &__table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: $text-md;
+
+        th,
+        td {
+            padding: 0.5rem 0.65rem;
+            text-align: left;
+            white-space: nowrap;
+            border-bottom: 1px solid colors.$line;
+        }
+
+        thead th {
+            font-size: $text-xs;
+            font-weight: 700;
+            letter-spacing: 0.03em;
+            text-transform: uppercase;
+            color: colors.$ink-soft;
+            background: colors.$paper-dim;
+        }
+
+        tbody th {
+            font-weight: 600;
+        }
+
+        tbody tr:last-child > * {
+            border-bottom: none;
+        }
+    }
+
+    &__num {
+        text-align: right !important;
+        font-weight: 600;
+        font-variant-numeric: tabular-nums;
+    }
+
+    &__mark {
+        margin-left: 0.15rem;
+        color: colors.$ink-soft;
+        cursor: help;
+    }
+
+    &__note {
+        font-size: $text-xs;
+        color: colors.$ink-soft;
+    }
+}

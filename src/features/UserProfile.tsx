@@ -10,6 +10,7 @@ import Accolades from './profile/Accolades';
 import BloonStats from './profile/BloonStats';
 import ProfileHero, { ProfileHeroPlaceholder } from './profile/ProfileHero';
 import RecentMatches from './profile/RecentMatches';
+import SeasonHistory from './profile/SeasonHistory';
 import SeasonRecord from './profile/SeasonRecord';
 import SeasonStrip from './profile/SeasonStrip';
 import StatsPanel from './profile/StatsPanel';
@@ -91,9 +92,7 @@ export default function UserProfile({ userId }: UserProfileProps) {
                 />
             ) : (
                 <ProfileHeroPlaceholder name={cachedName}>
-                    {isLoading && (
-                        <p className='profile-hero__alias'>Loading the profile from Ninja Kiwi…</p>
-                    )}
+                    {isLoading && <p className='profile-hero__alias'>Loading the profile…</p>}
                     {error && (
                         <ErrorState
                             title="Couldn't load this profile"
@@ -121,6 +120,8 @@ export default function UserProfile({ userId }: UserProfileProps) {
                     </section>
                 )}
             </div>
+
+            <SeasonHistory seasons={data?.seasons ?? []} />
 
             <HeadToHead userId={userId} />
 

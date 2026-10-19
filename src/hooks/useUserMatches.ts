@@ -14,7 +14,8 @@ export const userMatchesQueryOptions = (userId: string) =>
             return response.data.body ?? [];
         },
         staleTime: 60_000,
-        retry: 1,
+        // the server rate limits this one (NK request): don't retry when it says so
+        retry: (count, error) => count < 1 && !/too many/i.test(error.message),
     });
 
 export default function useUserMatches(userId: string, enabled = true) {

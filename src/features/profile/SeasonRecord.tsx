@@ -3,7 +3,10 @@ import useSeasonStats from '@/hooks/useSeasonStats';
 import { heroImage } from '@/utils/assetOverrides';
 import { formatHero, formatNumber, winRate } from '@/utils/format';
 
-/** Ranked record for the live season, from the matches our server recorded. */
+/**
+ * Ranked record for the live season: wins, losses and streaks from the profile readings our
+ * server stores (every game counts), hero and match count from the matches it recorded.
+ */
 export default function SeasonRecord({ userId }: { userId: string }) {
     const { data, isLoading, error, refetch } = useSeasonStats(userId);
 
@@ -29,10 +32,20 @@ export default function SeasonRecord({ userId }: { userId: string }) {
         );
     }
 
-    const played = data.wins + data.losses + data.draws;
-    const rate = winRate(data.wins, data.losses);
-    const winShare = played > 0 ? (data.wins / played) * 100 : 0;
-    const drawShare = played > 0 ? (data.draws / played) * 100 : 0;
+    // the profile readings see every ranked game; the recorded matches only HoM vs HoM ones
+    const { wins, losses, draws } = data.record ?? data;
+    const played = wins + losses + draws;
+    const rate = winRate(wins, losses);
+    const winShare = played > 0 ? (wins / played) * 100 : 0;
+    const drawShare = played > 0 ? (draws / played) * 100 : 0;
+    const since =
+        data.record && !data.record.complete
+            ? new Date(data.record.firstSeen).toLocaleDateString(undefined, {
+                  day: 'numeric',
+                  month: 'short',
+              })
+            : null;
+    const streak = (value: number | null) => (value === null ? '–' : formatNumber(value));
     const topHero = data.heroes[0];
     const topHeroPortrait = topHero ? heroImage(topHero.hero, topHero.portrait) : undefined;
 
@@ -58,7 +71,7 @@ export default function SeasonRecord({ userId }: { userId: string }) {
                     <div
                         className='stats-panel__bar'
                         role='img'
-                        aria-label={`${data.wins} wins, ${data.draws} draws, ${data.losses} losses`}
+                        aria-label={`${wins} wins, ${draws} draws, ${losses} losses`}
                     >
                         <span className='stats-panel__bar-win' style={{ width: `${winShare}%` }} />
                         <span
@@ -69,24 +82,30 @@ export default function SeasonRecord({ userId }: { userId: string }) {
 
                     <div className='stats-panel__record'>
                         <span>
-                            <strong>{formatNumber(data.wins)}</strong> wins
+                            <strong>{formatNumber(wins)}</strong> wins
                         </span>
                         <span>
-                            <strong>{formatNumber(data.draws)}</strong> draws
+                            <strong>{formatNumber(draws)}</strong> draws
                         </span>
                         <span>
-                            <strong>{formatNumber(data.losses)}</strong> losses
+                            <strong>{formatNumber(losses)}</strong> losses
                         </span>
                     </div>
+
+                    {since && (
+                        <p className='stats-panel__note'>
+                            Counted since {since}, our first reading of this player this season.
+                        </p>
+                    )}
 
                     <dl className='stats-panel__details'>
                         <div className='stats-panel__detail'>
                             <dt>Current win streak</dt>
-                            <dd>{formatNumber(data.winStreak)}</dd>
+                            <dd>{streak(data.winStreak)}</dd>
                         </div>
                         <div className='stats-panel__detail'>
                             <dt>Best win streak</dt>
-                            <dd>{formatNumber(data.bestWinStreak)}</dd>
+                            <dd>{streak(data.bestWinStreak)}</dd>
                         </div>
                         {topHero && (
                             <div className='stats-panel__detail'>
