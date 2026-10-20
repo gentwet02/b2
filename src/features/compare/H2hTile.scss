@@ -1,0 +1,91 @@
+@use '@/styles/utils/colors';
+@use '@/styles/utils' as *;
+
+.h2h-tile {
+    position: relative;
+    display: grid;
+    align-content: start;
+    gap: 0.2rem;
+    min-height: 6.25rem;
+    padding: $space-xs $space-xs;
+    background: colors.$paper-dim;
+    border: 1.5px solid colors.$ink;
+    border-radius: $radius-inner;
+    overflow: hidden;
+    @include transition((transform, box-shadow), $duration-fast);
+    @include enter($anim-pop-in, $duration-slow);
+    @include stagger(6, 50ms);
+
+    @include when-hover {
+        transform: translate(-2px, -2px);
+        box-shadow: $shadow-md $shadow-md 0 colors.$ink;
+    }
+
+    &__img {
+        position: absolute;
+        top: 0.55rem;
+        right: 0.55rem;
+        width: 2.25rem;
+        height: 2.25rem;
+        object-fit: cover;
+        border: 1.5px solid colors.$ink;
+        border-radius: 0.4rem;
+        background: colors.$paper;
+        @include transition(transform, $duration-base, $ease-spring);
+    }
+
+    @include when-hover {
+        &--map &__img {
+            transform: scale(1.08);
+        }
+
+        &--loadout &__img {
+            transform: rotate(6deg) scale(1.08);
+        }
+    }
+
+    &--loadout &__img {
+        border-radius: 50%;
+    }
+
+    &__label {
+        @extend %eyebrow;
+        padding-right: $space-xl;
+        font-size: $text-2xs;
+        color: colors.$ink-soft;
+    }
+
+    &__title {
+        @include display($text-lg);
+        padding-right: $space-xl;
+        overflow-wrap: anywhere;
+    }
+
+    &__towers {
+        display: block;
+        margin-top: 0.15rem;
+        font-family: $font-body;
+        font-size: $text-xs;
+        font-weight: 500;
+        color: colors.$ink-soft;
+    }
+
+    &__line {
+        font-size: $text-sm;
+    }
+
+    &--empty {
+        background: transparent;
+        border-style: dashed;
+
+        @include when-hover {
+            transform: none;
+            box-shadow: none;
+        }
+    }
+
+    &__none {
+        font-size: $text-sm;
+        color: colors.$ink-soft;
+    }
+}
