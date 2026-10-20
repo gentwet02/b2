@@ -54,4 +54,23 @@
         font-size: $text-xs;
         color: colors.$ink-soft;
     }
+
+    &__amount {
+        margin-left: auto;
+        display: inline-flex;
+        align-items: center;
+        gap: $space-2xs;
+        font-size: $text-sm;
+        color: colors.$ink-soft;
+
+        .season-history__amount-select {
+            width: 4.5rem;
+            font-size: $text-md;
+        }
+    }
+
+    &__actions {
+        display: flex;
+        justify-content: center;
+    }
 }

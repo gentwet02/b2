@@ -99,6 +99,7 @@ export interface UserProfileData {
 
 export interface UserSearch {
     matches?: number | undefined;
+    seasons?: number | undefined;
 }
 
 /** GET /users/:id/season: heroes and counts from the matches our server recorded, record and streaks from the stored profile. */

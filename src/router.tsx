@@ -12,7 +12,12 @@ import {
     LEADERBOARD_MIN_GAMES,
     LEADERBOARD_PAGE_SIZES,
 } from '@/config/leaderboard';
-import { PROFILE_MATCH_AMOUNTS, PROFILE_MATCH_DEFAULT } from '@/config/profile';
+import {
+    PROFILE_MATCH_AMOUNTS,
+    PROFILE_MATCH_DEFAULT,
+    PROFILE_SEASON_AMOUNTS,
+    PROFILE_SEASON_DEFAULT,
+} from '@/config/profile';
 import { leaderboardQueryOptions } from '@/hooks/useLeaderboard';
 import { profileQueryOptions } from '@/hooks/useProfile';
 import { seasonStatsQueryOptions } from '@/hooks/useSeasonStats';
@@ -126,10 +131,15 @@ const userRoute = createRoute({
     path: '/user/$userId',
     validateSearch: (search: Record<string, unknown>): UserSearch => {
         const matches = Number(search.matches);
+        const seasons = Number(search.seasons);
         return {
             matches:
                 PROFILE_MATCH_AMOUNTS.includes(matches) && matches !== PROFILE_MATCH_DEFAULT
                     ? matches
+                    : undefined,
+            seasons:
+                PROFILE_SEASON_AMOUNTS.includes(seasons) && seasons !== PROFILE_SEASON_DEFAULT
+                    ? seasons
                     : undefined,
         };
     },
