@@ -121,7 +121,7 @@ export default function UserProfile({ userId }: UserProfileProps) {
                 )}
             </div>
 
-            <SeasonHistory seasons={data?.seasons ?? []} />
+            <SeasonHistory userId={userId} />
 
             <HeadToHead userId={userId} />
 

@@ -1,6 +1,11 @@
 import { getFromApi } from '@/services/api/utils';
 import type { UserMatchesResponse } from '@/types/match';
-import type { RankHistory, SeasonStats, UserProfileData } from '@/types/profile';
+import type {
+    PlayerSeasonRecords,
+    RankHistory,
+    SeasonStats,
+    UserProfileData,
+} from '@/types/profile';
 
 export const userService = {
     getProfile: (userId: string) => getFromApi<UserProfileData>(`users/${userId}`),
@@ -11,4 +16,6 @@ export const userService = {
         getFromApi<SeasonStats>(
             `users/${userId}/season${season !== undefined ? `?season=${season}` : ''}`,
         ),
+    getSeasonRecords: (userId: string) =>
+        getFromApi<PlayerSeasonRecords>(`users/${userId}/seasons`),
 };

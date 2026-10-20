@@ -124,6 +124,20 @@ export interface SeasonStats {
     error?: string | null;
 }
 
+/** A player's games in one season, from the matches our server recorded (HoM vs HoM). */
+export interface PlayerSeasonRecord {
+    seasonId: number;
+    wins: number;
+    draws: number;
+    losses: number;
+}
+
+export interface PlayerSeasonRecords {
+    seasons: PlayerSeasonRecord[];
+    message?: string | null;
+    error?: string | null;
+}
+
 export interface SeasonRank {
     seasonId: number;
     name: string;

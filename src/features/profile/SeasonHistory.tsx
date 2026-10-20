@@ -1,18 +1,15 @@
 import Dropdown from '@/components/dropdown/Dropdown';
 import { PROFILE_SEASON_AMOUNTS, PROFILE_SEASON_DEFAULT } from '@/config/profile';
-import type { ProfileSeason } from '@/types/profile';
+import useSeasonRecords from '@/hooks/useSeasonRecords';
 import { formatNumber, seasonLabel, winRate } from '@/utils/format';
 import { getRouteApi } from '@tanstack/react-router';
 import { useState } from 'react';
 
 const routeApi = getRouteApi('/user/$userId');
 
-/**
- * Every season we have profile readings for: W–D–L and win rate, newest first.
- * No best win streak here: readings from past seasons are too sparse to tell it, so it's only
- * shown for the live season (SeasonRecord) and all time (StatsPanel) for now.
- */
-export default function SeasonHistory({ seasons }: { seasons: ProfileSeason[] }) {
+export default function SeasonHistory({ userId }: { userId: string }) {
+    const { data } = useSeasonRecords(userId);
+    const seasons = data ?? [];
     const search = routeApi.useSearch();
     const navigate = routeApi.useNavigate();
     const amount = search.seasons ?? PROFILE_SEASON_DEFAULT;
@@ -24,7 +21,6 @@ export default function SeasonHistory({ seasons }: { seasons: ProfileSeason[] })
 
     const shown = seasons.slice(0, amount * pageCount);
     const remaining = seasons.length - shown.length;
-    const anyPartial = shown.some((s) => !s.complete);
 
     function setAmount(n: number) {
         navigate({
@@ -71,25 +67,11 @@ export default function SeasonHistory({ seasons }: { seasons: ProfileSeason[] })
                     <tbody>
                         {shown.map((s) => {
                             const rate = winRate(s.wins, s.losses);
-                            // one reading and nothing before it: no record to show yet
-                            const unknown = !s.complete && s.wins + s.draws + s.losses === 0;
                             return (
                                 <tr key={s.seasonId}>
-                                    <th scope='row'>
-                                        {seasonLabel(s.seasonId)}
-                                        {!s.complete && (
-                                            <span
-                                                className='season-history__mark'
-                                                title='Counted from our first reading of this player in that season'
-                                            >
-                                                *
-                                            </span>
-                                        )}
-                                    </th>
+                                    <th scope='row'>{seasonLabel(s.seasonId)}</th>
                                     <td className='season-history__num'>
-                                        {unknown
-                                            ? '–'
-                                            : `${formatNumber(s.wins)}–${formatNumber(s.draws)}–${formatNumber(s.losses)}`}
+                                        {`${formatNumber(s.wins)}–${formatNumber(s.draws)}–${formatNumber(s.losses)}`}
                                     </td>
                                     <td className='season-history__rate'>
                                         {rate === null ? (
@@ -124,12 +106,6 @@ export default function SeasonHistory({ seasons }: { seasons: ProfileSeason[] })
                         Show {Math.min(amount, remaining)} more
                     </button>
                 </div>
-            )}
-            {anyPartial && (
-                <p className='season-history__note'>
-                    * Counted from our first reading of the player in that season: earlier games of
-                    that season are missing.
-                </p>
             )}
         </section>
     );

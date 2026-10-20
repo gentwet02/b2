@@ -3,10 +3,6 @@ import useSeasonStats from '@/hooks/useSeasonStats';
 import { heroImage } from '@/utils/assetOverrides';
 import { formatHero, formatNumber, seasonTitle, winRate } from '@/utils/format';
 
-/**
- * Ranked record for the live season: wins, losses and streaks from the profile readings our
- * server stores (every game counts), hero and match count from the matches it recorded.
- */
 export default function SeasonRecord({ userId }: { userId: string }) {
     const { data, isLoading, error, refetch } = useSeasonStats(userId);
 
@@ -32,19 +28,11 @@ export default function SeasonRecord({ userId }: { userId: string }) {
         );
     }
 
-    // the profile readings see every ranked game; the recorded matches only HoM vs HoM ones
-    const { wins, losses, draws } = data.record ?? data;
+    const { wins, losses, draws } = data;
     const played = wins + losses + draws;
     const rate = winRate(wins, losses);
     const winShare = played > 0 ? (wins / played) * 100 : 0;
     const drawShare = played > 0 ? (draws / played) * 100 : 0;
-    const since =
-        data.record && !data.record.complete
-            ? new Date(data.record.firstSeen).toLocaleDateString(undefined, {
-                  day: 'numeric',
-                  month: 'short',
-              })
-            : null;
     const streak = (value: number | null) => (value === null ? '–' : formatNumber(value));
     const topHero = data.heroes[0];
     const topHeroPortrait = topHero ? heroImage(topHero.hero, topHero.portrait) : undefined;
@@ -91,12 +79,6 @@ export default function SeasonRecord({ userId }: { userId: string }) {
                             <strong>{formatNumber(losses)}</strong> losses
                         </span>
                     </div>
-
-                    {since && (
-                        <p className='stats-panel__note'>
-                            Counted since {since}, our first reading of this player this season.
-                        </p>
-                    )}
 
                     <dl className='stats-panel__details'>
                         <div className='stats-panel__detail'>
