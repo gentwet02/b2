@@ -7,7 +7,11 @@ import { useState } from 'react';
 
 const routeApi = getRouteApi('/user/$userId');
 
-/** Every season we have profile readings for: record and best win streak, newest first. */
+/**
+ * Every season we have profile readings for: W–D–L and win rate, newest first.
+ * No best win streak here: readings from past seasons are too sparse to tell it, so it's only
+ * shown for the live season (SeasonRecord) and all time (StatsPanel) for now.
+ */
 export default function SeasonHistory({ seasons }: { seasons: ProfileSeason[] }) {
     const search = routeApi.useSearch();
     const navigate = routeApi.useNavigate();
@@ -62,9 +66,6 @@ export default function SeasonHistory({ seasons }: { seasons: ProfileSeason[] })
                             <th scope='col' className='season-history__num'>
                                 Win rate
                             </th>
-                            <th scope='col' className='season-history__num'>
-                                Best streak
-                            </th>
                         </tr>
                     </thead>
                     <tbody>
@@ -92,9 +93,6 @@ export default function SeasonHistory({ seasons }: { seasons: ProfileSeason[] })
                                     </td>
                                     <td className='season-history__num'>
                                         {rate === null ? '–' : `${rate.toFixed(1)}%`}
-                                    </td>
-                                    <td className='season-history__num'>
-                                        {formatNumber(s.bestWinStreak)}
                                     </td>
                                 </tr>
                             );
