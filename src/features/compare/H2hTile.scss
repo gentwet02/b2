@@ -36,11 +36,11 @@
 
     @include when-hover {
         .h2h-tile {
-            &--map &__img {
+            &--map > &__img {
                 transform: scale(1.08);
             }
 
-            &--loadout &__img {
+            &--loadout > &__img {
                 transform: rotate(6deg) scale(1.08);
             }
         }
