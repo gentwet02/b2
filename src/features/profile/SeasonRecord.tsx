@@ -1,7 +1,7 @@
 import { ErrorState } from '@/components/status/Status';
 import useSeasonStats from '@/hooks/useSeasonStats';
 import { heroImage } from '@/utils/assetOverrides';
-import { formatHero, formatNumber, winRate } from '@/utils/format';
+import { formatHero, formatNumber, seasonTitle, winRate } from '@/utils/format';
 
 /**
  * Ranked record for the live season: wins, losses and streaks from the profile readings our
@@ -10,7 +10,7 @@ import { formatHero, formatNumber, winRate } from '@/utils/format';
 export default function SeasonRecord({ userId }: { userId: string }) {
     const { data, isLoading, error, refetch } = useSeasonStats(userId);
 
-    const title = data?.seasonName ?? 'This season';
+    const title = data?.seasonName ? seasonTitle(data.seasonName) : 'This season';
 
     if (isLoading) {
         return (

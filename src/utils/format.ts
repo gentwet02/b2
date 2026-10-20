@@ -83,6 +83,9 @@ export function timeAgo(date: string | Date | null | undefined): string | null {
 
 export const seasonLabel = (seasonId: number) => `Season ${seasonId + 1}`;
 
+/** NK's season name without its "Event" suffix: "Season 31 Event" → "Season 31". */
+export const seasonTitle = (name: string) => name.replace(/\s*\bevent\b/gi, '').trim();
+
 /** Same as the server: several NK ids of one map share a key ("banana_depot_scene" → "bananadepot"). */
 export function mapKey(map: string): string {
     return map

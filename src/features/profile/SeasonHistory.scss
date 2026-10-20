@@ -1,4 +1,5 @@
 @use '@/styles/utils/colors';
+@use '@/styles/components';
 @use '@/styles/utils' as *;
 
 .season-history {
@@ -42,6 +43,14 @@
         text-align: right !important;
         font-weight: 600;
         font-variant-numeric: tabular-nums;
+    }
+
+    &__rate {
+        min-width: 8rem;
+
+        .lb-rate {
+            @include components.rate-bar(3rem);
+        }
     }
 
     &__mark {

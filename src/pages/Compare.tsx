@@ -16,9 +16,8 @@ import {
     playerLabel,
     rateOf,
     recordTitle,
-    seasonTitle,
 } from '@/utils/compare';
-import { formatNumber, getAlias, timeAgo } from '@/utils/format';
+import { formatNumber, getAlias, seasonTitle, timeAgo } from '@/utils/format';
 import { getRouteApi, Link } from '@tanstack/react-router';
 import { useState } from 'react';
 

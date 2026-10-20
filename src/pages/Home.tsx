@@ -4,7 +4,7 @@ import Podium from '@/features/Podium';
 import useLeaderboardStats from '@/hooks/useLeaderboardStats';
 import { useRankedPlayers } from '@/hooks/useRankedPlayers';
 import useSeasons from '@/hooks/useSeasons';
-import { formatNumber, seasonLabel, timeAgo } from '@/utils/format';
+import { formatNumber, seasonLabel, seasonTitle, timeAgo } from '@/utils/format';
 import { Link } from '@tanstack/react-router';
 
 export default function Home() {
@@ -26,7 +26,9 @@ export default function Home() {
         );
     }
 
-    const seasonName = seasons.data?.liveSeasonName ?? seasonLabel(liveSeason);
+    const seasonName = seasons.data?.liveSeasonName
+        ? seasonTitle(seasons.data.liveSeasonName)
+        : seasonLabel(liveSeason);
     const updated = timeAgo(data?.lastUpdated);
 
     return (

@@ -63,7 +63,7 @@ export default function SeasonHistory({ seasons }: { seasons: ProfileSeason[] })
                             <th scope='col' className='season-history__num'>
                                 W–D–L
                             </th>
-                            <th scope='col' className='season-history__num'>
+                            <th scope='col' className='season-history__rate'>
                                 Win rate
                             </th>
                         </tr>
@@ -91,8 +91,22 @@ export default function SeasonHistory({ seasons }: { seasons: ProfileSeason[] })
                                             ? '–'
                                             : `${formatNumber(s.wins)}–${formatNumber(s.draws)}–${formatNumber(s.losses)}`}
                                     </td>
-                                    <td className='season-history__num'>
-                                        {rate === null ? '–' : `${rate.toFixed(1)}%`}
+                                    <td className='season-history__rate'>
+                                        {rate === null ? (
+                                            '–'
+                                        ) : (
+                                            <span
+                                                className='lb-rate'
+                                                title={`${s.wins} won, ${s.losses} lost, ${s.draws} drawn`}
+                                            >
+                                                <span className='lb-rate__value'>
+                                                    {rate.toFixed(1)}%
+                                                </span>
+                                                <span className='lb-rate__bar' aria-hidden='true'>
+                                                    <span style={{ width: `${rate}%` }} />
+                                                </span>
+                                            </span>
+                                        )}
                                     </td>
                                 </tr>
                             );

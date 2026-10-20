@@ -1,5 +1,5 @@
 import type { Wld } from '@/types/compare';
-import { formatHero, formatLabel, winRate } from '@/utils/format';
+import { formatHero, formatLabel, seasonTitle, winRate } from '@/utils/format';
 
 export const gamesOf = (r: Wld | undefined) => (r ? r[0] + r[1] + r[2] : 0);
 export const rateOf = (r: Wld | undefined) => (r ? winRate(r[0], r[1]) : null);
@@ -27,8 +27,6 @@ export function formatLoadout(key: string) {
     const { hero, towers } = parseLoadout(key);
     return { hero: formatHero(hero), towers: towers.map(formatLabel).join(', ') };
 }
-
-export const seasonTitle = (name: string) => name.replace(' Event', '');
 
 /** "in Season 47" / "in any season", for sentences about the games counted. */
 export const inScope = (d: { season: number | 'all'; seasonName: string }) =>
