@@ -47,7 +47,9 @@ export default function Home() {
                 <div className='home__stage'>
                     {isLoading && <Loading label='Loading leaderboard…' />}
                     {error && <ErrorState error={error} onRetry={() => refetch()} />}
-                    {players.length > 0 && <Podium players={players} avatars={stats?.avatars} />}
+                    {players.length > 0 && (
+                        <Podium players={players} avatars={stats?.avatars} records={stats?.records} />
+                    )}
                 </div>
             </section>
 

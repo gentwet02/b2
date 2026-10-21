@@ -2,6 +2,32 @@
 @use '@/styles/components';
 @use '@/styles/utils' as *;
 
+$lift-ratio: 0.3;
+$lift-ease: $duration-slow $ease-spring;
+
+@mixin lifted {
+    translate: 0 calc(-1 * var(--podium-lift));
+
+    .podium__player {
+        translate: 0 $space-2xs;
+    }
+
+    .podium__avatar {
+        translate: 0 0.45rem;
+    }
+
+    .podium__name,
+    .podium__alias {
+        translate: 0 0.2rem;
+    }
+
+    .podium__stats {
+        opacity: 1;
+        translate: 0 0;
+        transition-delay: 80ms;
+    }
+}
+
 .podium {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
@@ -15,6 +41,17 @@
         display: grid;
         gap: $space-2xs;
         min-width: 0;
+        isolation: isolate;
+        --podium-lift: max(calc(var(--podium-step) * #{$lift-ratio}), 2.5rem);
+        transition: translate $lift-ease;
+
+        @include when-hover {
+            @include lifted;
+        }
+
+        &:has(:focus-visible) {
+            @include lifted;
+        }
     }
 
     &__player {
@@ -24,6 +61,7 @@
         padding: $space-2xs;
         text-align: center;
         border-radius: $radius-inner;
+        transition: translate $lift-ease;
         @include enter($anim-fade-down, $duration-slow, calc(var(--podium-delay, 0ms) + 200ms));
 
         @include when-hover {
@@ -46,6 +84,9 @@
         background: colors.$paper-dim;
         object-fit: cover;
         @include components.avatar-pop;
+        transition:
+            transform $duration-base $ease-spring,
+            translate $lift-ease;
 
         &--empty {
             @include components.avatar-fallback;
@@ -65,7 +106,10 @@
         font-size: var(--fluid-15-20);
         @include truncate;
         text-decoration: underline transparent;
-        @include transition((color, text-decoration-color), $duration-fast);
+        transition:
+            color $duration-fast $ease-out,
+            text-decoration-color $duration-fast $ease-out,
+            translate $lift-ease;
     }
 
     &__alias {
@@ -73,6 +117,7 @@
         font-weight: 500;
         color: colors.$ink-soft;
         margin-block: calc($space-2xs * -1) $space-4xs;
+        transition: translate $lift-ease;
     }
 
     &__score {
@@ -80,8 +125,11 @@
     }
 
     &__step {
+        position: relative;
         display: grid;
-        place-items: start center;
+        grid-template-rows: auto 1fr;
+        justify-items: center;
+        height: var(--podium-step);
         padding-top: $space-2xs;
         @include display(var(--fluid-36-52));
         color: colors.$ink;
@@ -91,6 +139,57 @@
         box-shadow: 4px 0 0 colors.$ink;
         transform-origin: bottom center;
         @include animate($anim-grow-y, $duration-slower, $ease-spring, var(--podium-delay, 0ms));
+
+        &::after {
+            content: '';
+            position: absolute;
+            z-index: -1;
+            top: 100%;
+            inset-inline: -2px;
+            height: calc(var(--podium-lift) + 1.5rem);
+            background: inherit;
+            border-inline: 2px solid colors.$ink;
+            box-shadow: 4px 0 0 colors.$ink;
+        }
+    }
+
+    &__stats {
+        align-self: stretch;
+        justify-self: stretch;
+        margin-bottom: calc(-1 * var(--podium-lift));
+        display: grid;
+        align-content: center;
+        gap: 0.15rem;
+        padding: $space-4xs $space-3xs;
+        font-family: $font-body;
+        font-size: $text-xs;
+        line-height: 1.15;
+        letter-spacing: normal;
+        opacity: 0;
+        translate: 0 0.4rem;
+        transition:
+            opacity $duration-fast $ease-out,
+            translate $duration-base $ease-out;
+
+        div {
+            display: flex;
+            justify-content: center;
+            align-items: baseline;
+            gap: 0.3em;
+            min-width: 0;
+            white-space: nowrap;
+        }
+
+        dd {
+            order: -1;
+            font-family: $font-display;
+            font-size: $text-base;
+        }
+
+        dt {
+            color: colors.$ink-soft;
+            font-weight: 600;
+        }
     }
 
     &__spot--3 {
@@ -105,18 +204,27 @@
         --podium-delay: 240ms;
     }
 
+    &__spot--1 {
+        --podium-step: var(--fluid-114-152);
+    }
+
+    &__spot--2 {
+        --podium-step: var(--fluid-84-112);
+    }
+
+    &__spot--3 {
+        --podium-step: var(--fluid-60-80);
+    }
+
     &__spot--1 &__step {
-        height: var(--fluid-114-152);
         background: colors.$banana;
     }
 
     &__spot--2 &__step {
-        height: var(--fluid-84-112);
         background: #dfe4ee;
     }
 
     &__spot--3 &__step {
-        height: var(--fluid-60-80);
         background: #eab18a;
     }
 
@@ -127,6 +235,14 @@
     @include breakpoint-down(small) {
         &__name {
             font-weight: 600;
+        }
+
+        &__stats {
+            font-size: $text-2xs;
+
+            dd {
+                font-size: $text-sm;
+            }
         }
     }
 }
