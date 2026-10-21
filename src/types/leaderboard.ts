@@ -22,7 +22,8 @@ export interface LeaderboardResponse {
     error?: string | null;
 }
 
-export const LEADERBOARD_SORTS = ['rank', 'games', 'winrate', 'wins', 'name'] as const;
+/** score: the rank order, sorted from the Score header */
+export const LEADERBOARD_SORTS = ['rank', 'score', 'games', 'winrate', 'wins', 'name'] as const;
 export type LeaderboardSort = (typeof LEADERBOARD_SORTS)[number];
 
 export interface LeaderboardSearch {
@@ -30,10 +31,13 @@ export interface LeaderboardSearch {
     size?: number | undefined;
     q?: string | undefined;
     sort?: LeaderboardSort | undefined;
+    /** the sort's opposite order */
+    reverse?: true | undefined;
     min?: number | undefined;
 }
 export interface LeaderboardView {
     sort?: LeaderboardSort;
+    reverse?: boolean;
     minGames?: number;
 }
 
@@ -47,6 +51,7 @@ export interface LeaderboardStats {
 
 export const LEADERBOARD_SORT_LABELS: Record<LeaderboardSort, string> = {
     rank: 'Rank',
+    score: 'Score',
     games: 'Most games',
     winrate: 'Best win rate',
     wins: 'Most wins',

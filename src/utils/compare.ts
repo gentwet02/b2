@@ -14,10 +14,10 @@ export const rateOf = (r: Wld | undefined) => (r ? winRate(r[0], r[1]) : null);
 export const formatRate = (rate: number | null, digits = 0) =>
     rate === null ? '–' : `${rate.toFixed(digits)}%`;
 
-/** "5–3", or "5–3–1" when there are draws */
-export const formatRecord = ([w, l, d]: Wld) => (d ? `${w}–${l}–${d}` : `${w}–${l}`);
+/** "5–3" (wins–losses), or "5–1–3" (wins–draws–losses) when there are draws */
+export const formatRecord = ([w, l, d]: Wld) => (d ? `${w}–${d}–${l}` : `${w}–${l}`);
 
-export const recordTitle = ([w, l, d]: Wld) => `${w} won, ${l} lost, ${d} drawn`;
+export const recordTitle = ([w, l, d]: Wld) => `${w} won, ${d} drawn, ${l} lost`;
 
 export const playerLabel = (
     p: { alias?: string | null | undefined; name?: string | null | undefined },
@@ -85,3 +85,9 @@ export function pickExtremes(records: Record<string, Wld>, min: number) {
     // one entry, or all at the same rate: no worst
     return { best, worst: rateOf(worst.record)! < rateOf(best.record)! ? worst : null };
 }
+
+/** A–Z comparator on a row's text (RecordTable's `label.sort`). */
+export const byText =
+    <T>(text: (row: T) => string) =>
+    (a: T, b: T) =>
+        text(a).localeCompare(text(b), undefined, { sensitivity: 'base', numeric: true });

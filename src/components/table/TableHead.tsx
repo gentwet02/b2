@@ -7,10 +7,11 @@ interface TableHeadProps {
     disableSorting: boolean;
     handleSort: (category: Category) => void;
     sortConfig: { key: null | string; direction: string };
+    isSortable?: (key: string) => boolean;
 }
 
 export default function TableHead(props: TableHeadProps) {
-    const { categories, disableSorting, handleSort, sortConfig } = props;
+    const { categories, disableSorting, handleSort, sortConfig, isSortable } = props;
 
     return (
         <thead className='table__head'>
@@ -24,18 +25,35 @@ export default function TableHead(props: TableHeadProps) {
                         typeof category === 'string'
                             ? convertString.toTitle(category)
                             : category.title;
+                    const key = typeof category === 'string' ? category : category.name;
+                    const sortable = isSortable ? isSortable(key) : !disableSorting;
+                    const active = sortConfig.key === key;
                     return (
                         <th
                             key={`table-head-${categoryName}`}
-                            className='table__head-title'
+                            className={`table__head-title${sortable ? ' table__head-title--sortable' : ''}`}
                             data-category={categoryName}
+                            aria-sort={
+                                active
+                                    ? sortConfig.direction === 'asc'
+                                        ? 'ascending'
+                                        : 'descending'
+                                    : undefined
+                            }
+                            title={
+                                sortable
+                                    ? active
+                                        ? 'Click to reverse the order'
+                                        : 'Click to sort'
+                                    : undefined
+                            }
                             onClick={() => {
-                                if (!disableSorting) handleSort(category);
+                                if (sortable) handleSort(category);
                             }}
                         >
                             <div className='table__table__header-cell-content'>
                                 <span>{convertString.toTitle(categoryTitle)}</span>
-                                {sortConfig.key === category && (
+                                {active && (
                                     <ChevronDownIcon
                                         className='table__table__header-cell-icon'
                                         rotate={sortConfig.direction === 'asc' ? true : false}

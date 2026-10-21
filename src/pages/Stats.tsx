@@ -4,12 +4,14 @@ import MapChip, { type MapChipOption } from '@/features/match/MapChip';
 import TowerChips from '@/features/match/TowerChips';
 import { ErrorState, Loading } from '@/components/status/Status';
 import { LoadoutLabel, MapLabel } from '@/features/compare/Labels';
-import RecordTable, { type RecordColumn } from '@/features/compare/RecordTable';
+import RecordTable from '@/features/compare/RecordTable';
 import { previousRange } from '@/config/compare';
 import {
     STATS_MAX_TOWERS,
     STATS_MIN_DEFAULT,
     STATS_MIN_GAMES,
+    STATS_MIN_PICK,
+    STATS_MIN_PICK_DEFAULT,
     STATS_PLAYERS,
     STATS_PLAYERS_DEFAULT,
     STATS_VIEW_DEFAULT,
@@ -19,7 +21,6 @@ import {
 import { useRankedPlayers } from '@/hooks/useRankedPlayers';
 import useSeasons from '@/hooks/useSeasons';
 import useStats from '@/hooks/useStats';
-import type { Wld } from '@/types/compare';
 import type { Stats as StatsData, StatsMapRow, StatsRow, StatsSearch } from '@/types/stats';
 import { heroImage } from '@/utils/assetOverrides';
 import {
@@ -30,6 +31,7 @@ import {
     playerLabel,
     rateOf,
     recordTitle,
+    byText,
 } from '@/utils/compare';
 import {
     formatHero,
@@ -45,7 +47,7 @@ import {
     splitList,
 } from '@/utils/format';
 import { getRouteApi, Link } from '@tanstack/react-router';
-import { useMemo, useState } from 'react';
+import { useMemo, useState, type ReactNode } from 'react';
 
 const routeApi = getRouteApi('/stats');
 
@@ -95,7 +97,6 @@ function VariantLabel({ hero, labels }: { hero: string; labels: StatsData['label
 function groupTitle(data: StatsData) {
     const where = data.season === 'all' ? 'every season' : seasonTitle(data.seasonName);
     if (data.mode === 'player' && data.player) return `${playerLabel(data.player)} in ${where}`;
-    if (data.mode === 'everyone') return `Every player in ${where}`;
     const range = data.players ?? STATS_PLAYERS_DEFAULT;
     const label = statsPlayersLabel(range).replace('Top', 'top').replace('All', 'all');
     const bounds = data.season === 'all' ? null : data.seasons[0]?.bounds;
@@ -165,11 +166,9 @@ function Summary({ data }: { data: StatsData }) {
             </div>
 
             <p className='versus-note'>
-                {data.mode === 'everyone'
-                    ? 'Both players of every recorded game are counted, so the overall win rate is 50%, and a mirror (same pick on both sides) counts as one win and one loss.'
-                    : data.mode === 'top' && data.season === 'all'
-                      ? 'Each season counts its own players in this range.'
-                      : null}
+                {data.mode === 'top' && data.season === 'all'
+                    ? 'Each season counts its own players in this range.'
+                    : null}
                 {data.missingSeasons.length > 0 &&
                     ` ${data.missingSeasons.length} season${data.missingSeasons.length > 1 ? 's are' : ' is'} skipped, their leaderboard isn't loaded yet.`}
             </p>
@@ -181,185 +180,203 @@ interface ResultsProps {
     data: StatsData;
     view: NonNullable<StatsSearch['view']>;
     min: number;
-    /** heroes: one row per variant */
+    /** minimum pick rate, in % */
+    minPick: number;
+    /** heroes, strats, maps: one row per variant (skin, classic / reversed) */
     split: boolean;
     /** strats: the 3 towers only, hero ignored */
     towersOnly: boolean;
     onFocus: (next: Partial<StatsSearch>) => void;
 }
 
-function Results({ data, view, min, split, towersOnly, onFocus }: ResultsProps) {
+interface TableSpec {
+    id: string;
+    rows: StatsRow[];
+    title: string;
+    render: (r: StatsRow) => ReactNode;
+    /** the row's name, for the A–Z sort */
+    name: (r: StatsRow) => string;
+    /** the filters "Focus →" sets, null: already focused */
+    focus: (r: StatsRow) => Partial<StatsSearch> | null;
+    pageSize?: number;
+    /** rows sent / rows there are, and what they are */
+    cut?: { total: number; noun: string };
+}
+
+function Results({ data, view, min, minPick, split, towersOnly, onFocus }: ResultsProps) {
     const groupGames = gamesOf(data.group);
-    const enough = <T extends { record: Wld }>(rows: T[]) =>
-        rows.filter((r) => gamesOf(r.record) >= min);
+    const pickOf = (r: StatsRow) => share(gamesOf(r.record), groupGames) ?? 0;
+    const keep = <T extends StatsRow>(rows: T[], pick: (r: T) => number) =>
+        rows.filter((r) => gamesOf(r.record) >= min && pick(r) >= minPick);
+    const empty =
+        minPick > 0
+            ? `Nothing with ${min}+ ${min === 1 ? 'game' : 'games'} and a ${minPick}%+ pick rate here.`
+            : `Nothing with ${min}+ ${min === 1 ? 'game' : 'games'} here.`;
 
-    const pickColumn: RecordColumn<StatsRow> = {
-        title: 'Pick rate',
-        numeric: true,
-        render: (r) => formatShare(share(gamesOf(r.record), groupGames)),
-        sort: (a, b) => gamesOf(b.record) - gamesOf(a.record),
+    const focusButton = (next: Partial<StatsSearch> | null) =>
+        next ? (
+            <button
+                type='button'
+                className='versus-drill stats-focus'
+                onClick={() => onFocus(next)}
+            >
+                Focus →
+            </button>
+        ) : null;
+
+    const table = (spec: TableSpec) => {
+        const shown = keep(spec.rows, pickOf);
+        return (
+            <>
+                <RecordTable<StatsRow>
+                    key={spec.id}
+                    rows={shown}
+                    rowKey={(r) => r.key}
+                    label={{ title: spec.title, render: spec.render, sort: byText(spec.name) }}
+                    columns={[
+                        {
+                            title: 'Pick rate',
+                            numeric: true,
+                            render: (r) => formatShare(pickOf(r)),
+                            sort: (a, b) => gamesOf(b.record) - gamesOf(a.record),
+                        },
+                    ]}
+                    after={[{ title: '', render: (r) => focusButton(spec.focus(r)) }]}
+                    empty={empty}
+                    {...(spec.pageSize ? { pageSize: spec.pageSize } : {})}
+                />
+                {spec.cut && spec.cut.total > spec.rows.length && (
+                    <p className='versus-note'>
+                        The {formatNumber(spec.rows.length)} most played of{' '}
+                        {formatNumber(spec.cut.total)} {spec.cut.noun}.
+                    </p>
+                )}
+            </>
+        );
     };
-    const focusColumn = (render: (r: StatsRow) => Partial<StatsSearch> | null) => ({
-        title: '',
-        render: (r: StatsRow) => {
-            const next = render(r);
-            return next ? (
-                <button
-                    type='button'
-                    className='versus-drill stats-focus'
-                    onClick={() => onFocus(next)}
-                >
-                    Focus →
-                </button>
-            ) : null;
-        },
-    });
-    const empty = `No game with at least ${min} ${min === 1 ? 'game' : 'games'} here.`;
 
-    if (view === 'heroes' && split) {
-        const picked = data.filters.hero;
-        return (
-            <RecordTable<StatsRow>
-                key='variants'
-                rows={enough(data.heroVariants)}
-                rowKey={(r) => r.key}
-                label={{
-                    title: 'Hero',
-                    render: (r) => <VariantLabel hero={r.key} labels={data.labels} />,
-                }}
-                columns={[pickColumn]}
-                after={[
-                    focusColumn((r) => {
-                        const base = data.labels.variants[r.key]?.base ?? r.key;
-                        return picked?.hero === r.key
-                            ? null
-                            : { hero: formatHeroPick({ base, hero: r.key }) };
-                    }),
-                ]}
-                empty={empty}
-            />
-        );
-    }
+    const { filters, labels } = data;
+    const loadoutName = (key: string) => {
+        const { hero, towers } = parseLoadout(key);
+        return `${formatHero(hero)} ${towers.map(formatLabel).join(' ')}`;
+    };
+
     if (view === 'heroes') {
-        return (
-            <RecordTable<StatsRow>
-                key={view}
-                rows={enough(data.heroes)}
-                rowKey={(r) => r.key}
-                label={{
-                    title: 'Hero',
-                    render: (r) => <HeroLabel base={r.key} labels={data.labels} />,
-                }}
-                columns={[pickColumn]}
-                after={[
-                    focusColumn((r) =>
-                        r.key === data.filters.hero?.base && !data.filters.hero.hero
-                            ? null
-                            : { hero: r.key },
-                    ),
-                ]}
-                empty={empty}
-            />
-        );
-    }
-    if (view === 'towers') {
-        return (
-            <RecordTable<StatsRow>
-                key={view}
-                rows={enough(data.towers)}
-                rowKey={(r) => r.key}
-                label={{
-                    title: 'Tower',
-                    render: (r) => <span className='stats-tower'>{formatLabel(r.key)}</span>,
-                }}
-                columns={[pickColumn]}
-                after={[
-                    focusColumn((r) =>
-                        data.filters.towers.includes(r.key) ||
-                        data.filters.towers.length >= STATS_MAX_TOWERS
-                            ? null
-                            : { towers: joinList([...data.filters.towers, r.key]) },
-                    ),
-                ]}
-                empty={empty}
-                pageSize={60}
-            />
-        );
-    }
-    if (view === 'loadouts' && towersOnly) {
-        return (
-            <>
-                <RecordTable<StatsRow>
-                    key='trios'
-                    rows={enough(data.trios)}
-                    rowKey={(r) => r.key}
-                    label={{
-                        title: 'Towers',
-                        render: (r) => (
-                            <span className='stats-tower'>
-                                {r.key.split(',').map(formatLabel).join(' · ')}
-                            </span>
-                        ),
-                    }}
-                    columns={[pickColumn]}
-                    after={[
-                        focusColumn((r) =>
-                            [...data.filters.towers].sort().join(',') === r.key
-                                ? null
-                                : { towers: r.key },
-                        ),
-                    ]}
-                    empty={empty}
-                    pageSize={50}
-                />
-                {data.trioCount > data.trios.length && (
-                    <p className='versus-note'>
-                        The {formatNumber(data.trios.length)} most played of{' '}
-                        {formatNumber(data.trioCount)} tower picks.
-                    </p>
-                )}
-            </>
-        );
-    }
-    if (view === 'loadouts') {
-        const rows = enough(data.loadouts);
-        return (
-            <>
-                <RecordTable<StatsRow>
-                    key={view}
-                    rows={rows}
-                    rowKey={(r) => r.key}
-                    label={{
-                        title: 'Strat',
-                        render: (r) => <LoadoutLabel loadoutKey={r.key} labels={data.labels} />,
-                    }}
-                    columns={[pickColumn]}
-                    after={[
-                        focusColumn((r) => {
-                            const { hero, towers } = parseLoadout(r.key);
-                            return { hero, towers: joinList(towers) };
-                        }),
-                    ]}
-                    empty={empty}
-                    pageSize={50}
-                />
-                {data.loadoutCount > data.loadouts.length && (
-                    <p className='versus-note'>
-                        The {formatNumber(data.loadouts.length)} most played of{' '}
-                        {formatNumber(data.loadoutCount)} strats.
-                    </p>
-                )}
-            </>
-        );
+        return split
+            ? table({
+                  id: 'hero-variants',
+                  rows: data.heroVariants,
+                  title: 'Hero',
+                  render: (r) => <VariantLabel hero={r.key} labels={labels} />,
+                  name: (r) => formatHero(r.key),
+                  focus: (r) =>
+                      filters.hero?.hero === r.key
+                          ? null
+                          : {
+                                hero: formatHeroPick({
+                                    base: labels.variants[r.key]?.base ?? r.key,
+                                    hero: r.key,
+                                }),
+                            },
+              })
+            : table({
+                  id: 'heroes',
+                  rows: data.heroes,
+                  title: 'Hero',
+                  render: (r) => <HeroLabel base={r.key} labels={labels} />,
+                  name: (r) => formatHero(r.key),
+                  focus: (r) =>
+                      r.key === filters.hero?.base && !filters.hero.hero ? null : { hero: r.key },
+              });
     }
 
-    const focused = !!data.filters.hero || data.filters.towers.length > 0;
+    if (view === 'towers') {
+        return table({
+            id: 'towers',
+            rows: data.towers,
+            title: 'Tower',
+            render: (r) => <span className='stats-tower'>{formatLabel(r.key)}</span>,
+            name: (r) => formatLabel(r.key),
+            focus: (r) =>
+                filters.towers.includes(r.key) || filters.towers.length >= STATS_MAX_TOWERS
+                    ? null
+                    : { towers: joinList([...filters.towers, r.key]) },
+            pageSize: 60,
+        });
+    }
+
+    if (view === 'loadouts') {
+        if (towersOnly) {
+            return table({
+                id: 'trios',
+                rows: data.trios,
+                title: 'Towers',
+                render: (r) => (
+                    <span className='stats-tower'>
+                        {r.key.split(',').map(formatLabel).join(' · ')}
+                    </span>
+                ),
+                name: (r) => r.key.split(',').map(formatLabel).join(' '),
+                focus: (r) =>
+                    [...filters.towers].sort().join(',') === r.key ? null : { towers: r.key },
+                pageSize: 50,
+                cut: { total: data.trioCount, noun: 'tower picks' },
+            });
+        }
+        if (split) {
+            // the variants' portraits, keyed like the strat rows ("Quincy_Cyber")
+            const variantLabels = {
+                ...labels,
+                heroes: {
+                    ...labels.heroes,
+                    ...Object.fromEntries(
+                        Object.entries(labels.variants).map(([hero, v]) => [
+                            hero,
+                            { hero, portrait: v.portrait },
+                        ]),
+                    ),
+                },
+            };
+            return table({
+                id: 'loadout-variants',
+                rows: data.loadoutVariants,
+                title: 'Strat',
+                render: (r) => <LoadoutLabel loadoutKey={r.key} labels={variantLabels} />,
+                name: (r) => loadoutName(r.key),
+                focus: (r) => {
+                    const { hero, towers } = parseLoadout(r.key);
+                    const base = labels.variants[hero]?.base ?? hero;
+                    return { hero: formatHeroPick({ base, hero }), towers: joinList(towers) };
+                },
+                pageSize: 50,
+                cut: { total: data.loadoutVariantCount, noun: 'strats' },
+            });
+        }
+        return table({
+            id: 'loadouts',
+            rows: data.loadouts,
+            title: 'Strat',
+            render: (r) => <LoadoutLabel loadoutKey={r.key} labels={labels} />,
+            name: (r) => loadoutName(r.key),
+            focus: (r) => {
+                const { hero, towers } = parseLoadout(r.key);
+                return { hero, towers: joinList(towers) };
+            },
+            pageSize: 50,
+            cut: { total: data.loadoutCount, noun: 'strats' },
+        });
+    }
+
+    // maps: with a focus, the pick rate on each map; without one, how often each map is played
+    const focused = !!filters.hero || filters.towers.length > 0;
     const mapRows = split ? data.mapVariants : data.maps;
     const allMaps = mapRows.reduce((sum, m) => sum + m.total, 0);
-    const picked = data.filters.map
-        ? data.filters.map.variant
-            ? `${data.filters.map.base}:${data.filters.map.variant}`
-            : data.filters.map.base
+    const mapPick = (r: StatsMapRow) =>
+        (focused ? share(gamesOf(r.record), r.total) : share(r.total, allMaps)) ?? 0;
+    const picked = filters.map
+        ? filters.map.variant
+            ? `${filters.map.base}:${filters.map.variant}`
+            : filters.map.base
         : null;
     const reversible = new Set(
         data.options.maps
@@ -367,47 +384,31 @@ function Results({ data, view, min, split, towersOnly, onFocus }: ResultsProps) 
             .map((m) => m.key),
     );
     // split rows: "oasis" is the classic version when a reversed one exists
-    const pickOf = (key: string) =>
+    const pickKey = (key: string) =>
         split && !key.includes(':') && reversible.has(key) ? `${key}:classic` : key;
     return (
         <RecordTable<StatsMapRow>
-            key={split ? 'map-variants' : view}
-            rows={enough(mapRows)}
+            key={split ? 'map-variants' : 'maps'}
+            rows={keep(mapRows, mapPick)}
             rowKey={(r) => r.key}
             label={{
                 title: 'Map',
-                render: (r) => <MapLabel mapKey={r.key} labels={data.labels} />,
+                render: (r) => <MapLabel mapKey={r.key} labels={labels} />,
+                sort: byText((r) => formatMap(labels.maps[r.key]?.map ?? r.key)),
             }}
             columns={[
-                focused
-                    ? {
-                          title: 'Pick rate',
-                          numeric: true,
-                          render: (r) => formatShare(share(gamesOf(r.record), r.total)),
-                          sort: (a, b) =>
-                              (share(gamesOf(b.record), b.total) ?? 0) -
-                              (share(gamesOf(a.record), a.total) ?? 0),
-                      }
-                    : {
-                          title: 'Played',
-                          numeric: true,
-                          render: (r) => formatShare(share(r.total, allMaps)),
-                          sort: (a, b) => b.total - a.total,
-                      },
+                {
+                    title: focused ? 'Pick rate' : 'Played',
+                    numeric: true,
+                    render: (r) => formatShare(mapPick(r)),
+                    sort: (a, b) => mapPick(b) - mapPick(a),
+                },
             ]}
             after={[
                 {
                     title: '',
                     render: (r) =>
-                        pickOf(r.key) === picked ? null : (
-                            <button
-                                type='button'
-                                className='versus-drill stats-focus'
-                                onClick={() => onFocus({ map: pickOf(r.key) })}
-                            >
-                                Focus →
-                            </button>
-                        ),
+                        focusButton(pickKey(r.key) === picked ? null : { map: pickKey(r.key) }),
                 },
             ]}
             empty={empty}
@@ -427,6 +428,7 @@ export default function Stats() {
     const towers = splitList(search.towers).slice(0, STATS_MAX_TOWERS);
     const view = search.view ?? STATS_VIEW_DEFAULT;
     const min = search.min ?? STATS_MIN_DEFAULT;
+    const minPick = search.pick ?? STATS_MIN_PICK_DEFAULT;
     const split = !!search.variants;
     const towersOnly = !!search.towersOnly;
 
@@ -464,7 +466,6 @@ export default function Stats() {
                     band:
                         !merged.player &&
                         merged.band &&
-                        merged.players !== 'everyone' &&
                         previousRange(merged.players ?? STATS_PLAYERS_DEFAULT)
                             ? true
                             : undefined,
@@ -474,6 +475,10 @@ export default function Stats() {
                     view:
                         merged.view && merged.view !== STATS_VIEW_DEFAULT ? merged.view : undefined,
                     min: merged.min && merged.min !== STATS_MIN_DEFAULT ? merged.min : undefined,
+                    pick:
+                        merged.pick && merged.pick !== STATS_MIN_PICK_DEFAULT
+                            ? merged.pick
+                            : undefined,
                     variants: merged.variants || undefined,
                     towersOnly: merged.towersOnly || undefined,
                 };
@@ -524,8 +529,7 @@ export default function Stats() {
                 <div>
                     <h1 className='page__title'>Stats</h1>
                     <p className='page__subtitle'>
-                        How often heroes, towers and strats are picked, and how they do. Every
-                        record is from the side of the players picked below.
+                        How often heroes, towers and strats are picked, and how they do.
                     </p>
                 </div>
             </div>
@@ -586,7 +590,7 @@ export default function Stats() {
                                     onSelect={(next) => update({ players: next })}
                                 />
                             </div>
-                            {previous && players !== 'everyone' && (
+                            {previous && (
                                 <label className='versus-controls__band'>
                                     <input
                                         type='checkbox'
@@ -695,7 +699,9 @@ export default function Stats() {
                                         </button>
                                     ))}
                                 </div>
-                                {(view === 'heroes' || view === 'maps') && (
+                                {(view === 'heroes' ||
+                                    view === 'maps' ||
+                                    (view === 'loadouts' && !towersOnly)) && (
                                     <label className='versus-controls__band'>
                                         <input
                                             type='checkbox'
@@ -725,24 +731,44 @@ export default function Stats() {
                                         Include hero
                                     </label>
                                 )}
-                                <label className='stats-results__min'>
-                                    <span className='versus-controls__label'>Min. games</span>
-                                    <Dropdown
-                                        variant='compact'
-                                        options={STATS_MIN_GAMES.map((n) => ({
-                                            value: n,
-                                            label: String(n),
-                                        }))}
-                                        value={min}
-                                        aria-label='Minimum games'
-                                        onSelect={(n) => update({ min: n })}
-                                    />
-                                </label>
+                                <div className='stats-results__mins'>
+                                    <label className='stats-results__min'>
+                                        <span className='versus-controls__label'>Min. games</span>
+                                        <Dropdown
+                                            className='stats-results__select'
+                                            variant='compact'
+                                            options={STATS_MIN_GAMES.map((n) => ({
+                                                value: n,
+                                                label: String(n),
+                                            }))}
+                                            value={min}
+                                            aria-label='Minimum games'
+                                            onSelect={(n) => update({ min: n })}
+                                        />
+                                    </label>
+                                    <label className='stats-results__min'>
+                                        <span className='versus-controls__label'>
+                                            Min. pick rate
+                                        </span>
+                                        <Dropdown
+                                            className='stats-results__select'
+                                            variant='compact'
+                                            options={STATS_MIN_PICK.map((n) => ({
+                                                value: n,
+                                                label: n === 0 ? 'Any' : `${n}%`,
+                                            }))}
+                                            value={minPick}
+                                            aria-label='Minimum pick rate'
+                                            onSelect={(n) => update({ pick: n })}
+                                        />
+                                    </label>
+                                </div>
                             </div>
                             <Results
                                 data={data}
                                 view={view}
                                 min={min}
+                                minPick={minPick}
                                 split={split}
                                 towersOnly={towersOnly}
                                 onFocus={update}

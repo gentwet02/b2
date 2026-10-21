@@ -12,6 +12,15 @@
         user-select: none;
     }
 
+    th.table__head-title--sortable {
+        cursor: pointer;
+        @include transition(color, $duration-fast);
+
+        @include when-hover {
+            color: colors.$ink;
+        }
+    }
+
     &__header-cell-content {
         display: flex;
         align-items: center;
@@ -19,7 +28,6 @@
     }
 
     &__header-cell-icon {
-        color: colors.$bloon;
         @include animate($anim-pop-in, $duration-base, $ease-spring);
     }
 }

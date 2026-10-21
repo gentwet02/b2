@@ -18,6 +18,15 @@ interface TableProps {
     disableSearch?: boolean;
     disablePageSize?: boolean;
     disableSorting?: boolean;
+    /**
+     * Sorting done by the parent: the header shows `sort`, a click calls `onSort` with the
+     * column key (only for `sortable` columns). The rows are then shown in the given order.
+     */
+    sort?: { key: string; direction: 'asc' | 'desc' } | null | undefined;
+    onSort?: ((key: string) => void) | undefined;
+    sortable?: string[] | undefined;
+    /** extra controls, on the left of the page size selector */
+    controls?: ReactNode;
     searchText?: string[] | undefined;
     searchExact?: (string | undefined)[] | undefined;
     state?: TableStateInput | undefined;
@@ -61,6 +70,10 @@ export default function Table(props: TableProps) {
         searchExact,
         state,
         onStateChange,
+        sort,
+        onSort,
+        sortable,
+        controls,
     } = props;
 
     const [sortConfig, setSortConfig] = useState<SortConfig>({ key: null, direction: 'asc' });
@@ -98,7 +111,7 @@ export default function Table(props: TableProps) {
               )
             : [...data];
 
-        const key = sortConfig.key;
+        const key = onSort ? null : sortConfig.key;
         if (key) {
             const factor = sortConfig.direction === 'asc' ? 1 : -1;
             processedData.sort((a, b) => {
@@ -111,7 +124,7 @@ export default function Table(props: TableProps) {
         }
 
         return processedData;
-    }, [data, searchText, searchExact, searchTerm, sortConfig]);
+    }, [data, searchText, searchExact, searchTerm, sortConfig, onSort]);
 
     const totalPages = Math.max(1, Math.ceil(filteredAndSortedData.length / pageSize));
     // keep the page in range when the data shrinks (search, page size, refetch)
@@ -119,6 +132,10 @@ export default function Table(props: TableProps) {
 
     const handleSort = (category: Category) => {
         const key = categoryKey(category);
+        if (onSort) {
+            if (!sortable || sortable.includes(key)) onSort(key);
+            return;
+        }
         setSortConfig((previous) => ({
             key,
             direction: previous.key === key && previous.direction === 'asc' ? 'desc' : 'asc',
@@ -149,12 +166,17 @@ export default function Table(props: TableProps) {
                             searchPlaceHolder={searchPlaceHolder}
                         />
                     )}
-                    {!disablePageSize && (
-                        <TablePageSizeSelector
-                            pageSize={pageSize}
-                            onPageSizeChange={handlePageSize}
-                            pageSizeOptions={pageSizeOptions}
-                        />
+                    {(controls || !disablePageSize) && (
+                        <div className='table__controls-end'>
+                            {controls}
+                            {!disablePageSize && (
+                                <TablePageSizeSelector
+                                    pageSize={pageSize}
+                                    onPageSizeChange={handlePageSize}
+                                    pageSizeOptions={pageSizeOptions}
+                                />
+                            )}
+                        </div>
                     )}
                 </div>
             )}
@@ -163,8 +185,11 @@ export default function Table(props: TableProps) {
                     <TableHead
                         categories={columns}
                         handleSort={handleSort}
-                        sortConfig={sortConfig}
+                        sortConfig={onSort ? (sort ?? { key: null, direction: 'asc' }) : sortConfig}
                         disableSorting={disableSorting}
+                        isSortable={(key) =>
+                            onSort ? !sortable || sortable.includes(key) : !disableSorting
+                        }
                     />
                     <TableBody categories={columns} data={paginatedData} />
                 </table>

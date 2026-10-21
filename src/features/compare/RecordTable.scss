@@ -82,12 +82,10 @@
         @include bare-button;
         letter-spacing: inherit;
         text-transform: inherit;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.3rem;
         @include transition(color, $duration-fast);
-
-        &::after {
-            content: ' ↕';
-            opacity: 0.8;
-        }
 
         @include when-hover {
             color: colors.$ink;
@@ -95,11 +93,6 @@
 
         &--on {
             color: colors.$ink;
-
-            &::after {
-                content: ' ↓';
-                opacity: 1;
-            }
         }
     }
 

@@ -14,6 +14,14 @@
         gap: $space-s;
     }
 
+    &__controls-end {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: $space-xs $space-m;
+        margin-left: auto;
+    }
+
     &__scroll {
         overflow-x: auto;
         -webkit-overflow-scrolling: touch;

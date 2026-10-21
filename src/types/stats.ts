@@ -3,7 +3,7 @@ import type { SideFilterOptions } from './match';
 import type { HeroPick } from './tower';
 
 export type StatsSeason = number | 'all';
-export type StatsMode = 'player' | 'top' | 'everyone';
+export type StatsMode = 'player' | 'top';
 export type StatsView = 'heroes' | 'towers' | 'loadouts' | 'maps';
 
 /** A hero base, a tower, a loadout key ("Quincy|Alchemist,Druid,Ninja") or a map key. */
@@ -27,7 +27,7 @@ export interface Stats {
     season: StatsSeason;
     seasonName: string;
     mode: StatsMode;
-    /** range (top mode) or "everyone" */
+    /** leaderboard range (top mode) */
     players: string | null;
     band: boolean;
     player: { userId: string; name: string | null; alias: string | null } | null;
@@ -40,7 +40,7 @@ export interface Stats {
         seasonId: number;
         name: string;
         bounds: RankBounds | null;
-        /** players counted that season; null: everyone */
+        /** players counted that season */
         players: number | null;
     }[];
     missingSeasons: number[];
@@ -55,6 +55,9 @@ export interface Stats {
     /** most played first, at most 500 */
     loadouts: StatsRow[];
     loadoutCount: number;
+    /** strats with the exact hero variant: "Quincy_Cyber|Alchemist,Druid,Ninja", at most 500 */
+    loadoutVariants: StatsRow[];
+    loadoutVariantCount: number;
     /** strats without the hero: "Alchemist,Druid,Ninja", at most 500 */
     trios: StatsRow[];
     trioCount: number;
@@ -90,7 +93,7 @@ export interface StatsSearch {
     season?: StatsSeason | undefined;
     /** one player's id */
     player?: string | undefined;
-    /** a leaderboard range or "everyone" (default top 25) */
+    /** a leaderboard range (default top 25) */
     players?: string | undefined;
     band?: true | undefined;
     /** "oasis" (both versions), "oasis:classic" or "oasis:reversed" */
@@ -102,7 +105,9 @@ export interface StatsSearch {
     view?: StatsView | undefined;
     /** minimum games for a row */
     min?: number | undefined;
-    /** heroes and maps tables: one row per variant (skin, classic / reversed) */
+    /** minimum pick rate, in % */
+    pick?: number | undefined;
+    /** heroes, strats and maps tables: one row per variant (skin, classic / reversed) */
     variants?: true | undefined;
     /** strats table: the 3 towers only */
     towersOnly?: true | undefined;

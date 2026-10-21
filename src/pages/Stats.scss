@@ -43,10 +43,21 @@
         gap: $space-s;
     }
 
+    &__mins {
+        display: flex;
+        flex-wrap: wrap;
+        gap: $space-2xs $space-s;
+    }
+
     &__min {
         display: flex;
         align-items: center;
         gap: $space-2xs;
+    }
+
+    // narrow: the values are short ("250", "10%")
+    &__select {
+        width: 5.5rem;
     }
 }
 

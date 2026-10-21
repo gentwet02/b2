@@ -1,34 +1,18 @@
 @use '@/styles/utils/colors';
 @use '@/styles/utils' as *;
 
+// same as the stats page's small selectors: label on the left, narrow dropdown
 .leaderboard-filters {
     display: flex;
-    flex-wrap: wrap;
-    align-items: flex-end;
-    gap: $space-xs $space-s-m;
-    margin-bottom: $space-s;
-
-    &__field {
-        display: grid;
-        gap: $space-3xs;
-    }
+    align-items: center;
+    gap: $space-2xs;
 
     &__label {
-        font-size: $text-xs;
-        font-weight: 600;
+        @extend %eyebrow;
         color: colors.$ink-soft;
     }
 
-    &__reset {
-        min-height: 2.25rem;
-        @include enter($anim-pop-in, $duration-base);
-    }
-
-    @include breakpoint-down(small) {
-        margin-inline: $gutter;
-
-        &__field {
-            flex: 1 1 10rem;
-        }
+    &__select {
+        width: 5.5rem;
     }
 }

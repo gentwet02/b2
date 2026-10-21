@@ -39,7 +39,7 @@ import {
 import { MATCH_SORTS, type MatchesQuery, type MatchSort } from '@/types/match';
 import type { UserSearch } from '@/types/profile';
 import type { StatsSearch, StatsView } from '@/types/stats';
-import { STATS_MIN_GAMES, STATS_PLAYERS, STATS_VIEWS } from '@/config/stats';
+import { STATS_MIN_GAMES, STATS_MIN_PICK, STATS_PLAYERS, STATS_VIEWS } from '@/config/stats';
 import { COMPARE_RANGE_DEFAULT, COMPARE_RANGES } from './config/compare';
 
 const rootRoute = createRootRouteWithContext<{ queryClient: QueryClient }>()({
@@ -91,6 +91,7 @@ const leaderboardRoute = createRoute({
                     : undefined,
             q: q.trim() ? q : undefined,
             sort: LEADERBOARD_SORTS.includes(sort) && sort !== 'rank' ? sort : undefined,
+            reverse: [true, 1, '1', 'true'].includes(search.reverse as never) ? true : undefined,
             min: LEADERBOARD_MIN_GAMES.includes(min) && min > 0 ? min : undefined,
         };
     },
@@ -224,6 +225,11 @@ const statsRoute = createRoute({
             towers: text(search.towers, 130),
             view: STATS_VIEWS.some((v) => v.value === view) && view !== 'heroes' ? view : undefined,
             min: (STATS_MIN_GAMES as readonly number[]).includes(min) && min > 1 ? min : undefined,
+            pick:
+                (STATS_MIN_PICK as readonly number[]).includes(Number(search.pick)) &&
+                Number(search.pick) > 0
+                    ? Number(search.pick)
+                    : undefined,
             variants: [true, 1, '1', 'true'].includes(search.variants as never) ? true : undefined,
             towersOnly: [true, 1, '1', 'true'].includes(search.towersOnly as never)
                 ? true

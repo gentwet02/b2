@@ -86,9 +86,24 @@ export const seasonLabel = (seasonId: number) => `Season ${seasonId + 1}`;
 /** NK's season name without its "Event" suffix: "Season 31 Event" → "Season 31". */
 export const seasonTitle = (name: string) => name.replace(/\s*\bevent\b/gi, '').trim();
 
-/** Same as the server: several NK ids of one map share a key ("banana_depot_scene" → "bananadepot"). */
+/**
+ * Maps NK renamed over time: old id → current id. Same list as the server's (matchLabels.ts).
+ */
+const MAP_RENAMES: Record<string, string> = {
+    le_ruins: 'castle_ruins',
+    salmon_pool: 'salmon_ladder',
+    bloon_bot_factory: 'bot_factory',
+};
+
+/** The current id of a map: "salmon_pool" → "salmon_ladder" (the version suffix is kept). */
+export function currentMapId(map: string): string {
+    const [, base = map, suffix = ''] = /^(.*?)(_reversed)?$/.exec(map) ?? [];
+    return (MAP_RENAMES[base] ?? base) + suffix;
+}
+
+/** One key for every id of a map ("off_tide" / "offtide", "le_ruins" / "castle_ruins"…). */
 export function mapKey(map: string): string {
-    return map
+    return currentMapId(map)
         .toLowerCase()
         .replace(/_(scene|map_01)$/, '')
         .replace(/_/g, '');

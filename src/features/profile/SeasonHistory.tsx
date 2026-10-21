@@ -79,7 +79,7 @@ export default function SeasonHistory({ userId }: { userId: string }) {
                                         ) : (
                                             <span
                                                 className='lb-rate'
-                                                title={`${s.wins} won, ${s.losses} lost, ${s.draws} drawn`}
+                                                title={`${s.wins} won, ${s.draws} drawn, ${s.losses} lost`}
                                             >
                                                 <span className='lb-rate__value'>
                                                     {rate.toFixed(1)}%

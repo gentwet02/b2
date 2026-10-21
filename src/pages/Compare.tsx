@@ -10,6 +10,7 @@ import useSplitMaps from '@/hooks/useSplitMaps';
 import useVersus from '@/hooks/useVersus';
 import type { CompareSearch, Versus, VersusOpponent } from '@/types/compare';
 import {
+    formatLoadout,
     formatRate,
     formatRecord,
     gamesOf,
@@ -19,8 +20,9 @@ import {
     playerLabel,
     rateOf,
     recordTitle,
+    byText,
 } from '@/utils/compare';
-import { formatNumber, getAlias, seasonTitle, timeAgo } from '@/utils/format';
+import { formatMap, formatNumber, getAlias, seasonTitle, timeAgo } from '@/utils/format';
 import { getRouteApi, Link } from '@tanstack/react-router';
 import { useMemo, useState } from 'react';
 
@@ -140,6 +142,7 @@ function OpponentsSection({ data, search }: { data: Versus; search: CompareSearc
                 empty={`No game against these players ${inScope(data)}.`}
                 label={{
                     title: 'Player',
+                    sort: byText((o) => playerLabel(o)),
                     render: (o) => (
                         <span className='cmp-player'>
                             <Avatar id={o.userId} name={playerLabel(o)} size={28} />
@@ -211,7 +214,11 @@ function SeasonsSection({ data }: { data: Versus }) {
             <RecordTable
                 rows={rows}
                 rowKey={(s) => String(s.seasonId)}
-                label={{ title: 'Season', render: (s) => seasonTitle(s.name) }}
+                label={{
+                    title: 'Season',
+                    render: (s) => seasonTitle(s.name),
+                    sort: (a, b) => a.seasonId - b.seasonId,
+                }}
                 initialSort='none'
                 columns={
                     data.mode === 'top'
@@ -270,11 +277,17 @@ function MapsSection({ data }: { data: Versus }) {
                 label={{
                     title: 'Map',
                     render: (m) => <MapLabel mapKey={m.key} labels={labels} />,
+                    sort: byText((m) => formatMap(labels.maps[m.key]?.map ?? m.key)),
                 }}
             />
         </section>
     );
 }
+
+const loadoutName = (key: string) => {
+    const { hero, towers } = formatLoadout(key);
+    return `${hero} ${towers}`;
+};
 
 function LoadoutsSection({ data, name }: { data: Versus; name: string }) {
     const opponent = data.mode === 'player' ? data.opponents[0] : undefined;
@@ -292,6 +305,7 @@ function LoadoutsSection({ data, name }: { data: Versus; name: string }) {
                     label={{
                         title: 'Loadout',
                         render: (l) => <LoadoutLabel loadoutKey={l.key} labels={data.labels} />,
+                        sort: byText((l) => loadoutName(l.key)),
                     }}
                 />
             </section>
@@ -308,6 +322,7 @@ function LoadoutsSection({ data, name }: { data: Versus; name: string }) {
                     label={{
                         title: 'Loadout',
                         render: (l) => <LoadoutLabel loadoutKey={l.key} labels={data.labels} />,
+                        sort: byText((l) => loadoutName(l.key)),
                     }}
                 />
             </section>

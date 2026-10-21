@@ -5,11 +5,11 @@ import useLeaderboardStats from '@/hooks/useLeaderboardStats';
 import usePlayerAvatar from '@/hooks/usePlayerAvatar';
 import usePlayerAvatars from '@/hooks/usePlayerAvatars';
 import { useRankedPlayers } from '@/hooks/useRankedPlayers';
-import type { LeaderboardPlayer, LeaderboardView } from '@/types/leaderboard';
+import type { LeaderboardPlayer, LeaderboardSort, LeaderboardView } from '@/types/leaderboard';
 import type { Row, TableState, TableStateCause, TableStateInput } from '@/types/table';
 import { formatNumber, getAlias } from '@/utils/format';
 import { Link } from '@tanstack/react-router';
-import { useMemo } from 'react';
+import { useMemo, type ReactNode } from 'react';
 
 export interface RankedPlayer extends LeaderboardPlayer {
     rank: number;
@@ -51,6 +51,10 @@ interface LeaderboardScoreProps {
     itemsPerPage?: number | undefined;
     range?: [number, number] | undefined;
     view?: LeaderboardView | undefined;
+    /** a click on a column header: sort by it, or reverse it when it's already the sort */
+    onViewChange?: ((patch: LeaderboardView) => void) | undefined;
+    /** extra controls next to the page size selector */
+    controls?: ReactNode;
     tableState?: TableStateInput | undefined;
     onTableStateChange?: ((next: TableState, cause: TableStateCause) => void) | undefined;
 }
@@ -66,7 +70,16 @@ interface Line {
 
 const displayName = (p: LeaderboardPlayer) => p.alias || p.name;
 
-function compare(sort: LeaderboardView['sort'], a: Line, b: Line) {
+/** `dir` -1: the sort's opposite order (players without a win rate stay last). */
+function compare(sort: LeaderboardView['sort'], a: Line, b: Line, dir: 1 | -1 = 1) {
+    const byRank = dir * (a.player.rank - b.player.rank);
+    if (sort === 'winrate' && (a.rate === null || b.rate === null)) {
+        return (a.rate === null ? 1 : 0) - (b.rate === null ? 1 : 0) || byRank;
+    }
+    return dir * order(sort, a, b) || byRank;
+}
+
+function order(sort: LeaderboardView['sort'], a: Line, b: Line) {
     const byRank = a.player.rank - b.player.rank;
     switch (sort) {
         case 'games':
@@ -89,6 +102,16 @@ function compare(sort: LeaderboardView['sort'], a: Line, b: Line) {
     }
 }
 
+/** Table column → leaderboard sort, and the sort's first direction. */
+const HEADER_SORTS: Record<string, { sort: LeaderboardSort; first: 'asc' | 'desc' }> = {
+    rank: { sort: 'rank', first: 'asc' },
+    player: { sort: 'name', first: 'asc' },
+    // the score order is the rank order: highest first
+    score: { sort: 'score', first: 'desc' },
+    games: { sort: 'games', first: 'desc' },
+    'win-rate': { sort: 'winrate', first: 'desc' },
+};
+
 export default function LeaderboardScore(props: LeaderboardScoreProps) {
     const {
         season,
@@ -96,6 +119,8 @@ export default function LeaderboardScore(props: LeaderboardScoreProps) {
         itemsPerPage = 25,
         range,
         view,
+        onViewChange,
+        controls,
         tableState,
         onTableStateChange,
     } = props;
@@ -105,6 +130,29 @@ export default function LeaderboardScore(props: LeaderboardScoreProps) {
 
     const sort = view?.sort ?? 'rank';
     const minGames = view?.minGames ?? 0;
+
+    // the header shows the current sort; a second click on it reverses the order
+    const headerKey = Object.keys(HEADER_SORTS).find((key) => HEADER_SORTS[key]!.sort === sort);
+    const headerSort = headerKey
+        ? {
+              key: headerKey,
+              direction:
+                  (HEADER_SORTS[headerKey]!.first === 'asc') !== !!view?.reverse
+                      ? ('asc' as const)
+                      : ('desc' as const),
+          }
+        : null;
+    const sortBy = onViewChange
+        ? (key: string) => {
+              const next = HEADER_SORTS[key];
+              if (!next) return;
+              onViewChange(
+                  next.sort === sort
+                      ? { reverse: !view?.reverse }
+                      : { sort: next.sort, reverse: false },
+              );
+          }
+        : undefined;
 
     const lines = useMemo(() => {
         const visible = range ? players.slice(range[0] - 1, range[1]) : players;
@@ -120,8 +168,9 @@ export default function LeaderboardScore(props: LeaderboardScoreProps) {
             };
         });
         if (range) return all;
-        return all.filter((l) => l.games >= minGames).sort((a, b) => compare(sort, a, b));
-    }, [players, range, stats, sort, minGames]);
+        const dir = view?.reverse ? -1 : 1;
+        return all.filter((l) => l.games >= minGames).sort((a, b) => compare(sort, a, b, dir));
+    }, [players, range, stats, sort, minGames, view?.reverse]);
 
     const rows = useMemo(
         () =>
@@ -149,7 +198,7 @@ export default function LeaderboardScore(props: LeaderboardScoreProps) {
                         ) : (
                             <span
                                 className='lb-rate'
-                                title={`${wins} won, ${losses} lost, ${draws} drawn`}
+                                title={`${wins} won, ${draws} drawn, ${losses} lost`}
                             >
                                 <span className='lb-rate__value'>{rate.toFixed(0)}%</span>
                                 <span className='lb-rate__bar' aria-hidden='true'>
@@ -200,7 +249,11 @@ export default function LeaderboardScore(props: LeaderboardScoreProps) {
                     { name: 'win-rate', title: 'Win rate' },
                 ]}
                 data={rows}
-                disableSorting
+                sort={headerSort}
+                onSort={range ? undefined : sortBy}
+                sortable={range ? [] : Object.keys(HEADER_SORTS)}
+                controls={controls}
+                disableSorting={!!range}
                 disableSearch={!!range}
                 disablePageSize={!!range}
                 itemsPerPage={range ? Math.max(1, rows.length) : itemsPerPage}

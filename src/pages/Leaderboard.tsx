@@ -34,6 +34,7 @@ export default function Leaderboard() {
 
     const view = {
         sort: search.sort ?? 'rank',
+        reverse: !!search.reverse,
         minGames: search.min ?? 0,
     } satisfies Required<LeaderboardView>;
 
@@ -43,6 +44,7 @@ export default function Leaderboard() {
             search: (prev) => ({
                 ...prev,
                 sort: next.sort !== 'rank' ? next.sort : undefined,
+                reverse: next.reverse ? true : undefined,
                 min: next.minGames > 0 ? next.minGames : undefined,
                 page: undefined,
             }),
@@ -108,12 +110,13 @@ export default function Leaderboard() {
                     </button>
                 </div>
             </div>
-            <LeaderboardFilters view={view} onChange={onViewChange} />
             <LeaderboardScore
                 key={season}
                 season={season}
                 live={live}
                 view={view}
+                onViewChange={onViewChange}
+                controls={<LeaderboardFilters view={view} onChange={onViewChange} />}
                 itemsPerPage={LEADERBOARD_DEFAULT_SIZE}
                 tableState={{ page: search.page, pageSize: search.size, search: search.q }}
                 onTableStateChange={onTableStateChange}
