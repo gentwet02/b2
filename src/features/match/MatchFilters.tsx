@@ -9,19 +9,12 @@ import {
     SORT_LABELS,
 } from '@/types/match';
 import type { HeroPick } from '@/types/tower';
-import {
-    formatHeroPick,
-    formatMap,
-    formatNumber,
-    joinList,
-    parseHero,
-    seasonLabel,
-    splitList,
-} from '@/utils/format';
+import { formatHeroPick, joinList, parseHero, seasonLabel, splitList } from '@/utils/format';
 import PlayerSearch from './PlayerSearch';
 import SideFilters from './SideFilters';
 import HeroChips from './HeorChips';
 import TowerChips from './TowerChips';
+import MapChip from './MapChip';
 
 const SORT_OPTIONS = (Object.keys(SORT_LABELS) as MatchSort[]).map((value) => ({
     value,
@@ -90,10 +83,10 @@ export default function MatchFilters(props: MatchFiltersProps) {
                 sameSide: undefined,
                 player: name || undefined,
                 heroes: heroList(
-                    [...heroes, ...heroes2.filter((h) => !heroes.some((p) => p.base === h.base))].slice(
-                        0,
-                        maxHeroes,
-                    ),
+                    [
+                        ...heroes,
+                        ...heroes2.filter((h) => !heroes.some((p) => p.base === h.base)),
+                    ].slice(0, maxHeroes),
                 ),
                 towers: joinList([...new Set([...towers, ...towers2])].slice(0, maxTowers)),
                 player2: undefined,
@@ -108,21 +101,6 @@ export default function MatchFilters(props: MatchFiltersProps) {
         value: s.id,
         label: `${seasonLabel(s.id)}${s.live ? ' (live)' : ''}`,
     }));
-
-    const mapOptions = [
-        { value: '', label: 'Any map' },
-        // keep a map from the URL selectable even when it has no match in this season
-        ...(query.map && !options?.maps.some((m) => m.key === query.map)
-            ? [{ value: query.map, label: `${query.map} (0)` }]
-            : []),
-        ...(options?.maps ?? [])
-            .slice()
-            .sort((a, b) => formatMap(a.map).localeCompare(formatMap(b.map)))
-            .map((m) => ({
-                value: m.key,
-                label: `${formatMap(m.map)} (${formatNumber(m.count)})`,
-            })),
-    ];
 
     return (
         <section className='match-filters' aria-label='Filters'>
@@ -224,14 +202,12 @@ export default function MatchFilters(props: MatchFiltersProps) {
 
             <div className='match-filters__row'>
                 <div className='match-filters__field match-filters__field--map'>
-                    <label htmlFor='match-filters-map' className='match-filters__label'>
-                        Map
-                    </label>
-                    <Dropdown
-                        id='match-filters-map'
-                        options={mapOptions}
-                        value={query.map ?? ''}
-                        onSelect={(map) => onChange({ map: map || undefined })}
+                    <span className='match-filters__label'>Map</span>
+                    <MapChip
+                        value={query.map}
+                        options={options?.maps ?? []}
+                        placeholder='+ Any map'
+                        onChange={(map) => onChange({ map })}
                     />
                 </div>
                 <label className='match-filters__toggle'>

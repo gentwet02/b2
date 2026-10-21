@@ -109,3 +109,15 @@ export function getAlias(
     if (!name) return null;
     return player.alias && !cleanStr(player.alias).match(cleanStr(name)) ? player.alias : null;
 }
+
+const REVERSED_MAP = /_reversed$/;
+
+/** "oasis_reversed" is the reversed version of "oasis". */
+export const isReversedMap = (map: string) => REVERSED_MAP.test(map);
+
+/** Key of a map's base, both versions together: "oasis_reversed" → "oasis". */
+export const mapBaseKey = (map: string) => mapKey(map.replace(REVERSED_MAP, ''));
+
+/** The map filter that picks exactly this map: "oasis:reversed" or "oasis:classic". */
+export const mapFilterOf = (map: string) =>
+    `${mapBaseKey(map)}:${isReversedMap(map) ? 'reversed' : 'classic'}`;

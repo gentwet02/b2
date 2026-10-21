@@ -27,6 +27,7 @@ import Leaderboard from '@/pages/Leaderboard';
 import LeaderboardIndex from '@/pages/LeaderboardIndex';
 import MatchesHistory from '@/pages/MatchesHistory';
 import NotFound from '@/pages/NotFound';
+import Stats from '@/pages/Stats';
 import User from '@/pages/User';
 import { queryClient } from '@/queryClient';
 import type { CompareSearch } from '@/types/compare';
@@ -37,6 +38,8 @@ import {
 } from '@/types/leaderboard';
 import { MATCH_SORTS, type MatchesQuery, type MatchSort } from '@/types/match';
 import type { UserSearch } from '@/types/profile';
+import type { StatsSearch, StatsView } from '@/types/stats';
+import { STATS_MIN_GAMES, STATS_PLAYERS, STATS_VIEWS } from '@/config/stats';
 import { COMPARE_RANGE_DEFAULT, COMPARE_RANGES } from './config/compare';
 
 const rootRoute = createRootRouteWithContext<{ queryClient: QueryClient }>()({
@@ -178,6 +181,58 @@ const compareRoute = createRoute({
     component: Compare,
 });
 
+const statsRoute = createRoute({
+    getParentRoute: () => rootRoute,
+    path: '/stats',
+    validateSearch: (search: Record<string, unknown>): StatsSearch => {
+        const text = (value: unknown, max = 40) =>
+            typeof value === 'string' && /^[A-Za-z0-9_,]+$/.test(value.trim())
+                ? value.trim().slice(0, max)
+                : undefined;
+        const season = Number(search.season);
+        const player =
+            typeof search.player === 'string' && /^[a-z0-9]{8,64}$/i.test(search.player)
+                ? search.player
+                : undefined;
+        const players = search.players != null ? String(search.players) : '';
+        const view = search.view as StatsView;
+        const min = Number(search.min);
+        return {
+            season:
+                search.season === 'all'
+                    ? 'all'
+                    : search.season != null && Number.isInteger(season) && season >= 0
+                      ? season
+                      : undefined,
+            player,
+            players:
+                !player && STATS_PLAYERS.some((p) => p.value === players) && players !== 't25'
+                    ? players
+                    : undefined,
+            band:
+                !player && [true, 1, '1', 'true'].includes(search.band as never) ? true : undefined,
+            map:
+                typeof search.map === 'string' &&
+                /^[a-z0-9]+(:(classic|reversed))?$/.test(search.map)
+                    ? search.map
+                    : undefined,
+            hero:
+                typeof search.hero === 'string' &&
+                /^[A-Za-z0-9_]+(:[A-Za-z0-9_]+)?$/.test(search.hero)
+                    ? search.hero.slice(0, 82)
+                    : undefined,
+            towers: text(search.towers, 130),
+            view: STATS_VIEWS.some((v) => v.value === view) && view !== 'heroes' ? view : undefined,
+            min: (STATS_MIN_GAMES as readonly number[]).includes(min) && min > 1 ? min : undefined,
+            variants: [true, 1, '1', 'true'].includes(search.variants as never) ? true : undefined,
+            towersOnly: [true, 1, '1', 'true'].includes(search.towersOnly as never)
+                ? true
+                : undefined,
+        };
+    },
+    component: Stats,
+});
+
 const routeTree = rootRoute.addChildren([
     homeRoute,
     leaderboardIndexRoute,
@@ -185,6 +240,7 @@ const routeTree = rootRoute.addChildren([
     matchesRoute,
     userRoute,
     compareRoute,
+    statsRoute,
 ]);
 
 export const router = createRouter({

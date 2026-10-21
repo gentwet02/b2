@@ -24,6 +24,14 @@ export default function Header() {
                     >
                         Matches
                     </Link>
+                    <Link
+                        to='/stats'
+                        className='header__link'
+                        activeProps={{ className: 'header__link--active' }}
+                        activeOptions={{ includeSearch: false }}
+                    >
+                        Stats
+                    </Link>
                 </nav>
             </div>
         </header>

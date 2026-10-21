@@ -1,0 +1,15 @@
+@use '@/styles/utils/colors';
+@use '@/styles/utils' as *;
+
+// same look as the hero chip (HeorChips.scss), with a rounded-square map thumbnail
+.chip-filter--hero {
+    background: colors.$sky;
+    padding-left: 0.3rem;
+}
+
+.chip-filter__img.chip-filter__img--map {
+    @include size(1.6rem);
+    border-radius: 0.4rem;
+    border: 1.5px solid colors.$ink;
+    object-fit: cover;
+}

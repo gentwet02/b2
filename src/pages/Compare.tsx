@@ -6,6 +6,7 @@ import RecordTable from '@/features/compare/RecordTable';
 import VersusControls from '@/features/compare/VersusControls';
 import { COMPARE_RANGE_DEFAULT, previousRange, rangeLabel } from '@/config/compare';
 import useOpponentsMet from '@/hooks/useOpponentsMet';
+import useSplitMaps from '@/hooks/useSplitMaps';
 import useVersus from '@/hooks/useVersus';
 import type { CompareSearch, Versus, VersusOpponent } from '@/types/compare';
 import {
@@ -13,13 +14,15 @@ import {
     formatRecord,
     gamesOf,
     inScope,
+    mergeMapVersions,
+    pickList,
     playerLabel,
     rateOf,
     recordTitle,
 } from '@/utils/compare';
 import { formatNumber, getAlias, seasonTitle, timeAgo } from '@/utils/format';
 import { getRouteApi, Link } from '@tanstack/react-router';
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 
 const routeApi = getRouteApi('/user/$userId/compare');
 
@@ -238,17 +241,35 @@ function SeasonsSection({ data }: { data: Versus }) {
 }
 
 function MapsSection({ data }: { data: Versus }) {
+    const [split, setSplit] = useSplitMaps();
+    const merged = useMemo(
+        () => mergeMapVersions(data.total.maps, data.labels),
+        [data.total.maps, data.labels],
+    );
+    const together = merged.hasReversed && !split;
+    const rows = together ? pickList(merged.maps) : data.total.mapList;
+    const labels = together ? merged.labels : data.labels;
     return (
         <section className='profile-panel'>
             <div className='profile-panel__head'>
                 <h2 className='profile-panel__title'>Maps</h2>
+                {merged.hasReversed && (
+                    <label className='h2h-highlights__split'>
+                        <input
+                            type='checkbox'
+                            checked={split}
+                            onChange={(event) => setSplit(event.target.checked)}
+                        />
+                        Split reversed maps
+                    </label>
+                )}
             </div>
             <RecordTable
-                rows={data.total.mapList}
+                rows={rows}
                 rowKey={(m) => m.key}
                 label={{
                     title: 'Map',
-                    render: (m) => <MapLabel mapKey={m.key} labels={data.labels} />,
+                    render: (m) => <MapLabel mapKey={m.key} labels={labels} />,
                 }}
             />
         </section>

@@ -8,8 +8,10 @@ import useSeasons from '@/hooks/useSeasons';
 import type { MatchesQuery, MatchPick } from '@/types/match';
 import {
     formatNumber,
+    isReversedMap,
     joinList,
-    mapKey,
+    mapBaseKey,
+    mapFilterOf,
     parseHero,
     seasonLabel,
     splitList,
@@ -40,8 +42,10 @@ export default function MatchesHistory() {
     const query = routeApi.useSearch();
     const navigate = routeApi.useNavigate();
 
-    const setQuery = (patch: Partial<MatchesQuery>, options?: Pick<NavigateOptions, 'viewTransition'>) =>
-        navigate({ search: (prev) => ({ ...prev, ...patch }), replace: true, ...options });
+    const setQuery = (
+        patch: Partial<MatchesQuery>,
+        options?: Pick<NavigateOptions, 'viewTransition'>,
+    ) => navigate({ search: (prev) => ({ ...prev, ...patch }), replace: true, ...options });
 
     const [text, setText] = useParamText(query.player, (player) => setQuery({ player }));
     // same player mode: the other side's name
@@ -83,7 +87,10 @@ export default function MatchesHistory() {
     // clicking a hero, tower or map on a card adds it to the filters
     const pick = ({ kind, value }: MatchPick) => {
         if (kind === 'map') {
-            setQuery({ map: mapKey(value) });
+            // the exact version when the map has a reversed one, else just the map
+            const base = mapBaseKey(value);
+            const versions = options?.maps.find((m) => m.key === base)?.variants.length ?? 0;
+            setQuery({ map: isReversedMap(value) || versions > 1 ? mapFilterOf(value) : base });
         } else if (query.sameSide) {
             // same player mode: on the first side with room for it
             const key = kind === 'tower' ? 'towers' : 'heroes';

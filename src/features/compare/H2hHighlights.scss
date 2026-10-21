@@ -1,4 +1,16 @@
+@use '@/styles/components';
 @use '@/styles/utils' as *;
+
+.h2h-highlights-wrap {
+    display: grid;
+    gap: $space-2xs;
+}
+
+.h2h-highlights__split {
+    justify-self: end;
+    font-size: $text-sm;
+    @include components.toggle;
+}
 
 .h2h-highlights {
     display: grid;

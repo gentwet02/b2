@@ -50,7 +50,7 @@ export interface MatchesQuery {
     heroes?: string | undefined;
     /** up to 6, all of them in the match */
     towers?: string | undefined;
-    /** map key, see MatchFilterOptions.maps */
+    /** map key, see MatchFilterOptions.maps: "oasis", "oasis:classic" or "oasis:reversed" */
     map?: string | undefined;
     sort?: MatchSort | undefined;
     /**
@@ -107,7 +107,14 @@ export interface MatchFilterOptions extends SideFilterOptions {
     seasonId: number;
     /** same player mode: the options of side 1 and side 2 */
     sides?: [SideFilterOptions, SideFilterOptions];
-    maps: { key: string; map: string; count: number }[];
+    /** base maps: classic and reversed versions together, counted apart in `variants` */
+    maps: {
+        key: string;
+        map: string;
+        count: number;
+        image: string | null;
+        variants: { variant: 'classic' | 'reversed'; count: number }[];
+    }[];
     sorts: MatchSort[];
     maxHeroes: number;
     maxTowers: number;
