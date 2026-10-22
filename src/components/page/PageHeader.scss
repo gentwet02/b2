@@ -1,0 +1,40 @@
+@use '@/styles/utils/colors';
+@use '@/styles/utils' as *;
+
+.page {
+    &__head {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: flex-end;
+        justify-content: space-between;
+        gap: $space-s;
+    }
+
+    &__title {
+        @include display($text-5xl);
+    }
+
+    &__subtitle {
+        color: colors.$ink-soft;
+        margin-top: $space-3xs;
+    }
+
+    &__actions {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: $space-xs;
+    }
+
+    @include breakpoint-down(small) {
+        &__head {
+            margin-inline: $gutter;
+        }
+
+        &__actions > .button {
+            min-height: 2.25rem;
+            padding: $space-2xs $space-s;
+            font-size: $text-md;
+        }
+    }
+}

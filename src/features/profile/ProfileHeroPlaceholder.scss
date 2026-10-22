@@ -1,0 +1,27 @@
+@use '@/styles/utils/colors';
+@use '@/styles/utils' as *;
+
+// while the profile loads (the base styles come from ProfileHero.scss)
+.profile-hero {
+    &--placeholder &__name {
+        color: colors.$ink-soft;
+    }
+
+    &__banner--empty {
+        display: block;
+        background: colors.$paper-dim;
+    }
+
+    &__avatar-img--empty {
+        display: block;
+        border: 2px dashed colors.$line;
+    }
+
+    .status--error {
+        box-shadow: none;
+        border-width: 1.5px;
+        padding: $space-s-m;
+        justify-items: start;
+        text-align: left;
+    }
+}

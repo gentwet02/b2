@@ -1,25 +1,25 @@
 import type { NavigateOptions } from '@tanstack/react-router';
 import Dropdown from '@/components/dropdown/Dropdown';
-import { SIDE_MAX_HEROES, SIDE_MAX_TOWERS } from '@/config/match';
-import type { SeasonSummary } from '@/types/info';
+import HeroChips from '@/components/filter-chips/HeroChips';
+import MapChip from '@/components/filter-chips/MapChip';
+import TowerChips from '@/components/filter-chips/TowerChips';
+import SeasonSelect from '@/components/season-select/SeasonSelect';
 import {
-    type MatchFilterOptions,
-    type MatchesQuery,
-    type MatchSort,
-    SORT_LABELS,
-} from '@/types/match';
-import type { HeroPick } from '@/types/tower';
-import { formatHeroPick, joinList, parseHero, seasonLabel, splitList } from '@/utils/format';
-import HeroChips from './HeorChips';
-import MapChip from './MapChip';
+    MATCH_MAX_HEROES,
+    MATCH_MAX_TOWERS,
+    MATCH_SORT_DEFAULT,
+    MATCH_SORT_OPTIONS,
+    SIDE_MAX_HEROES,
+    SIDE_MAX_TOWERS,
+} from '@/config/match';
+import type { HeroPick } from '@/types/hero';
+import type { MatchFilterOptions, MatchesQuery } from '@/types/match';
+import type { SeasonSummary } from '@/types/season';
+import { formatHeroPick, parseHero } from '@/utils/hero';
+import { joinList, splitList } from '@/utils/search';
+import { urlSeason } from '@/utils/season';
 import PlayerSearch from './PlayerSearch';
 import SideFilters from './SideFilters';
-import TowerChips from './TowerChips';
-
-const SORT_OPTIONS = (Object.keys(SORT_LABELS) as MatchSort[]).map((value) => ({
-    value,
-    label: SORT_LABELS[value],
-}));
 
 interface MatchFiltersProps {
     query: MatchesQuery;
@@ -56,8 +56,8 @@ export default function MatchFilters(props: MatchFiltersProps) {
     const towers = splitList(query.towers);
     const heroes2 = splitList(query.heroes2).map(parseHero);
     const towers2 = splitList(query.towers2);
-    const maxHeroes = options?.maxHeroes ?? 2;
-    const maxTowers = options?.maxTowers ?? 6;
+    const maxHeroes = options?.maxHeroes ?? MATCH_MAX_HEROES;
+    const maxTowers = options?.maxTowers ?? MATCH_MAX_TOWERS;
 
     const heroList = (next: HeroPick[]) => joinList(next.map(formatHeroPick));
 
@@ -97,11 +97,6 @@ export default function MatchFilters(props: MatchFiltersProps) {
         );
     };
 
-    const seasonOptions = seasons.map((s) => ({
-        value: s.id,
-        label: `${seasonLabel(s.id)}${s.live ? ' (live)' : ''}`,
-    }));
-
     return (
         <section className='match-filters' aria-label='Filters'>
             <div className='match-filters__row'>
@@ -119,10 +114,10 @@ export default function MatchFilters(props: MatchFiltersProps) {
                     </label>
                     <Dropdown
                         id='match-filters-sort'
-                        options={SORT_OPTIONS}
-                        value={query.sort ?? 'newest'}
+                        options={MATCH_SORT_OPTIONS}
+                        value={query.sort ?? MATCH_SORT_DEFAULT}
                         onSelect={(sort) =>
-                            onChange({ sort: sort === 'newest' ? undefined : sort })
+                            onChange({ sort: sort === MATCH_SORT_DEFAULT ? undefined : sort })
                         }
                     />
                 </div>
@@ -131,14 +126,16 @@ export default function MatchFilters(props: MatchFiltersProps) {
                         <label htmlFor='match-filters-season' className='match-filters__label'>
                             Season
                         </label>
-                        <Dropdown
+                        <SeasonSelect
                             id='match-filters-season'
-                            options={seasonOptions}
-                            value={seasonId ?? ''}
+                            seasons={seasons}
+                            liveSeason={liveSeason}
+                            value={seasonId}
                             placeholder='Season'
-                            onSelect={(id) =>
+                            onChange={(season) =>
+                                // another season has other heroes, towers and maps
                                 onChange({
-                                    season: id === liveSeason ? undefined : id,
+                                    season: urlSeason(season, liveSeason),
                                     heroes: undefined,
                                     towers: undefined,
                                     heroes2: undefined,
@@ -217,6 +214,14 @@ export default function MatchFilters(props: MatchFiltersProps) {
                         onChange={(e) => (e.target.checked ? splitSides() : mergeSides())}
                     />
                     <span>Filter sides separately</span>
+                </label>
+                <label className='match-filters__toggle'>
+                    <input
+                        type='checkbox'
+                        checked={!!query.allNames}
+                        onChange={(e) => onChange({ allNames: e.target.checked || undefined })}
+                    />
+                    <span>Include old names</span>
                 </label>
             </div>
         </section>

@@ -1,4 +1,8 @@
-export interface Stats {
+import type { ReactNode } from 'react';
+import type { BaseApiResponse } from '@/types/api';
+
+/** NK's ranked or casual totals (lifetime). */
+export interface ProfileStats {
     wins: number;
     draws: number;
     losses: number;
@@ -37,8 +41,8 @@ export interface UserProfile {
     equippedBorder: string;
     equippedBorderURL: string;
     equippedTitle: string;
-    casualStats: Stats;
-    rankedStats: Stats;
+    casualStats: ProfileStats;
+    rankedStats: ProfileStats;
     badges_equipped: unknown[];
     badges_all: unknown[];
     chests: string[];
@@ -86,10 +90,8 @@ export interface ProfileSeason {
 }
 
 /** GET /users/:id — the stored profile, in Ninja Kiwi's shape, plus our season records. */
-export interface UserProfileData {
+export interface UserProfileData extends BaseApiResponse {
     body: UserProfile;
-    error: string | null;
-    message?: string | null;
     success: boolean;
     /** season records, newest first */
     seasons?: ProfileSeason[];
@@ -103,7 +105,7 @@ export interface UserSearch {
 }
 
 /** GET /users/:id/season: heroes and counts from the matches our server recorded, record and streaks from the stored profile. */
-export interface SeasonStats {
+export interface SeasonStats extends BaseApiResponse {
     seasonId: number;
     seasonName: string;
     recorded: number;
@@ -120,8 +122,6 @@ export interface SeasonStats {
     heroes: { hero: string; played: number; wins: number; portrait?: string }[];
     firstSeen: string | null;
     lastSeen: string | null;
-    message?: string | null;
-    error?: string | null;
 }
 
 /** A player's games in one season, from the matches our server recorded (HoM vs HoM). */
@@ -132,10 +132,8 @@ export interface PlayerSeasonRecord {
     losses: number;
 }
 
-export interface PlayerSeasonRecords {
+export interface PlayerSeasonRecords extends BaseApiResponse {
     seasons: PlayerSeasonRecord[];
-    message?: string | null;
-    error?: string | null;
 }
 
 export interface SeasonRank {
@@ -147,11 +145,27 @@ export interface SeasonRank {
 }
 
 /** GET /users/:id/ranks */
-export interface RankHistory {
+export interface RankHistory extends BaseApiResponse {
     current: SeasonRank | null;
     /** best finish of a finished season */
     best: SeasonRank | null;
     seasons: SeasonRank[];
-    message?: string | null;
-    error?: string | null;
+}
+
+/** One label / value of a profile stat card. */
+export interface StatDetail {
+    label: string;
+    value: ReactNode;
+    /** on the value */
+    className?: string;
+}
+
+/**
+ * Equipped badges as Ninja Kiwi sends them. Their exact shape isn't documented, so read
+ * defensively: an image URL anywhere in the item becomes a picture, otherwise its name.
+ */
+export interface Badge {
+    key: string;
+    name: string;
+    url?: string | undefined;
 }

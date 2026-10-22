@@ -1,0 +1,22 @@
+@use '@/styles/utils/colors';
+@use '@/styles/components';
+
+.user-avatar {
+    display: inline-block;
+    flex: none;
+
+    &__img {
+        display: block;
+        width: 100%;
+        height: 100%;
+        border-radius: 50%;
+        border: 1.5px solid colors.$ink;
+        background: colors.$paper-dim;
+        object-fit: cover;
+
+        &--empty {
+            @include components.avatar-fallback;
+            line-height: 1;
+        }
+    }
+}

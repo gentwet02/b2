@@ -1,39 +1,29 @@
-import { useCallback, useEffect, useId, useLayoutEffect, useMemo, useRef, useState } from 'react';
-import type { ChangeEvent, KeyboardEvent, MouseEvent } from 'react';
-import { createPortal } from 'react-dom';
-import { ChevronDownIcon } from '@/components/icons';
-
-export type DropdownValue = string | number;
-
-export interface DropdownItem<V extends DropdownValue> {
-    value: V;
-    label: string;
-}
-
-export type DropdownOption<V extends DropdownValue> = V | DropdownItem<V>;
+import { useId } from 'react';
+import { DROPDOWN_ICON_SIZES, DROPDOWN_SEARCH_THRESHOLD } from '@/config/dropdown';
+import useDropdown from '@/hooks/useDropdown';
+import type { DropdownOption, DropdownValue, DropdownVariant } from '@/types/dropdown';
+import DropdownInput from './DropdownInput';
+import DropdownList from './DropdownList';
+import DropdownSpacer from './DropdownSpacer';
 
 interface DropdownProps<V extends DropdownValue> {
     options: readonly DropdownOption<V>[];
     value: V | '';
     onSelect: (value: V) => void;
-    id?: string;
-    className?: string;
-    inputClassName?: string;
-    placeholder?: string;
-    disabled?: boolean;
-    autoFocus?: boolean;
-    searchable?: boolean;
-    variant?: 'default' | 'compact' | 'pill';
-    noResultsText?: string;
-    'aria-label'?: string;
+    id?: string | undefined;
+    className?: string | undefined;
+    inputClassName?: string | undefined;
+    placeholder?: string | undefined;
+    disabled?: boolean | undefined;
+    autoFocus?: boolean | undefined;
+    /** type to filter the options (default: more than 8 of them) */
+    searchable?: boolean | undefined;
+    variant?: DropdownVariant | undefined;
+    noResultsText?: string | undefined;
+    'aria-label'?: string | undefined;
 }
 
-const SEARCH_THRESHOLD = 8;
-
-function isItem<V extends DropdownValue>(option: DropdownOption<V>): option is DropdownItem<V> {
-    return typeof option === 'object';
-}
-
+/** A select you can type in: a combobox input over a list of options. */
 export default function Dropdown<V extends DropdownValue>(props: DropdownProps<V>) {
     const {
         options,
@@ -45,7 +35,7 @@ export default function Dropdown<V extends DropdownValue>(props: DropdownProps<V
         placeholder,
         disabled = false,
         autoFocus = false,
-        searchable = options.length > SEARCH_THRESHOLD,
+        searchable = options.length > DROPDOWN_SEARCH_THRESHOLD,
         variant = 'default',
         noResultsText = 'No matches found',
         'aria-label': ariaLabel,
@@ -56,262 +46,53 @@ export default function Dropdown<V extends DropdownValue>(props: DropdownProps<V
     const listboxId = `${inputId}-listbox`;
     const optionId = (index: number) => `${inputId}-option-${index}`;
 
-    const rootRef = useRef<HTMLDivElement>(null);
-    const listRef = useRef<HTMLUListElement>(null);
-    const shouldScrollRef = useRef(false);
-
-    const [isOpen, setIsOpen] = useState(false);
-    const [query, setQuery] = useState('');
-    const [isFiltering, setIsFiltering] = useState(false);
-    const [activeIndex, setActiveIndex] = useState(-1);
-    const [spacerTop, setSpacerTop] = useState(0);
-    // after closing, the list stays rendered with its last options until its exit animation ends
-    const [exitItems, setExitItems] = useState<DropdownItem<V>[] | null>(null);
-    const openItemsRef = useRef<DropdownItem<V>[]>([]);
-    const wasOpenRef = useRef(false);
-
-    const items = useMemo(
-        () =>
-            options.map((option) =>
-                isItem(option) ? option : { value: option, label: String(option) },
-            ),
-        [options],
-    );
-
-    const selectedIndex = items.findIndex((item) => item.value === value);
-    const selectedLabel = items[selectedIndex]?.label ?? '';
-    const inputValue = isFiltering ? query : selectedLabel;
-
-    const filteredItems = useMemo(() => {
-        const search = query.trim().toLowerCase();
-        if (!isFiltering || !search) return items;
-        return items.filter((item) => item.label.toLowerCase().includes(search));
-    }, [items, query, isFiltering]);
-
-    const activeItem: DropdownItem<V> | undefined = isOpen ? filteredItems[activeIndex] : undefined;
-    const isClosing = !isOpen && exitItems !== null;
-    const shownItems = isOpen ? filteredItems : (exitItems ?? []);
-
-    useLayoutEffect(() => {
-        if (isOpen) openItemsRef.current = filteredItems;
-    }, [isOpen, filteredItems]);
-
-    useLayoutEffect(() => {
-        if (wasOpenRef.current && !isOpen) setExitItems(openItemsRef.current);
-        if (isOpen) setExitItems(null);
-        wasOpenRef.current = isOpen;
-    }, [isOpen]);
-
-    const close = useCallback(() => {
-        setIsOpen(false);
-        setIsFiltering(false);
-        setQuery('');
-        setActiveIndex(-1);
-    }, []);
-
-    function open() {
-        if (disabled) return;
-        setIsOpen(true);
-        setIsFiltering(false);
-        setActiveIndex(Math.max(selectedIndex, 0));
-        shouldScrollRef.current = true;
-    }
-
-    function select(item: DropdownItem<V>) {
-        close();
-        if (item.value !== value) onSelect(item.value);
-    }
-
-    function moveTo(index: number) {
-        if (index === activeIndex) return;
-        shouldScrollRef.current = true;
-        setActiveIndex(index);
-    }
-
-    useEffect(() => {
-        if (!isOpen) return;
-        function handlePointerDown(event: PointerEvent) {
-            if (!rootRef.current?.contains(event.target as Node)) close();
-        }
-        document.addEventListener('pointerdown', handlePointerDown);
-        return () => document.removeEventListener('pointerdown', handlePointerDown);
-    }, [isOpen, close]);
-
-    useEffect(() => {
-        if (!isOpen || !shouldScrollRef.current) return;
-        shouldScrollRef.current = false;
-        listRef.current
-            ?.querySelector<HTMLElement>(`[data-index="${activeIndex}"]`)
-            ?.scrollIntoView({ block: 'nearest' });
-    }, [isOpen, activeIndex]);
-
-    useLayoutEffect(() => {
-        if (!isOpen || !rootRef.current || !listRef.current) return;
-        const { top, height } = rootRef.current.getBoundingClientRect();
-        setSpacerTop(top + window.scrollY + height + listRef.current.offsetHeight);
-    }, [isOpen, filteredItems.length]);
-
-    function handleChange(event: ChangeEvent<HTMLInputElement>) {
-        if (!searchable) return;
-        setQuery(event.target.value);
-        setIsFiltering(true);
-        setIsOpen(true);
-        setActiveIndex(0);
-        if (listRef.current) listRef.current.scrollTop = 0;
-    }
-
-    function handleClick(event: MouseEvent<HTMLInputElement>) {
-        if (isOpen) {
-            close();
-            return;
-        }
-        open();
-        if (searchable && inputValue) event.currentTarget.select();
-    }
-
-    function handleKeyDown(event: KeyboardEvent<HTMLInputElement>) {
-        switch (event.key) {
-            case 'ArrowDown':
-            case 'ArrowUp': {
-                event.preventDefault();
-                if (!isOpen) {
-                    open();
-                    return;
-                }
-                const last = filteredItems.length - 1;
-                if (last < 0) return;
-                if (event.key === 'ArrowDown') moveTo(activeIndex >= last ? 0 : activeIndex + 1);
-                else moveTo(activeIndex <= 0 ? last : activeIndex - 1);
-                break;
-            }
-            case 'Enter':
-                if (!isOpen) return;
-                event.preventDefault();
-                if (activeItem) select(activeItem);
-                break;
-            case 'Escape':
-                if (!isOpen) return;
-                event.preventDefault();
-                close();
-                break;
-            case 'Tab':
-                if (isOpen) close();
-                break;
-        }
-    }
+    const dropdown = useDropdown({ options, value, onSelect, disabled, searchable });
 
     const rootClassName = [
         'dropdown',
         variant !== 'default' && `dropdown--${variant}`,
-        isOpen && 'dropdown--open',
+        dropdown.isOpen && 'dropdown--open',
         className,
     ]
         .filter(Boolean)
         .join(' ');
 
-    const iconSize = { default: 16, compact: 12, pill: 10 }[variant];
-
     return (
-        <div ref={rootRef} className={rootClassName}>
-            <div className='dropdown__input-wrapper'>
-                <input
-                    id={inputId}
-                    name={inputId}
-                    type='text'
-                    role='combobox'
-                    aria-label={ariaLabel}
-                    aria-expanded={isOpen}
-                    aria-controls={listboxId}
-                    aria-autocomplete={searchable ? 'list' : 'none'}
-                    aria-activedescendant={activeItem ? optionId(activeIndex) : undefined}
-                    autoComplete='off'
-                    autoFocus={autoFocus}
-                    disabled={disabled}
-                    readOnly={!searchable}
-                    placeholder={placeholder}
-                    className={
-                        inputClassName ? `dropdown__input ${inputClassName}` : 'dropdown__input'
-                    }
-                    value={inputValue}
-                    onChange={handleChange}
-                    onClick={handleClick}
-                    onKeyDown={handleKeyDown}
-                />
-                <ChevronDownIcon
-                    className='dropdown__icon'
-                    aria-hidden='true'
-                    width={iconSize}
-                    height={iconSize}
-                    rotate={isOpen}
-                />
-            </div>
+        <div ref={dropdown.rootRef} className={rootClassName}>
+            <DropdownInput
+                id={inputId}
+                listboxId={listboxId}
+                activeOptionId={dropdown.activeItem ? optionId(dropdown.activeIndex) : undefined}
+                value={dropdown.inputValue}
+                isOpen={dropdown.isOpen}
+                searchable={searchable}
+                disabled={disabled}
+                autoFocus={autoFocus}
+                placeholder={placeholder}
+                className={inputClassName}
+                iconSize={DROPDOWN_ICON_SIZES[variant]}
+                aria-label={ariaLabel}
+                onChange={dropdown.handleChange}
+                onClick={dropdown.handleClick}
+                onKeyDown={dropdown.handleKeyDown}
+            />
 
-            <ul
-                ref={listRef}
+            <DropdownList
+                ref={dropdown.listRef}
                 id={listboxId}
-                role='listbox'
-                className={isClosing ? 'dropdown__list dropdown__list--closing' : 'dropdown__list'}
-                hidden={!isOpen && !isClosing}
-                onClick={(event) => event.preventDefault()}
-                onAnimationEnd={(event) => {
-                    if (isClosing && event.target === event.currentTarget) setExitItems(null);
-                }}
-            >
-                {isOpen && filteredItems.length === 0 ? (
-                    <li
-                        className='dropdown__empty'
-                        role='option'
-                        aria-disabled='true'
-                        aria-selected='false'
-                    >
-                        {noResultsText}
-                    </li>
-                ) : (
-                    shownItems.map((item, index) => {
-                        const isActive = index === activeIndex;
-                        const isCurrent = item.value === value;
-                        return (
-                            <li
-                                key={String(item.value)}
-                                id={optionId(index)}
-                                data-index={index}
-                                role='option'
-                                aria-selected={isActive}
-                                className={[
-                                    'dropdown__option',
-                                    isActive && 'dropdown__option--active',
-                                    isCurrent && 'dropdown__option--current',
-                                ]
-                                    .filter(Boolean)
-                                    .join(' ')}
-                                onMouseDown={(event) => event.preventDefault()}
-                                onMouseMove={() => {
-                                    if (!isActive) setActiveIndex(index);
-                                }}
-                                onClick={() => select(item)}
-                            >
-                                {item.label}
-                            </li>
-                        );
-                    })
-                )}
-            </ul>
+                items={dropdown.shownItems}
+                value={value}
+                activeIndex={dropdown.activeIndex}
+                optionId={optionId}
+                hidden={!dropdown.isOpen && !dropdown.isClosing}
+                closing={dropdown.isClosing}
+                empty={dropdown.isEmpty ? noResultsText : null}
+                onHover={dropdown.hover}
+                onSelect={dropdown.select}
+                onClosed={dropdown.finishClosing}
+            />
 
-            {isOpen &&
-                createPortal(
-                    <div
-                        aria-hidden='true'
-                        style={{
-                            position: 'absolute',
-                            left: 0,
-                            right: 0,
-                            top: spacerTop,
-                            height: '1rem',
-                            pointerEvents: 'none',
-                        }}
-                    />,
-                    document.getElementById('root') ?? document.body,
-                )}
+            {dropdown.isOpen && <DropdownSpacer top={dropdown.spacerTop} />}
         </div>
     );
 }

@@ -1,0 +1,14 @@
+@use '@/styles/utils/colors';
+@use '@/styles/utils' as *;
+
+// the panel's grid and gap space the two rows
+.stats-controls {
+    &__focus {
+        padding-top: $space-s;
+        border-top: 2px dashed color-mix(in srgb, colors.$ink 20%, transparent);
+    }
+
+    &__clear {
+        align-self: center;
+    }
+}

@@ -1,5 +1,6 @@
-import type { UserProfileData } from '@/types/profile';
 import { useQueryClient } from '@tanstack/react-query';
+import { queryKeys } from '@/hooks/queries/keys';
+import type { UserProfileData } from '@/types/profile';
 
 /**
  * Avatars for the leaderboard: the server's known avatars, overridden by any profile
@@ -10,7 +11,7 @@ export default function usePlayerAvatars(serverAvatars: Record<string, string> |
     const queryClient = useQueryClient();
     const avatars: Record<string, string> = { ...serverAvatars };
     for (const [key, data] of queryClient.getQueriesData<UserProfileData>({
-        queryKey: ['userProfile'],
+        queryKey: queryKeys.profile(),
     })) {
         const id = key[1];
         const url = data?.body?.equippedAvatarURL;

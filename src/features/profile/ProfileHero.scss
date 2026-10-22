@@ -164,33 +164,11 @@
         }
     }
 
-    &--placeholder &__name {
-        color: colors.$ink-soft;
-    }
-
-    &__banner--empty {
-        display: block;
-        background: colors.$paper-dim;
-    }
-
-    &__avatar-img--empty {
-        display: block;
-        border: 2px dashed colors.$line;
-    }
-
     &__note {
         align-self: center;
         position: relative;
         z-index: 3;
         font-size: $text-sm;
         color: colors.$ink-soft;
-    }
-
-    .status--error {
-        box-shadow: none;
-        border-width: 1.5px;
-        padding: $space-s-m;
-        justify-items: start;
-        text-align: left;
     }
 }

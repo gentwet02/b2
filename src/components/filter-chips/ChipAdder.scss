@@ -1,0 +1,34 @@
+@use '@/styles/utils/colors';
+@use '@/styles/utils' as *;
+
+// the dashed "+ Add …" select at the end of a chip list
+.chip-adder {
+    width: 13rem;
+    min-width: 0;
+
+    .dropdown__input {
+        padding-block: 0.35rem;
+        font-size: $text-md;
+        border-style: dashed;
+        background-color: transparent;
+
+        &::placeholder {
+            font-weight: 600;
+            color: colors.$ink;
+        }
+    }
+
+    &.dropdown--open .dropdown__input {
+        border-style: solid;
+        background-color: colors.$paper;
+    }
+
+    .dropdown__list {
+        font-size: $text-md;
+    }
+
+    @include breakpoint-down(small) {
+        flex: 1 1 100%;
+        width: auto;
+    }
+}

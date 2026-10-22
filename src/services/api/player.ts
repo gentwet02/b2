@@ -1,6 +1,6 @@
-import type { playerNameResponse } from '@/types/player';
-import { getFromApi } from '@/services/api/utils';
+import { getFromApi } from '@/services/api/client';
+import type { PlayerNameResponse } from '@/types/player';
 
 export const playerService = {
-    getPlayerName: (playerId: string) => getFromApi<playerNameResponse>(`players/${playerId}`),
+    getPlayerName: (playerId: string) => getFromApi<PlayerNameResponse>(`players/${playerId}`),
 };

@@ -1,3 +1,7 @@
+@use '@/styles/utils/colors';
+@use '@/styles/components';
+@use '@/styles/utils' as *;
+
 .lb-player {
     display: flex;
     align-items: center;

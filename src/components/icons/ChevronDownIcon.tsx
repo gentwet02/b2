@@ -1,11 +1,21 @@
-export default function ChevronDownIcon({
-    width = 16,
-    height = 16,
-    fill = 'currentColor',
-    rotate = false,
-    className = 'icon icon-chevron--down',
-    ...props
-}) {
+import type { SVGProps } from 'react';
+
+interface ChevronDownIconProps extends Omit<SVGProps<SVGSVGElement>, 'rotate'> {
+    /** point up (open dropdown, ascending sort), with a turn animation */
+    rotate?: boolean;
+}
+
+export default function ChevronDownIcon(props: ChevronDownIconProps) {
+    const {
+        width = 16,
+        height = 16,
+        fill = 'currentColor',
+        rotate = false,
+        className = 'icon icon-chevron--down',
+        style,
+        ...rest
+    } = props;
+
     return (
         <svg
             className={className}
@@ -16,13 +26,14 @@ export default function ChevronDownIcon({
             style={{
                 transform: rotate ? 'rotate(180deg)' : 'none',
                 transition: 'transform 300ms',
+                ...style,
             }}
-            {...props}
+            {...rest}
         >
             <path
                 fill={fill}
                 d='M233.4 406.6c12.5 12.5 32.8 12.5 45.3 0l192-192c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L256 338.7L86.6 169.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3l192 192z'
-            ></path>
+            />
         </svg>
     );
 }

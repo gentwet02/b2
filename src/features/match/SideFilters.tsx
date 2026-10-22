@@ -1,8 +1,8 @@
+import HeroChips from '@/components/filter-chips/HeroChips';
+import TowerChips from '@/components/filter-chips/TowerChips';
 import { SIDE_MAX_HEROES, SIDE_MAX_TOWERS } from '@/config/match';
+import type { HeroPick } from '@/types/hero';
 import type { SideFilterOptions } from '@/types/match';
-import type { HeroPick } from '@/types/tower';
-import HeroChips from './HeorChips';
-import TowerChips from './TowerChips';
 import PlayerSearch from './PlayerSearch';
 
 interface SideFiltersProps {
@@ -16,6 +16,7 @@ interface SideFiltersProps {
     onTowers: (next: string[]) => void;
 }
 
+/** "Filter sides separately": one player's name, hero and towers. */
 export default function SideFilters(props: SideFiltersProps) {
     const { title, playerText, onPlayerText, heroes, onHeroes, towers, onTowers, options } = props;
 

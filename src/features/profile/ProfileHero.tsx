@@ -1,60 +1,7 @@
-import type { UserProfile } from '@/types/profile';
-import { formatLabel } from '@/utils/format';
 import type { ReactNode } from 'react';
-
-/** Same footprint as the real hero, shown while the profile loads. */
-export function ProfileHeroPlaceholder({
-    name,
-    children,
-}: {
-    name?: string | undefined;
-    children?: ReactNode;
-}) {
-    return (
-        <section className='profile-hero profile-hero--placeholder' aria-busy='true'>
-            <div className='profile-hero__banner profile-hero__banner--empty' />
-            <div className='profile-hero__body'>
-                <div className='profile-hero__avatar'>
-                    <span className='profile-hero__avatar-img profile-hero__avatar-img--empty' />
-                </div>
-                <div className='profile-hero__info'>
-                    <h1 className='profile-hero__name'>{name ?? 'Loading profile…'}</h1>
-                    {children}
-                </div>
-            </div>
-        </section>
-    );
-}
-
-const IMAGE_URL = /^https?:\/\/\S+\.(png|jpe?g|webp|gif|svg)(\?\S*)?$/i;
-
-interface Badge {
-    key: string;
-    name: string;
-    url?: string | undefined;
-}
-
-function readBadges(raw: unknown[] | undefined): Badge[] {
-    return (raw ?? []).flatMap((item, i): Badge[] => {
-        if (typeof item === 'string') {
-            return IMAGE_URL.test(item)
-                ? [{ key: `b${i}`, url: item, name: 'Badge' }]
-                : [{ key: `b${i}`, name: formatLabel(item) }];
-        }
-        if (item && typeof item === 'object') {
-            const values = Object.entries(item as Record<string, unknown>);
-            const url = values.find(([, v]) => typeof v === 'string' && IMAGE_URL.test(v))?.[1] as
-                | string
-                | undefined;
-            const nameField = values.find(
-                ([k, v]) => typeof v === 'string' && /^(name|badge|type|id)$/i.test(k),
-            )?.[1] as string | undefined;
-            const name = nameField ? formatLabel(nameField) : 'Badge';
-            return url || nameField ? [{ key: `b${i}`, url, name }] : [];
-        }
-        return [];
-    });
-}
+import type { UserProfile } from '@/types/profile';
+import { readBadges } from '@/utils/badges';
+import { formatLabel } from '@/utils/format';
 
 interface ProfileHeroProps {
     profile: UserProfile;
@@ -77,9 +24,6 @@ export default function ProfileHero(props: ProfileHeroProps) {
             className={`profile-hero${profile.equippedBorderURL ? ' profile-hero--framed' : ''}`}
             aria-labelledby='profile-name'
         >
-            {/* {profile.equippedBorderURL && (
-                <img className='profile-hero__frame' src={profile.equippedBorderURL} alt='' />
-            )} */}
             {profile.equippedBannerURL && (
                 <img className='profile-hero__banner' src={profile.equippedBannerURL} alt='' />
             )}

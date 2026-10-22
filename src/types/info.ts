@@ -1,12 +1,8 @@
-export interface SeasonSummary {
-    id: number;
-    name: string;
-    live: boolean;
-}
+import type { BaseApiResponse } from '@/types/api';
+import type { SeasonSummary } from '@/types/season';
 
-export interface infoResponse {
-    message: string | null;
-    error: string | null;
+/** GET /info */
+export interface InfoResponse extends BaseApiResponse {
     liveSeason: number;
     liveSeasonName?: string;
     totalScores: number;

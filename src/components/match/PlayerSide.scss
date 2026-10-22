@@ -82,6 +82,18 @@
         @include truncate;
     }
 
+    &__old-name {
+        font-size: $text-xs;
+        font-style: italic;
+        color: colors.$ink-soft;
+        @include truncate;
+
+        strong {
+            font-style: normal;
+            font-weight: 700;
+        }
+    }
+
     &__result {
         flex: none;
         font-size: $text-2xs;

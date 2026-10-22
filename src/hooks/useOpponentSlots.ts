@@ -1,9 +1,9 @@
-import { COMPARE_SLOTS } from '@/config/compare';
-import useCompareSlots, { resetCompareSlots, setCompareSlot } from '@/hooks/useCompareSlots';
-import { useRankedPlayers } from '@/hooks/useRankedPlayers';
-import useSeasons from '@/hooks/useSeasons';
-import type { CompareSeason } from '@/types/compare';
 import { useMemo } from 'react';
+import { COMPARE_SLOTS } from '@/config/compare';
+import useRankedPlayers from '@/hooks/queries/useRankedPlayers';
+import useSeasons from '@/hooks/queries/useSeasons';
+import useCompareSlots, { resetCompareSlots, setCompareSlot } from '@/hooks/useCompareSlots';
+import type { SeasonScope } from '@/types/season';
 
 export interface OpponentSlot {
     index: number;
@@ -16,7 +16,7 @@ export interface OpponentSlot {
  * The 10 opponents of a profile: the season's top 10 (the profile player left out),
  * where every slot the visitor replaced shows their pick instead.
  */
-export default function useOpponentSlots(userId: string, season?: CompareSeason) {
+export default function useOpponentSlots(userId: string, season?: SeasonScope) {
     const seasons = useSeasons();
     const liveSeason = seasons.data?.liveSeason;
     // "all seasons" uses the live leaderboard

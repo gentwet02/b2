@@ -1,6 +1,8 @@
-import { ErrorState, Loading } from '@/components/status/Status';
-import useSeasons from '@/hooks/useSeasons';
 import { Navigate } from '@tanstack/react-router';
+import Page from '@/components/page/Page';
+import ErrorState from '@/components/status/ErrorState';
+import Loading from '@/components/status/Loading';
+import useSeasons from '@/hooks/queries/useSeasons';
 
 /** /leaderboard → the live season's leaderboard. */
 export default function LeaderboardIndex() {
@@ -9,9 +11,9 @@ export default function LeaderboardIndex() {
     if (isLoading) return <Loading label='Finding the live season…' />;
     if (error || !data) {
         return (
-            <main className='page'>
+            <Page>
                 <ErrorState error={error} onRetry={() => refetch()} />
-            </main>
+            </Page>
         );
     }
     return <Navigate to='/leaderboard/$season' params={{ season: data.liveSeason }} replace />;

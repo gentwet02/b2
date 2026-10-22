@@ -1,0 +1,25 @@
+@use '@/styles/utils/colors';
+@use '@/styles/components';
+@use '@/styles/utils' as *;
+
+.profile {
+    display: grid;
+    gap: $space-m;
+
+    // both stats cards always share one height
+    &__stats {
+        align-items: stretch !important;
+    }
+
+    &__stats,
+    &__columns {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        align-items: start;
+        gap: $space-m;
+
+        @include breakpoint-down(800px) {
+            grid-template-columns: 1fr;
+        }
+    }
+}

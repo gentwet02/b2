@@ -16,7 +16,7 @@ interface UseThrottleParams<T extends CallbackFunction> {
     dependencies?: React.DependencyList;
 }
 
-export function useThrottle<T extends CallbackFunction>({
+export default function useThrottle<T extends CallbackFunction>({
     callback,
     delay = 300, // In milliseconds
     leading = true, // Execute immediately on first call
@@ -76,6 +76,6 @@ export function useThrottle<T extends CallbackFunction>({
         }) as T,
         // disable eslint for the deconstruct unknown dependencies
         // eslint-disable-next-line react-hooks/exhaustive-deps
-        [callback, delay, leading, trailing, ...dependencies]
+        [callback, delay, leading, trailing, ...dependencies],
     );
 }

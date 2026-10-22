@@ -15,3 +15,9 @@ export interface TableState {
 }
 
 export type TableStateInput = { [K in keyof TableState]?: TableState[K] | undefined };
+
+/** The column a table is sorted on (none yet: null), and which way. */
+export interface TableSort {
+    key: string | null;
+    direction: 'asc' | 'desc';
+}

@@ -1,3 +1,5 @@
+import Panel from '@/components/panel/Panel';
+import PanelEmpty from '@/components/panel/PanelEmpty';
 import type { BloonStat } from '@/types/profile';
 import { formatLabel, formatNumber } from '@/utils/format';
 
@@ -11,10 +13,9 @@ export default function BloonStats(props: BloonStatsProps) {
     const top = [...bloons].sort((a, b) => b.sends - a.sends).slice(0, 10);
 
     return (
-        <section className='profile-panel'>
-            <h2 className='profile-panel__title'>Bloons sent and popped</h2>
+        <Panel title='Bloons sent and popped'>
             {top.length === 0 ? (
-                <p className='profile-panel__empty'>No bloon stats recorded yet.</p>
+                <PanelEmpty>No bloon stats recorded yet.</PanelEmpty>
             ) : (
                 <table className='bloon-stats'>
                     <thead>
@@ -35,6 +36,6 @@ export default function BloonStats(props: BloonStatsProps) {
                     </tbody>
                 </table>
             )}
-        </section>
+        </Panel>
     );
 }

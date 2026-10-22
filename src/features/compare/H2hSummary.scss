@@ -1,0 +1,23 @@
+@use '@/styles/utils/colors';
+@use '@/styles/utils' as *;
+
+.h2h-summary {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: $space-2xs $space-s;
+
+    &__rate {
+        @include display($text-4xl);
+        @include enter($anim-pop-in, $duration-slower);
+    }
+
+    &__text {
+        color: colors.$ink-soft;
+        font-weight: 500;
+
+        strong {
+            color: colors.$ink;
+        }
+    }
+}

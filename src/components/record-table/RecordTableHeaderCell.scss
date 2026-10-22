@@ -1,0 +1,34 @@
+@use '@/styles/utils/colors';
+@use '@/styles/utils' as *;
+
+.record-table {
+    &__sort {
+        @include bare-button;
+        letter-spacing: inherit;
+        text-transform: inherit;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.3rem;
+        @include transition(color, $duration-fast);
+
+        @include when-hover {
+            color: colors.$ink;
+        }
+
+        &--on {
+            color: colors.$ink;
+        }
+
+        .record-table__num > & {
+            flex-direction: row-reverse;
+        }
+
+        &-icon {
+            flex-shrink: 0;
+
+            &--off {
+                visibility: hidden;
+            }
+        }
+    }
+}

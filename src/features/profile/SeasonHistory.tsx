@@ -1,13 +1,24 @@
-import Dropdown from '@/components/dropdown/Dropdown';
-import { PROFILE_SEASON_AMOUNTS, PROFILE_SEASON_DEFAULT } from '@/config/profile';
-import useSeasonRecords from '@/hooks/useSeasonRecords';
-import { formatNumber, seasonLabel, winRate } from '@/utils/format';
 import { getRouteApi } from '@tanstack/react-router';
 import { useState } from 'react';
+import Dropdown from '@/components/dropdown/Dropdown';
+import Panel from '@/components/panel/Panel';
+import RateBar from '@/components/rate-bar/RateBar';
+import { PROFILE_SEASON_AMOUNTS, PROFILE_SEASON_DEFAULT } from '@/config/profile';
+import useSeasonRecords from '@/hooks/queries/useSeasonRecords';
+import { formatNumber, plural } from '@/utils/format';
+import { recordTitle, winRate } from '@/utils/record';
+import { seasonLabel } from '@/utils/season';
 
 const routeApi = getRouteApi('/user/$userId');
 
-export default function SeasonHistory({ userId }: { userId: string }) {
+interface SeasonHistoryProps {
+    userId: string;
+}
+
+/** W–D–L and win rate of every season we recorded the player in, newest first. */
+export default function SeasonHistory(props: SeasonHistoryProps) {
+    const { userId } = props;
+
     const { data } = useSeasonRecords(userId);
     const seasons = data ?? [];
     const search = routeApi.useSearch();
@@ -31,13 +42,12 @@ export default function SeasonHistory({ userId }: { userId: string }) {
     }
 
     return (
-        <section className='profile-panel profile-panel--seasons'>
-            <div className='profile-panel__head'>
-                <h2 className='profile-panel__title'>Season by season</h2>
-                <span className='profile-panel__note'>
-                    {seasons.length} season{seasons.length === 1 ? '' : 's'}
-                </span>
-                {seasons.length > (PROFILE_SEASON_AMOUNTS[0] ?? 0) && (
+        <Panel
+            className='panel--seasons'
+            title='Season by season'
+            note={`${seasons.length} ${plural(seasons.length, 'season')}`}
+            actions={
+                seasons.length > (PROFILE_SEASON_AMOUNTS[0] ?? 0) && (
                     <div className='season-history__amount'>
                         <span aria-hidden='true'>Show</span>
                         <Dropdown
@@ -49,8 +59,9 @@ export default function SeasonHistory({ userId }: { userId: string }) {
                             onSelect={setAmount}
                         />
                     </div>
-                )}
-            </div>
+                )
+            }
+        >
             <div className='season-history'>
                 <table className='season-history__table'>
                     <thead>
@@ -77,17 +88,11 @@ export default function SeasonHistory({ userId }: { userId: string }) {
                                         {rate === null ? (
                                             '–'
                                         ) : (
-                                            <span
-                                                className='lb-rate'
-                                                title={`${s.wins} won, ${s.draws} drawn, ${s.losses} lost`}
-                                            >
-                                                <span className='lb-rate__value'>
-                                                    {rate.toFixed(1)}%
-                                                </span>
-                                                <span className='lb-rate__bar' aria-hidden='true'>
-                                                    <span style={{ width: `${rate}%` }} />
-                                                </span>
-                                            </span>
+                                            <RateBar
+                                                rate={rate}
+                                                digits={1}
+                                                title={recordTitle([s.wins, s.losses, s.draws])}
+                                            />
                                         )}
                                     </td>
                                 </tr>
@@ -107,6 +112,6 @@ export default function SeasonHistory({ userId }: { userId: string }) {
                     </button>
                 </div>
             )}
-        </section>
+        </Panel>
     );
 }

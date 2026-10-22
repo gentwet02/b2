@@ -1,11 +1,6 @@
 import Dropdown from '@/components/dropdown/Dropdown';
-import { LEADERBOARD_MIN_GAMES } from '@/config/leaderboard';
+import { LEADERBOARD_MIN_GAMES_OPTIONS } from '@/config/leaderboard';
 import type { LeaderboardView } from '@/types/leaderboard';
-
-const MIN_GAMES_OPTIONS = LEADERBOARD_MIN_GAMES.map((value) => ({
-    value,
-    label: value === 0 ? 'Any' : `${value}+`,
-}));
 
 interface LeaderboardFiltersProps {
     view: Required<LeaderboardView>;
@@ -13,14 +8,16 @@ interface LeaderboardFiltersProps {
 }
 
 /** Minimum games, shown next to the table's page size. Sorting is done from the headers. */
-export default function LeaderboardFilters({ view, onChange }: LeaderboardFiltersProps) {
+export default function LeaderboardFilters(props: LeaderboardFiltersProps) {
+    const { view, onChange } = props;
+
     return (
         <label className='leaderboard-filters'>
             <span className='leaderboard-filters__label'>Min. games</span>
             <Dropdown
                 className='leaderboard-filters__select'
                 variant='compact'
-                options={MIN_GAMES_OPTIONS}
+                options={LEADERBOARD_MIN_GAMES_OPTIONS}
                 value={view.minGames}
                 aria-label='Minimum games played'
                 onSelect={(minGames) => onChange({ minGames })}

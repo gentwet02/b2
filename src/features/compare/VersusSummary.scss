@@ -1,0 +1,23 @@
+@use '@/styles/utils/colors';
+@use '@/styles/utils' as *;
+
+.versus-title {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: $space-2xs;
+
+    &__vs {
+        font-size: 0.6em;
+        color: colors.$ink-soft;
+        margin-inline: $space-3xs;
+    }
+
+    a {
+        @include transition(color, $duration-fast);
+
+        @include when-hover {
+            color: colors.$bloon;
+        }
+    }
+}

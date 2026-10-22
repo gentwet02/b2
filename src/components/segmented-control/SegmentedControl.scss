@@ -1,0 +1,37 @@
+@use '@/styles/utils/colors';
+@use '@/styles/utils' as *;
+
+.segmented-control {
+    display: inline-flex;
+    border: 2px solid colors.$ink;
+    border-radius: 999px;
+    overflow: hidden;
+
+    &__option {
+        padding: 0.3rem 0.8rem;
+        font: inherit;
+        font-size: $text-sm;
+        font-weight: 600;
+        color: colors.$ink;
+        background: colors.$paper;
+        border: none;
+        cursor: pointer;
+        @include transition((background-color, color), $duration-fast);
+
+        @include when-hover {
+            background: color-mix(in srgb, colors.$banana 35%, colors.$paper);
+        }
+
+        & + & {
+            border-left: 2px solid colors.$ink;
+        }
+
+        @include when-touch {
+            padding-block: 0.5rem;
+        }
+
+        &[aria-pressed='true'] {
+            background: colors.$banana;
+        }
+    }
+}

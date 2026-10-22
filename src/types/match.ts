@@ -1,3 +1,7 @@
+import type { MATCH_SORTS } from '@/config/match';
+import type { BaseApiResponse } from '@/types/api';
+import type { MapVariant } from '@/types/map';
+
 export type MatchResult = 'win' | 'lose' | 'draw' | 'cancelled' | 'lobbyDC' | 'opponentLobbyDC';
 export type Outcome = 'win' | 'lose' | 'neutral';
 export type MatchPick = { kind: 'hero' | 'tower' | 'map'; value: string };
@@ -14,6 +18,8 @@ export interface MatchPlayer {
     profileURL: string;
     /** Stored matches: the player's known alias, when there is one. */
     alias?: string;
+    /** "Include old names" searches: the older name the search found this player by. */
+    matchedName?: string;
 }
 
 export interface Match {
@@ -34,7 +40,6 @@ export interface CrawlProgress {
     total: number;
 }
 
-export const MATCH_SORTS = ['newest', 'oldest', 'longest', 'shortest', 'rounds'] as const;
 export type MatchSort = (typeof MATCH_SORTS)[number];
 
 /**
@@ -59,6 +64,8 @@ export interface MatchesQuery {
      */
     sameSide?: boolean | undefined;
     player2?: string | undefined;
+    /** the player searches also match the names players had before */
+    allNames?: boolean | undefined;
     heroes2?: string | undefined;
     towers2?: string | undefined;
 }
@@ -84,12 +91,10 @@ export interface CrawlInfo {
     lastRunEndedAt: string | null;
 }
 
-export interface MatchesResponse {
+export interface MatchesResponse extends BaseApiResponse {
     matches: MatchesPage;
     /** live season only */
     crawl: CrawlInfo | null;
-    message: string | null;
-    error: string | null;
 }
 
 /** Heroes and towers available for one side (or both sides when not split). */
@@ -103,7 +108,7 @@ export interface SideFilterOptions {
 }
 
 /** GET /matches-history/filters: what the season's stored matches contain. */
-export interface MatchFilterOptions extends SideFilterOptions {
+export interface MatchFilterOptions extends SideFilterOptions, BaseApiResponse {
     seasonId: number;
     /** same player mode: the options of side 1 and side 2 */
     sides?: [SideFilterOptions, SideFilterOptions];
@@ -113,27 +118,15 @@ export interface MatchFilterOptions extends SideFilterOptions {
         map: string;
         count: number;
         image: string | null;
-        variants: { variant: 'classic' | 'reversed'; count: number }[];
+        variants: { variant: MapVariant; count: number }[];
     }[];
     sorts: MatchSort[];
     maxHeroes: number;
     maxTowers: number;
-    message?: string | null;
-    error?: string | null;
 }
 
 /** GET /users/:id/matches — Ninja Kiwi's latest matches, through the server (rate limited). */
-export interface UserMatchesResponse {
+export interface UserMatchesResponse extends BaseApiResponse {
     success: boolean;
-    error: string | null;
-    message?: string | null;
     body: Match[];
 }
-
-export const SORT_LABELS: Record<MatchSort, string> = {
-    newest: 'Newest first',
-    oldest: 'Oldest first',
-    longest: 'Longest',
-    shortest: 'Shortest',
-    rounds: 'Most rounds',
-};

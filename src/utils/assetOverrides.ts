@@ -1,7 +1,8 @@
 import bonnie from '@/assets/images/heroes/bonnie.png';
 import etienneBee from '@/assets/images/heroes/etienne_bee.png';
 import clubJammin from '@/assets/images/maps/club_jammin.png';
-import { heroKey, mapKey } from '@/utils/format';
+import { heroKey } from '@/utils/hero';
+import { mapKey } from '@/utils/map';
 
 const HERO_IMAGES: Record<string, string> = {
     [heroKey('bonnie')]: bonnie,

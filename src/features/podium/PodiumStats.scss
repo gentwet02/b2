@@ -1,3 +1,7 @@
+@use '@/styles/utils/colors';
+@use '@/styles/components';
+@use '@/styles/utils' as *;
+
 .podium__stats {
     align-self: stretch;
     justify-self: stretch;

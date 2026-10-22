@@ -1,0 +1,11 @@
+@use '@/styles/utils/colors';
+@use '@/styles/components';
+
+.rate-bar {
+    @include components.rate-bar;
+}
+
+.rate-bar__none {
+    color: colors.$ink-soft;
+    font-weight: 500;
+}

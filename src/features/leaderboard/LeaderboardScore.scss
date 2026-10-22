@@ -3,8 +3,23 @@
 @use '@/styles/utils' as *;
 
 .leaderboard-score {
+    // fixed widths for every column but the player's, so a new sort (other
+    // rows, other score lengths, the sort icon moving) never shifts them:
+    // the player column takes whatever is left
     th[data-category='rank'] {
-        width: 5.5rem;
+        width: 4rem;
+    }
+
+    th[data-category='score'] {
+        width: 7rem;
+    }
+
+    th[data-category='games'] {
+        width: 6.5rem;
+    }
+
+    th[data-category='win-rate'] {
+        width: 9rem;
     }
 
     th[data-category='score'],
@@ -14,8 +29,8 @@
         text-align: right;
     }
 
-    th[data-category='win-rate'] {
-        width: 9rem;
+    td:not(:nth-child(2)) {
+        white-space: nowrap;
     }
 
     th[data-category='score'] .table__table__header-cell-content,
@@ -24,22 +39,12 @@
         justify-content: flex-start;
     }
 
-    &__note {
-        margin-top: $space-2xs;
-        font-size: $text-sm;
-        color: colors.$ink-soft;
-    }
-
     .lb-num {
         font-weight: 600;
 
         &--empty {
             color: colors.$ink-soft;
         }
-    }
-
-    .lb-rate {
-        @include components.rate-bar;
     }
 
     .lb-rank {
@@ -93,9 +98,21 @@
                 padding-inline-start: 0;
             }
 
-            th[data-category='rank'],
+            // narrower, but still fixed: each fits its header and sort icon
+            th[data-category='rank'] {
+                width: 3.75rem;
+            }
+
+            th[data-category='score'] {
+                width: 4.25rem;
+            }
+
+            th[data-category='games'] {
+                width: 4.5rem;
+            }
+
             th[data-category='win-rate'] {
-                width: revert;
+                width: 5.25rem;
             }
 
             &__cell {
@@ -121,7 +138,7 @@
                     visibility: hidden;
                 }
 
-                .lb-rate {
+                .rate-bar {
                     grid-template-columns: 1fr;
                     gap: 0;
 

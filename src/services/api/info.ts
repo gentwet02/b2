@@ -1,6 +1,6 @@
-import { getFromApi } from '@/services/api/utils';
-import type { infoResponse } from '@/types/info';
+import { getFromApi } from '@/services/api/client';
+import type { InfoResponse } from '@/types/info';
 
 export const infoService = {
-    getInfo: () => getFromApi<infoResponse>('info'),
+    getInfo: () => getFromApi<InfoResponse>('info'),
 };

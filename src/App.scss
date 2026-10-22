@@ -66,58 +66,6 @@ select {
     background: colors.with-opacity('banana', 0.6);
 }
 
-.page {
-    @include container;
-    padding-block: $space-s-l $space-l-xl;
-    display: grid;
-    gap: $space-m-l;
-    flex: 1;
-
-    > * {
-        @include enter($anim-fade-up, $duration-slow);
-        @include stagger(6, 60ms);
-    }
-
-    &__head {
-        display: flex;
-        flex-wrap: wrap;
-        align-items: flex-end;
-        justify-content: space-between;
-        gap: $space-s;
-    }
-
-    &__title {
-        @include display($text-5xl);
-    }
-
-    &__subtitle {
-        color: colors.$ink-soft;
-        margin-top: $space-3xs;
-    }
-
-    &__actions {
-        display: flex;
-        flex-wrap: wrap;
-        align-items: center;
-        gap: $space-xs;
-    }
-
-    @include breakpoint-down(small) {
-        width: 100%;
-        margin-inline: revert;
-
-        &__head {
-            margin-inline: $gutter;
-        }
-
-        &__actions > .button {
-            min-height: 2.25rem;
-            padding: $space-2xs $space-s;
-            font-size: $text-md;
-        }
-    }
-}
-
 .button {
     @include components.button;
 
@@ -130,6 +78,29 @@ select {
     @include bare-button; // also used on <button>
     font-weight: 600;
     @include link-underline;
+}
+
+// "Head to head →", "Focus →": small links (or buttons) at the end of a row
+.drill-link {
+    font-size: $text-sm;
+    font-weight: 600;
+    color: colors.$ink-soft;
+    @include transition(color, $duration-fast);
+
+    @include when-hover {
+        color: colors.$bloon;
+    }
+
+    &:is(button) {
+        padding: 0;
+        font: inherit;
+        font-size: $text-sm;
+        font-weight: 600;
+        background: none;
+        border: none;
+        cursor: pointer;
+        white-space: nowrap;
+    }
 }
 
 .visually-hidden {

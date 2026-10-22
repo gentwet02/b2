@@ -1,0 +1,58 @@
+@use '@/styles/utils/colors';
+@use '@/styles/utils' as *;
+
+.dropdown {
+    &__input-wrapper {
+        position: relative;
+    }
+
+    &__input {
+        width: 100%;
+        padding: 0.5rem 2.25rem 0.5rem 0.75rem;
+        font: inherit;
+        font-weight: 600;
+        text-overflow: ellipsis;
+        color: colors.$ink;
+        background-color: colors.$paper;
+        border: 2px solid colors.$ink;
+        border-radius: var(--dropdown-radius);
+        @include transition(
+            (border-color, border-radius, box-shadow, background-color),
+            $duration-fast
+        );
+
+        @include when-hover {
+            background-color: color-mix(in srgb, colors.$paper-dim 50%, colors.$paper);
+        }
+
+        &::placeholder {
+            font-weight: 500;
+            color: colors.$ink-soft;
+        }
+
+        &:focus {
+            outline: none;
+            box-shadow: 0 0 0 3px colors.with-opacity('bloon', 0.35);
+        }
+
+        // non-searchable: behaves like a select
+        &:read-only:not(:disabled) {
+            cursor: pointer;
+            caret-color: transparent;
+        }
+
+        &:disabled {
+            opacity: 0.55;
+            cursor: not-allowed;
+        }
+    }
+
+    &__icon {
+        position: absolute;
+        top: 50%;
+        right: 0.85rem;
+        translate: 0 -50%; // separate from the icon's inline rotate transform
+        color: colors.$ink;
+        pointer-events: none;
+    }
+}

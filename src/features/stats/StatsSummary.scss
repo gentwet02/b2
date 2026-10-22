@@ -1,0 +1,8 @@
+@use '@/styles/utils/colors';
+@use '@/styles/utils' as *;
+
+.stats-summary {
+    display: flex;
+    flex-wrap: wrap;
+    gap: $space-s $space-xl;
+}

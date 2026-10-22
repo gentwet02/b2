@@ -48,20 +48,9 @@
     &__rate {
         min-width: 8rem;
 
-        .lb-rate {
-            @include components.rate-bar(3rem);
+        .rate-bar {
+            grid-template-columns: 3rem 1fr;
         }
-    }
-
-    &__mark {
-        margin-left: 0.15rem;
-        color: colors.$ink-soft;
-        cursor: help;
-    }
-
-    &__note {
-        font-size: $text-xs;
-        color: colors.$ink-soft;
     }
 
     &__amount {

@@ -1,0 +1,24 @@
+@use '@/styles/utils/colors';
+@use '@/styles/utils' as *;
+
+.stats-results {
+    &__mins {
+        display: flex;
+        flex-wrap: wrap;
+        gap: $space-2xs $space-s;
+    }
+
+    &__min {
+        display: flex;
+        align-items: center;
+        gap: $space-2xs;
+    }
+
+    &__select {
+        width: 5.5rem;
+    }
+}
+
+.stats-tower {
+    font-weight: 600;
+}

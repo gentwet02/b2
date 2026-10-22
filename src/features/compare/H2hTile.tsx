@@ -1,27 +1,22 @@
 import type { ReactNode } from 'react';
-import type { H2hPick, HeadToHead } from '@/types/compare';
+import type { H2hPick, H2hTileKind, Labels } from '@/types/compare';
 import { heroImage, mapImage } from '@/utils/assetOverrides';
-import {
-    formatLoadout,
-    formatRate,
-    formatRecord,
-    gamesOf,
-    rateOf,
-    recordTitle,
-} from '@/utils/compare';
-import { formatMap } from '@/utils/format';
+import { formatLoadout } from '@/utils/loadout';
+import { formatMap } from '@/utils/map';
+import { formatRate, formatRecord, gamesOf, rateOf, recordTitle } from '@/utils/record';
 
-type Kind = 'map' | 'loadout';
-
-interface TileProps {
+interface H2hTileProps {
     label: string;
-    kind: Kind;
+    kind: H2hTileKind;
     pick: H2hPick | null;
-    labels: HeadToHead['labels'];
+    labels: Labels;
     empty: string;
 }
 
-export function H2hTile({ label, kind, pick, labels, empty }: TileProps) {
+/** One best / worst map or loadout, with its record. */
+export default function H2hTile(props: H2hTileProps) {
+    const { label, kind, pick, labels, empty } = props;
+
     if (!pick) {
         return (
             <div className='h2h-tile h2h-tile--empty'>

@@ -1,15 +1,23 @@
-import Dropdown from '@/components/dropdown/Dropdown';
-import { LEADERBOARD_DEFAULT_SIZE } from '@/config/leaderboard';
-import LeaderboardFilters from '@/features/leaderboard/LeaderboardFilters';
-import LeaderboardScore from '@/features/leaderboard/LeaderboardScore';
-import useLeaderboard, { leaderboardKey } from '@/hooks/useLeaderboard';
-import useSeasons from '@/hooks/useSeasons';
-import { useThrottle } from '@/hooks/useThrottle';
-import type { LeaderboardView } from '@/types/leaderboard';
-import type { TableState, TableStateCause } from '@/types/table';
-import { formatNumber, seasonLabel, timeAgo } from '@/utils/format';
 import { useIsFetching, useQueryClient } from '@tanstack/react-query';
 import { getRouteApi } from '@tanstack/react-router';
+import Page from '@/components/page/Page';
+import PageHeader from '@/components/page/PageHeader';
+import SeasonSelect from '@/components/season-select/SeasonSelect';
+import {
+    LEADERBOARD_DEFAULT_SIZE,
+    LEADERBOARD_REFRESH_THROTTLE_MS,
+    LEADERBOARD_SORT_DEFAULT,
+} from '@/config/leaderboard';
+import LeaderboardFilters from '@/features/leaderboard/LeaderboardFilters';
+import LeaderboardScore from '@/features/leaderboard/LeaderboardScore';
+import { queryKeys } from '@/hooks/queries/keys';
+import useLeaderboard from '@/hooks/queries/useLeaderboard';
+import useSeasons from '@/hooks/queries/useSeasons';
+import useThrottle from '@/hooks/useThrottle';
+import type { LeaderboardView } from '@/types/leaderboard';
+import type { TableState, TableStateCause } from '@/types/table';
+import { formatNumber, timeAgo } from '@/utils/format';
+import { seasonLabel } from '@/utils/season';
 
 const routeApi = getRouteApi('/leaderboard/$season');
 
@@ -21,19 +29,20 @@ export default function Leaderboard() {
 
     const seasons = useSeasons();
     const known = seasons.data?.seasons ?? [];
+    const liveSeason = seasons.data?.liveSeason;
     const current = known.find((s) => s.id === season);
-    const live = current?.live ?? season === seasons.data?.liveSeason;
+    const live = current?.live ?? season === liveSeason;
 
     const { data } = useLeaderboard(season, live);
-    const isFetching = useIsFetching({ queryKey: leaderboardKey(season) }) > 0;
+    const isFetching = useIsFetching({ queryKey: queryKeys.leaderboard(season) }) > 0;
 
     const refresh = useThrottle({
-        callback: () => queryClient.invalidateQueries({ queryKey: leaderboardKey(season) }),
-        delay: 2000,
+        callback: () => queryClient.invalidateQueries({ queryKey: queryKeys.leaderboard(season) }),
+        delay: LEADERBOARD_REFRESH_THROTTLE_MS,
     });
 
     const view = {
-        sort: search.sort ?? 'rank',
+        sort: search.sort ?? LEADERBOARD_SORT_DEFAULT,
         reverse: !!search.reverse,
         minGames: search.min ?? 0,
     } satisfies Required<LeaderboardView>;
@@ -43,7 +52,7 @@ export default function Leaderboard() {
         navigate({
             search: (prev) => ({
                 ...prev,
-                sort: next.sort !== 'rank' ? next.sort : undefined,
+                sort: next.sort !== LEADERBOARD_SORT_DEFAULT ? next.sort : undefined,
                 reverse: next.reverse ? true : undefined,
                 min: next.minGames > 0 ? next.minGames : undefined,
                 page: undefined,
@@ -61,6 +70,7 @@ export default function Leaderboard() {
                 size: next.pageSize !== LEADERBOARD_DEFAULT_SIZE ? next.pageSize : undefined,
                 q: next.search || undefined,
             }),
+            // typing in the search box: one history entry
             replace: cause === 'search',
             resetScroll: false,
         });
@@ -69,47 +79,46 @@ export default function Leaderboard() {
     const updated = timeAgo(data?.lastUpdated);
 
     return (
-        <main className='page leaderboard'>
-            <div className='page__head'>
-                <div>
-                    <h1 className='page__title'>
+        <Page className='leaderboard'>
+            <PageHeader
+                title={
+                    <>
                         {current?.name ?? seasonLabel(season)}
                         {live && <span className='leaderboard__live'>Live</span>}
-                    </h1>
-                    <p className='page__subtitle'>
-                        {count !== undefined
-                            ? `${formatNumber(count)} players in the Hall of Masters${updated ? `, updated ${updated}` : ''}`
-                            : 'Hall of Masters leaderboard'}
-                    </p>
-                </div>
-                <div className='page__actions'>
-                    {known.length > 1 && (
-                        <Dropdown
-                            className='leaderboard__season'
-                            aria-label='Season'
-                            options={known.map((s) => ({
-                                value: s.id,
-                                label: `${seasonLabel(s.id)}${s.live ? ' (live)' : ''}`,
-                            }))}
-                            value={season}
-                            onSelect={(id) =>
-                                navigate({
-                                    params: { season: id },
-                                    search: (prev) => ({ ...prev, page: undefined }),
-                                })
-                            }
-                        />
-                    )}
-                    <button
-                        type='button'
-                        onClick={() => refresh()}
-                        className='button'
-                        disabled={isFetching}
-                    >
-                        {isFetching ? 'Refreshing…' : 'Refresh'}
-                    </button>
-                </div>
-            </div>
+                    </>
+                }
+                subtitle={
+                    count !== undefined
+                        ? `${formatNumber(count)} players in the Hall of Masters${updated ? `, updated ${updated}` : ''}`
+                        : 'Hall of Masters leaderboard'
+                }
+                actions={
+                    <>
+                        {known.length > 1 && (
+                            <SeasonSelect
+                                className='leaderboard__season'
+                                seasons={known}
+                                liveSeason={liveSeason}
+                                value={season}
+                                onChange={(next) =>
+                                    navigate({
+                                        params: { season: next },
+                                        search: (prev) => ({ ...prev, page: undefined }),
+                                    })
+                                }
+                            />
+                        )}
+                        <button
+                            type='button'
+                            onClick={() => refresh()}
+                            className='button'
+                            disabled={isFetching}
+                        >
+                            {isFetching ? 'Refreshing…' : 'Refresh'}
+                        </button>
+                    </>
+                }
+            />
             <LeaderboardScore
                 key={season}
                 season={season}
@@ -121,6 +130,6 @@ export default function Leaderboard() {
                 tableState={{ page: search.page, pageSize: search.size, search: search.q }}
                 onTableStateChange={onTableStateChange}
             />
-        </main>
+        </Page>
     );
 }

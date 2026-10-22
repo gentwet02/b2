@@ -1,9 +1,10 @@
-import { StatusMessage } from '@/components/status/Status';
 import { Link } from '@tanstack/react-router';
+import Page from '@/components/page/Page';
+import StatusMessage from '@/components/status/StatusMessage';
 
 export default function NotFound() {
     return (
-        <main className='page'>
+        <Page>
             <StatusMessage
                 title='This page popped'
                 action={
@@ -14,6 +15,6 @@ export default function NotFound() {
             >
                 The address doesn't match any page. Check the link, or start from the leaderboard.
             </StatusMessage>
-        </main>
+        </Page>
     );
 }

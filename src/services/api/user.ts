@@ -1,4 +1,4 @@
-import { getFromApi } from '@/services/api/utils';
+import { getFromApi, withQuery } from '@/services/api/client';
 import type { UserMatchesResponse } from '@/types/match';
 import type {
     PlayerSeasonRecords,
@@ -13,9 +13,7 @@ export const userService = {
         getFromApi<UserMatchesResponse>(`users/${userId}/matches`),
     getRanks: (userId: string) => getFromApi<RankHistory>(`users/${userId}/ranks`),
     getSeasonStats: (userId: string, season?: number) =>
-        getFromApi<SeasonStats>(
-            `users/${userId}/season${season !== undefined ? `?season=${season}` : ''}`,
-        ),
+        getFromApi<SeasonStats>(withQuery(`users/${userId}/season`, { season })),
     getSeasonRecords: (userId: string) =>
         getFromApi<PlayerSeasonRecords>(`users/${userId}/seasons`),
 };

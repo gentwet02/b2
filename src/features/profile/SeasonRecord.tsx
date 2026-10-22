@@ -1,121 +1,86 @@
-import { ErrorState } from '@/components/status/Status';
-import useSeasonStats from '@/hooks/useSeasonStats';
+import PanelEmpty from '@/components/panel/PanelEmpty';
+import ErrorState from '@/components/status/ErrorState';
+import useSeasonStats from '@/hooks/queries/useSeasonStats';
+import type { StatDetail } from '@/types/profile';
 import { heroImage } from '@/utils/assetOverrides';
-import { formatHero, formatNumber, seasonTitle, winRate } from '@/utils/format';
+import { formatNumber } from '@/utils/format';
+import { formatHero } from '@/utils/hero';
+import { seasonTitle } from '@/utils/season';
+import StatCard from './StatCard';
+import StatDetails from './StatDetails';
+import WinLossSummary from './WinLossSummary';
 
-export default function SeasonRecord({ userId }: { userId: string }) {
+interface SeasonRecordProps {
+    userId: string;
+}
+
+/** This season's ranked record, from the matches and profile readings our server recorded. */
+export default function SeasonRecord(props: SeasonRecordProps) {
+    const { userId } = props;
+
     const { data, isLoading, error, refetch } = useSeasonStats(userId);
-
-    const title = data?.seasonName ? seasonTitle(data.seasonName) : 'This season';
 
     if (isLoading) {
         return (
-            <section
-                className='stats-panel stats-panel--accent stats-panel--loading'
-                aria-busy='true'
-            >
-                <h2 className='stats-panel__title'>This season</h2>
-                <p className='profile-panel__empty'>Loading the season record…</p>
-            </section>
+            <StatCard title='This season' accent placeholder busy>
+                <PanelEmpty>Loading the season record…</PanelEmpty>
+            </StatCard>
         );
     }
     if (error || !data) {
         return (
-            <section className='stats-panel'>
-                <h2 className='stats-panel__title'>This season</h2>
+            <StatCard title='This season'>
                 <ErrorState error={error} onRetry={() => refetch()} />
-            </section>
+            </StatCard>
         );
     }
 
     const { wins, losses, draws } = data;
-    const played = wins + losses + draws;
-    const rate = winRate(wins, losses);
-    const winShare = played > 0 ? (wins / played) * 100 : 0;
-    const drawShare = played > 0 ? (draws / played) * 100 : 0;
     const streak = (value: number | null) => (value === null ? '–' : formatNumber(value));
     const topHero = data.heroes[0];
-    const topHeroPortrait = topHero ? heroImage(topHero.hero, topHero.portrait) : undefined;
+
+    const details: StatDetail[] = [
+        { label: 'Current win streak', value: streak(data.winStreak) },
+        { label: 'Best win streak', value: streak(data.bestWinStreak) },
+    ];
+    if (topHero) {
+        const portrait = heroImage(topHero.hero, topHero.portrait);
+        details.push({
+            label: 'Most played hero',
+            className: 'stats-panel__hero',
+            value: (
+                <>
+                    {portrait && <img className='stats-panel__hero-img' src={portrait} alt='' />}
+                    <span>
+                        {formatHero(topHero.hero)}{' '}
+                        <span className='stats-panel__sub'>
+                            {topHero.wins}/{topHero.played} won
+                        </span>
+                    </span>
+                </>
+            ),
+        });
+    }
+    details.push({ label: 'Matches recorded', value: formatNumber(data.recorded) });
 
     return (
-        <section className='stats-panel stats-panel--accent'>
-            <h2 className='stats-panel__title'>
-                {title} <span className='stats-panel__tag'>Ranked</span>
-            </h2>
-
-            {played === 0 ? (
-                <p className='profile-panel__empty'>
-                    No ranked match recorded for this player this season yet.
-                </p>
+        <StatCard
+            accent
+            title={
+                <>
+                    {data.seasonName ? seasonTitle(data.seasonName) : 'This season'}{' '}
+                    <span className='stats-panel__tag'>Ranked</span>
+                </>
+            }
+        >
+            {wins + losses + draws === 0 ? (
+                <PanelEmpty>No ranked match recorded for this player this season yet.</PanelEmpty>
             ) : (
                 <>
-                    <div className='stats-panel__rate'>
-                        <span className='stats-panel__rate-value'>
-                            {rate === null ? 'No games' : `${rate.toFixed(1)}%`}
-                        </span>
-                        {rate !== null && <span className='stats-panel__rate-label'>win rate</span>}
-                    </div>
-
-                    <div
-                        className='stats-panel__bar'
-                        role='img'
-                        aria-label={`${wins} wins, ${draws} draws, ${losses} losses`}
-                    >
-                        <span className='stats-panel__bar-win' style={{ width: `${winShare}%` }} />
-                        <span
-                            className='stats-panel__bar-draw'
-                            style={{ width: `${drawShare}%` }}
-                        />
-                    </div>
-
-                    <div className='stats-panel__record'>
-                        <span>
-                            <strong>{formatNumber(wins)}</strong> wins
-                        </span>
-                        <span>
-                            <strong>{formatNumber(draws)}</strong> draws
-                        </span>
-                        <span>
-                            <strong>{formatNumber(losses)}</strong> losses
-                        </span>
-                    </div>
-
-                    <dl className='stats-panel__details'>
-                        <div className='stats-panel__detail'>
-                            <dt>Current win streak</dt>
-                            <dd>{streak(data.winStreak)}</dd>
-                        </div>
-                        <div className='stats-panel__detail'>
-                            <dt>Best win streak</dt>
-                            <dd>{streak(data.bestWinStreak)}</dd>
-                        </div>
-                        {topHero && (
-                            <div className='stats-panel__detail'>
-                                <dt>Most played hero</dt>
-                                <dd className='stats-panel__hero'>
-                                    {topHeroPortrait && (
-                                        <img
-                                            className='stats-panel__hero-img'
-                                            src={topHeroPortrait}
-                                            alt=''
-                                        />
-                                    )}
-                                    <span>
-                                        {formatHero(topHero.hero)}{' '}
-                                        <span className='stats-panel__sub'>
-                                            {topHero.wins}/{topHero.played} won
-                                        </span>
-                                    </span>
-                                </dd>
-                            </div>
-                        )}
-                        <div className='stats-panel__detail'>
-                            <dt>Matches recorded</dt>
-                            <dd>{formatNumber(data.recorded)}</dd>
-                        </div>
-                    </dl>
+                    <WinLossSummary wins={wins} draws={draws} losses={losses} />
+                    <StatDetails details={details} />
                 </>
             )}
-        </section>
+        </StatCard>
     );
 }

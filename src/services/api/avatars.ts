@@ -1,4 +1,5 @@
-import { getFromApi, toError } from '@/services/api/utils';
+import { AVATAR_BATCH_MAX, AVATAR_BATCH_MS } from '@/config/api';
+import { getFromApi, toError } from '@/services/api/client';
 
 export interface AvatarsResponse {
     avatars: Record<string, string>;
@@ -11,9 +12,6 @@ export interface AvatarResult {
     url: string | null;
     pending: boolean;
 }
-
-const BATCH_MS = 40;
-const MAX_IDS = 100;
 
 type Waiter = { resolve: (r: AvatarResult) => void; reject: (e: unknown) => void };
 
@@ -44,7 +42,8 @@ function flush() {
     queue = new Map();
     timer = null;
     const ids = [...batch.keys()];
-    for (let i = 0; i < ids.length; i += MAX_IDS) void send(ids.slice(i, i + MAX_IDS), batch);
+    for (let i = 0; i < ids.length; i += AVATAR_BATCH_MAX)
+        void send(ids.slice(i, i + AVATAR_BATCH_MAX), batch);
 }
 
 /**
@@ -56,6 +55,6 @@ export function loadAvatar(id: string): Promise<AvatarResult> {
         const waiters = queue.get(id) ?? [];
         waiters.push({ resolve, reject });
         queue.set(id, waiters);
-        timer ??= setTimeout(flush, BATCH_MS);
+        timer ??= setTimeout(flush, AVATAR_BATCH_MS);
     });
 }

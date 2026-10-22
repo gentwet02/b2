@@ -1,0 +1,29 @@
+@use '@/styles/utils' as *;
+
+.controls {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-end;
+    gap: $space-s $space-l;
+
+    &__season {
+        min-width: 11rem;
+    }
+
+    &__range {
+        min-width: 11rem;
+    }
+
+    .dropdown--open {
+        z-index: z('popover');
+    }
+
+    @include breakpoint-down(small) {
+        margin-inline: $gutter;
+
+        &__season,
+        &__range {
+            min-width: 0;
+        }
+    }
+}

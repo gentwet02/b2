@@ -1,0 +1,7 @@
+@use '@/styles/utils/colors';
+@use '@/styles/utils' as *;
+
+.controls__label {
+    @extend %eyebrow;
+    color: colors.$ink-soft;
+}

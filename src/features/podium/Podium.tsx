@@ -1,17 +1,18 @@
 import { Link } from '@tanstack/react-router';
 import PlayerAvatar from '@/components/avatar/PlayerAvatar';
-import type { RankedPlayer } from '@/features/leaderboard/LeaderboardScore';
+import { PODIUM_ORDER } from '@/config/leaderboard';
 import usePlayerAvatars from '@/hooks/usePlayerAvatars';
-import { formatNumber, getAlias } from '@/utils/format';
+import type { RankedPlayer } from '@/types/leaderboard';
+import type { Wld } from '@/types/record';
+import { formatNumber } from '@/utils/format';
+import { getAlias } from '@/utils/player';
 import PodiumStats from './PodiumStats';
-
-const ORDER = [2, 1, 3];
 
 interface PodiumProps {
     players: RankedPlayer[];
     avatars?: Record<string, string> | undefined;
-    /** [wins, losses, draws] per player id, from the leaderboard stats */
-    records?: Record<string, [number, number, number]> | undefined;
+    /** per player id, from the leaderboard stats */
+    records?: Record<string, Wld> | undefined;
 }
 
 export default function Podium(props: PodiumProps) {
@@ -19,7 +20,7 @@ export default function Podium(props: PodiumProps) {
 
     const avatars = usePlayerAvatars(serverAvatars);
 
-    const top = ORDER.map((rank) => players[rank - 1]).filter(Boolean);
+    const top = PODIUM_ORDER.map((rank) => players[rank - 1]).filter(Boolean);
 
     if (top.length === 0) return null;
 

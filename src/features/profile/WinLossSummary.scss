@@ -1,0 +1,55 @@
+@use '@/styles/utils/colors';
+@use '@/styles/utils' as *;
+
+.stats-panel {
+    &__rate {
+        display: flex;
+        align-items: baseline;
+        gap: $space-2xs;
+    }
+
+    &__rate-value {
+        @include display($text-5xl);
+    }
+
+    &__rate-label {
+        color: colors.$ink-soft;
+        font-weight: 500;
+    }
+
+    &__bar {
+        display: flex;
+        height: 0.9rem;
+        background: colors.$bloon;
+        border: 2px solid colors.$ink;
+        border-radius: 999px;
+        overflow: hidden;
+    }
+
+    &__bar-win,
+    &__bar-draw {
+        @include grow-bar(200ms);
+    }
+
+    &__bar-win {
+        background: colors.$leaf;
+    }
+
+    &__bar-draw {
+        background: colors.$line;
+        transform-origin: left center;
+    }
+
+    &__record {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: $space-2xs $space-s-m;
+        color: colors.$ink-soft;
+
+        strong {
+            color: colors.$ink;
+            font-weight: 700;
+        }
+    }
+}

@@ -2,7 +2,9 @@ import { Link } from '@tanstack/react-router';
 import { RESULT_TEXT } from '@/config/match';
 import type { MatchPick, MatchPlayer, Outcome } from '@/types/match';
 import { heroImage } from '@/utils/assetOverrides';
-import { extractUserId, formatHero, formatLabel, getAlias } from '@/utils/format';
+import { formatLabel } from '@/utils/format';
+import { formatHero } from '@/utils/hero';
+import { extractUserId, getAlias } from '@/utils/player';
 import Pickable from './Pickable';
 
 interface PlayerSideProps {
@@ -51,6 +53,14 @@ export default function PlayerSide(props: PlayerSideProps) {
                     </span>
                 </div>
                 {alias && <div className='match-card__alias'>{alias}</div>}
+                {player.matchedName && (
+                    <div
+                        className='match-card__old-name'
+                        title='This player was found by a name they used before'
+                    >
+                        Found as <strong>{player.matchedName}</strong> (old name)
+                    </div>
+                )}
                 <div>
                     <Pickable
                         className='match-card__hero'

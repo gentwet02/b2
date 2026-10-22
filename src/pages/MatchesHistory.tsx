@@ -1,42 +1,21 @@
-import MatchCard from '@/components/match/MatchCard';
-import { ErrorState, Loading, StatusMessage } from '@/components/status/Status';
-import MatchFilters from '@/features/match/MatchFilters';
-import useDebouncedValue from '@/hooks/useDebouncedValue';
-import useMatchFilters from '@/hooks/useMatchFilters';
-import useMatchesHistory from '@/hooks/useMatchesHistory';
-import useSeasons from '@/hooks/useSeasons';
-import type { MatchesQuery, MatchPick } from '@/types/match';
-import {
-    formatNumber,
-    isReversedMap,
-    joinList,
-    mapBaseKey,
-    mapFilterOf,
-    parseHero,
-    seasonLabel,
-    splitList,
-    timeAgo,
-} from '@/utils/format';
 import { getRouteApi, type NavigateOptions } from '@tanstack/react-router';
-import { useEffect, useState } from 'react';
+import MatchList from '@/components/match/MatchList';
+import Page from '@/components/page/Page';
+import PageHeader from '@/components/page/PageHeader';
+import ErrorState from '@/components/status/ErrorState';
+import Loading from '@/components/status/Loading';
+import StatusMessage from '@/components/status/StatusMessage';
+import MatchFilters from '@/features/match/MatchFilters';
+import useMatchesHistory from '@/hooks/queries/useMatchesHistory';
+import useMatchFilters from '@/hooks/queries/useMatchFilters';
+import useSeasons from '@/hooks/queries/useSeasons';
+import useUrlText from '@/hooks/useUrlText';
+import type { MatchesQuery, MatchPick } from '@/types/match';
+import { formatNumber, plural, timeAgo } from '@/utils/format';
+import { addPick, isFiltering, NO_FILTERS } from '@/utils/matchFilters';
+import { seasonLabel } from '@/utils/season';
 
 const routeApi = getRouteApi('/matches-history');
-
-/** A name box that updates its URL param once typing pauses, and follows the URL. */
-function useParamText(value: string | undefined, set: (value: string | undefined) => void) {
-    const [text, setText] = useState(value ?? '');
-    const debounced = useDebouncedValue(text.trim(), 300);
-    useEffect(() => {
-        if (debounced !== (value ?? '')) set(debounced || undefined);
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [debounced]);
-    useEffect(() => {
-        // the URL changed by itself (Back, Clear filters): show it in the box
-        if ((value ?? '') !== debounced) setText(value ?? '');
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [value]);
-    return [text, setText] as const;
-}
 
 export default function MatchesHistory() {
     const query = routeApi.useSearch();
@@ -47,9 +26,9 @@ export default function MatchesHistory() {
         options?: Pick<NavigateOptions, 'viewTransition'>,
     ) => navigate({ search: (prev) => ({ ...prev, ...patch }), replace: true, ...options });
 
-    const [text, setText] = useParamText(query.player, (player) => setQuery({ player }));
+    const [text, setText] = useUrlText(query.player, (player) => setQuery({ player }));
     // same player mode: the other side's name
-    const [text2, setText2] = useParamText(query.player2, (player2) => setQuery({ player2 }));
+    const [text2, setText2] = useUrlText(query.player2, (player2) => setQuery({ player2 }));
 
     const seasons = useSeasons();
     const filters = useMatchFilters(query);
@@ -69,95 +48,40 @@ export default function MatchesHistory() {
     const page = first?.matches;
     const crawl = first?.crawl ?? null;
     const matches = data?.pages.flatMap((p) => p.matches.items) ?? [];
-    const filtering = !!(
-        query.player ||
-        query.heroes ||
-        query.towers ||
-        query.map ||
-        (query.sameSide && (query.player2 || query.heroes2 || query.towers2))
-    );
+    const filtering = isFiltering(query);
     const seasonId = page?.seasonId ?? query.season ?? seasons.data?.liveSeason;
-    const options = filters.data;
-
-    // a hero clicked on a card, as a filter item: any variant of its base
-    const heroItem = (hero: string) =>
-        options?.heroes.find((h) => h.variants.some((v) => v.hero === hero))?.base ??
-        (hero.includes('_') ? `${hero.split('_')[0]}:${hero}` : hero);
 
     // clicking a hero, tower or map on a card adds it to the filters
-    const pick = ({ kind, value }: MatchPick) => {
-        if (kind === 'map') {
-            // the exact version when the map has a reversed one, else just the map
-            const base = mapBaseKey(value);
-            const versions = options?.maps.find((m) => m.key === base)?.variants.length ?? 0;
-            setQuery({ map: isReversedMap(value) || versions > 1 ? mapFilterOf(value) : base });
-        } else if (query.sameSide) {
-            // same player mode: on the first side with room for it
-            const key = kind === 'tower' ? 'towers' : 'heroes';
-            const max = kind === 'tower' ? 3 : 1;
-            const item = kind === 'tower' ? value : heroItem(value);
-            const same = (a: string) =>
-                kind === 'tower' ? a === item : parseHero(a).base === parseHero(item).base;
-            for (const side of [key, `${key}2`] as const) {
-                const list = splitList(query[side]);
-                if (list.some(same)) return;
-                if (list.length < max) {
-                    setQuery({ [side]: joinList([...list, item]) });
-                    break;
-                }
-            }
-        } else if (kind === 'tower') {
-            const towers = splitList(query.towers);
-            if (towers.includes(value) || towers.length >= (options?.maxTowers ?? 6)) return;
-            setQuery({ towers: joinList([...towers, value]) });
-        } else {
-            const heroes = splitList(query.heroes);
-            const item = heroItem(value);
-            const itemBase = parseHero(item).base;
-            if (
-                heroes.some((h) => parseHero(h).base === itemBase) ||
-                heroes.length >= (options?.maxHeroes ?? 2)
-            )
-                return;
-            setQuery({ heroes: joinList([...heroes, item]) });
-        }
+    const pick = (clicked: MatchPick) => {
+        const patch = addPick(query, clicked, filters.data);
+        if (!patch) return;
+        setQuery(patch);
         window.scrollTo({ top: 0, behavior: 'smooth' });
     };
 
     const clearFilters = () => {
         setText('');
         setText2('');
-        setQuery({
-            player: undefined,
-            heroes: undefined,
-            towers: undefined,
-            map: undefined,
-            sameSide: undefined,
-            player2: undefined,
-            heroes2: undefined,
-            towers2: undefined,
-        });
+        setQuery(NO_FILTERS);
     };
 
     if (isLoading) return <Loading label='Loading matches…' />;
 
     return (
-        <main className='page matches'>
-            <div className='page__head'>
-                <div>
-                    <h1 className='page__title'>Ranked matches</h1>
-                    <p className='page__subtitle'>
-                        {page
-                            ? `${formatNumber(page.totalMatches)} matches recorded in ${seasonId !== undefined ? seasonLabel(seasonId) : 'this season'}, played by Hall of Masters players`
-                            : 'Matches played by Hall of Masters players'}
-                    </p>
-                </div>
-            </div>
+        <Page className='matches'>
+            <PageHeader
+                title='Ranked matches'
+                subtitle={
+                    page
+                        ? `${formatNumber(page.totalMatches)} matches recorded in ${seasonId !== undefined ? seasonLabel(seasonId) : 'this season'}, played by Hall of Masters players`
+                        : 'Matches played by Hall of Masters players'
+                }
+            />
 
             <MatchFilters
                 query={query}
                 onChange={setQuery}
-                options={options}
+                options={filters.data}
                 seasons={seasons.data?.seasons ?? []}
                 liveSeason={seasons.data?.liveSeason}
                 seasonId={seasonId}
@@ -172,7 +96,7 @@ export default function MatchesHistory() {
                     {isFetching && isPlaceholderData
                         ? 'Searching…'
                         : page
-                          ? `${formatNumber(page.total)} ${page.total === 1 ? 'match' : 'matches'}`
+                          ? `${formatNumber(page.total)} ${plural(page.total, 'match', 'matches')}`
                           : ''}
                 </span>
                 {filtering && (
@@ -223,13 +147,13 @@ export default function MatchesHistory() {
             )}
 
             {matches.length > 0 && (
-                <ul className={`matches__list${isPlaceholderData ? ' matches__list--stale' : ''}`}>
-                    {matches.map((match) => (
-                        <li key={match.id}>
-                            <MatchCard match={match} onPick={pick} />
-                        </li>
-                    ))}
-                </ul>
+                <MatchList
+                    matches={matches}
+                    onPick={pick}
+                    className={
+                        isPlaceholderData ? 'matches__list matches__list--stale' : 'matches__list'
+                    }
+                />
             )}
 
             {hasNextPage && page && (
@@ -241,9 +165,9 @@ export default function MatchesHistory() {
                 >
                     {isFetchingNextPage
                         ? 'Loading…'
-                        : `Show ${Math.min(20, page.total - matches.length)} more`}
+                        : `Show ${Math.min(page.limit, page.total - matches.length)} more`}
                 </button>
             )}
-        </main>
+        </Page>
     );
 }

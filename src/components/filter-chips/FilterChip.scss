@@ -1,0 +1,50 @@
+@use '@/styles/utils/colors';
+@use '@/styles/utils' as *;
+
+.filter-chips {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: $space-2xs;
+}
+
+.filter-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    padding: 0.2rem 0.3rem 0.2rem 0.75rem;
+    font-size: $text-md;
+    font-weight: 600;
+    background: colors.$banana;
+    border: 2px solid colors.$ink;
+    border-radius: $radius-pill;
+    @include enter($anim-pop-in, $duration-base);
+
+    // a hero or map: picture first, sky blue
+    &--image {
+        background: colors.$sky;
+        padding-left: 0.3rem;
+    }
+
+    &__img {
+        @include size(1.6rem);
+        border-radius: 50%;
+        border: 1.5px solid colors.$ink;
+        background: colors.$paper;
+
+        &--map {
+            border-radius: 0.4rem;
+            object-fit: cover;
+        }
+    }
+
+    &__variant {
+        width: 9.5rem;
+    }
+
+    &__remove {
+        font-size: $text-base;
+        border: none;
+        @include icon-button(1.4rem, transparent);
+    }
+}

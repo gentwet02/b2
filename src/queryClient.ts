@@ -1,12 +1,13 @@
 import { QueryClient } from '@tanstack/react-query';
+import { QUERY_DEFAULTS } from '@/config/queries';
 
 /** Shared by React (App.tsx) and the router, whose loaders prefetch data on hover. */
 export const queryClient = new QueryClient({
     defaultOptions: {
         queries: {
-            staleTime: 5 * 1000,
+            staleTime: QUERY_DEFAULTS.stale,
             refetchOnWindowFocus: false,
-            retry: 1,
+            retry: QUERY_DEFAULTS.retry,
         },
     },
 });

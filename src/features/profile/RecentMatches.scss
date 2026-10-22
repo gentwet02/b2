@@ -2,13 +2,6 @@
 @use '@/styles/utils' as *;
 
 .recent-matches {
-    display: grid;
-    gap: $space-xs;
-
-    > li {
-        max-width: 100%;
-    }
-
     &__amount {
         margin-left: auto;
         display: inline-flex;
@@ -21,10 +14,6 @@
             width: 4.5rem;
             font-size: $text-md;
         }
-    }
-
-    &__more {
-        justify-self: center;
     }
 
     &__actions {

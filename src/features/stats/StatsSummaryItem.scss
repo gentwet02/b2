@@ -1,0 +1,20 @@
+@use '@/styles/utils/colors';
+@use '@/styles/utils' as *;
+
+.stats-summary {
+    &__item {
+        display: grid;
+        gap: $space-3xs;
+    }
+
+    &__value {
+        @include display($text-3xl);
+        @include enter($anim-pop-in, $duration-slower);
+    }
+
+    &__label {
+        font-size: $text-sm;
+        font-weight: 600;
+        color: colors.$ink-soft;
+    }
+}

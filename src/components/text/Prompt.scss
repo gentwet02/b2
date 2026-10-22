@@ -1,0 +1,7 @@
+@use '@/styles/utils' as *;
+
+.prompt {
+    text-align: center;
+    padding: $space-l 0;
+    @include enter($anim-fade-up);
+}

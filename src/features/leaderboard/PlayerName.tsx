@@ -1,15 +1,17 @@
 import { Link } from '@tanstack/react-router';
 import PlayerAvatar from '@/components/avatar/PlayerAvatar';
-import usePlayerAvatar from '@/hooks/usePlayerAvatar';
+import usePlayerAvatar from '@/hooks/queries/usePlayerAvatar';
 import type { LeaderboardPlayer } from '@/types/leaderboard';
-import { getAlias } from '@/utils/format';
+import { getAlias } from '@/utils/player';
 
 interface PlayerNameProps {
     player: LeaderboardPlayer;
     avatar?: string | undefined;
     avatarReady?: boolean;
 }
-export function PlayerName(props: PlayerNameProps) {
+
+/** Avatar, name (a link to the profile) and alias, in a leaderboard row. */
+export default function PlayerName(props: PlayerNameProps) {
     const { player, avatar, avatarReady = true } = props;
 
     const src = usePlayerAvatar(player.id, avatar, avatarReady);

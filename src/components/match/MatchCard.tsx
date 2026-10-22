@@ -1,7 +1,10 @@
 import { NEUTRAL_TEXT } from '@/config/match';
-import type { Match, MatchPick, Outcome } from '@/types/match';
+import type { Match, MatchPick } from '@/types/match';
 import { mapImage } from '@/utils/assetOverrides';
-import { extractUserId, formatDuration, formatLabel, formatMap, timeAgo } from '@/utils/format';
+import { formatDuration, formatLabel, timeAgo } from '@/utils/format';
+import { formatMap } from '@/utils/map';
+import { matchOutcome } from '@/utils/match';
+import { extractUserId } from '@/utils/player';
 import Pickable from './Pickable';
 import PlayerSide from './PlayerSide';
 
@@ -13,19 +16,6 @@ interface MatchCardProps {
     onPick?: ((pick: MatchPick) => void) | undefined;
 }
 
-function outcome(result: string): Outcome {
-    switch (result) {
-        case 'win':
-        case 'opponentLobbyDC':
-            return 'win';
-        case 'lose':
-        case 'lobbyDC':
-            return 'lose';
-        default:
-            return 'neutral';
-    }
-}
-
 export default function MatchCard(props: MatchCardProps) {
     const { match, perspectiveId, onPick } = props;
 
@@ -33,8 +23,8 @@ export default function MatchCard(props: MatchCardProps) {
     if (perspectiveId && extractUserId(right.profileURL) === perspectiveId) {
         [left, right] = [right, left];
     }
-    const leftOutcome = outcome(left.result);
-    const rightOutcome = outcome(right.result);
+    const leftOutcome = matchOutcome(left.result);
+    const rightOutcome = matchOutcome(right.result);
     const tone = perspectiveId ? leftOutcome : 'neutral';
     const nobodyWon = leftOutcome === 'neutral' && rightOutcome === 'neutral';
     const middle = nobodyWon ? (NEUTRAL_TEXT[left.result] ?? formatLabel(left.result)) : 'vs';

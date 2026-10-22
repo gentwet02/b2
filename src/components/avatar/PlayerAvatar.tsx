@@ -14,7 +14,9 @@ interface PlayerAvatarProps {
 }
 
 /** Avatar image that falls back to the player's initial when the URL is missing or dead. */
-export default function PlayerAvatar({ src, name, className, size, lazy }: PlayerAvatarProps) {
+export default function PlayerAvatar(props: PlayerAvatarProps) {
+    const { src, name, className, size, lazy } = props;
+
     const [failed, setFailed] = useState<string | null>(null);
 
     if (src && failed !== src && !broken.has(src)) {

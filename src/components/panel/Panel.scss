@@ -1,0 +1,38 @@
+@use '@/styles/utils/colors';
+@use '@/styles/components';
+@use '@/styles/utils' as *;
+
+.panel {
+    display: grid;
+    gap: $space-s;
+    padding: $space-s-m $space-m $space-m;
+    min-width: 0;
+    @include components.panel;
+
+    @include breakpoint-down(small) {
+        padding: $space-s $gutter $space-s-m;
+    }
+
+    &__head {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: baseline;
+        justify-content: space-between;
+        gap: $space-2xs $space-s;
+    }
+
+    &__title {
+        @include display($text-2xl);
+    }
+
+    &__note {
+        color: colors.$ink-soft;
+        font-weight: 500;
+    }
+
+    .status--error,
+    .status--empty {
+        box-shadow: none;
+        border-width: 1.5px;
+    }
+}

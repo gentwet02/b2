@@ -1,20 +1,26 @@
-import { formatNumber, winRate } from '@/utils/format';
+import type { Wld } from '@/types/record';
+import { formatNumber, plural } from '@/utils/format';
+import { formatRate, gamesOf, rateOf } from '@/utils/record';
+
+interface PodiumStatsProps {
+    record?: Wld | undefined;
+}
 
 /** Revealed under the rank number when the step lifts on hover. */
-export default function PodiumStats({ record }: { record?: [number, number, number] | undefined }) {
-    const [wins, losses, draws] = record ?? [0, 0, 0];
-    const games = wins + losses + draws;
-    const rate = winRate(wins, losses);
+export default function PodiumStats(props: PodiumStatsProps) {
+    const { record } = props;
+
+    const games = gamesOf(record);
 
     return (
         <dl className='podium__stats'>
             <div>
-                <dt>{games === 1 ? 'game' : 'games'}</dt>
+                <dt>{plural(games, 'game')}</dt>
                 <dd>{record ? formatNumber(games) : '–'}</dd>
             </div>
             <div>
                 <dt>win rate</dt>
-                <dd>{rate === null ? '–' : `${rate.toFixed(1)}%`}</dd>
+                <dd>{formatRate(rateOf(record), 1)}</dd>
             </div>
         </dl>
     );

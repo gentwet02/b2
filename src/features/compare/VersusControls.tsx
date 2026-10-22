@@ -1,94 +1,71 @@
-import Dropdown from '@/components/dropdown/Dropdown';
-import { COMPARE_RANGES, previousRange } from '@/config/compare';
-import useOpponentsMet from '@/hooks/useOpponentsMet';
-import useSeasons from '@/hooks/useSeasons';
-import type { CompareSearch, CompareSeason, MetOpponent } from '@/types/compare';
-import { formatRecord, gamesOf } from '@/utils/compare';
-import { getAlias, seasonLabel } from '@/utils/format';
 import { useMemo } from 'react';
+import ControlGroup from '@/components/controls/ControlGroup';
+import Controls from '@/components/controls/Controls';
+import RangeControl from '@/components/controls/RangeControl';
+import Dropdown from '@/components/dropdown/Dropdown';
+import SeasonSelect from '@/components/season-select/SeasonSelect';
+import SegmentedControl from '@/components/segmented-control/SegmentedControl';
+import { COMPARE_MODES } from '@/config/compare';
+import useOpponentsMet from '@/hooks/queries/useOpponentsMet';
+import useSeasons from '@/hooks/queries/useSeasons';
+import type { CompareSearch } from '@/types/compare';
+import type { SeasonScope } from '@/types/season';
+import { plural } from '@/utils/format';
+import { nameWithAlias } from '@/utils/player';
+import { formatRecord, gamesOf } from '@/utils/record';
+import { urlSeason } from '@/utils/season';
 
 interface VersusControlsProps {
     userId: string;
     playerMode: boolean;
     vs: string | undefined;
     range: string;
-    band: boolean;
-    season: CompareSeason | undefined;
-    /** name of the current opponent when they aren't in the list (never met) */
-    vsName?: string | null | undefined;
-    vsAlias?: string | null | undefined;
+    exclude: string | undefined;
+    season: SeasonScope | undefined;
+    /** the current opponent when they aren't in the list (never met) */
+    vsPlayer?: { name: string | null; alias: string | null } | undefined;
     onChange: (next: CompareSearch) => void;
     onPlayerMode: () => void;
 }
 
 export default function VersusControls(props: VersusControlsProps) {
-    const { userId, playerMode, vs, range, band, season, vsName, vsAlias, onChange, onPlayerMode } =
-        props;
+    const { userId, playerMode, vs, range, exclude, season, vsPlayer, onChange, onPlayerMode } = props;
 
     const seasons = useSeasons();
     const met = useOpponentsMet(userId, season);
 
-    const liveSeason = seasons.data?.liveSeason;
-    const previous = previousRange(range);
-
-    const seasonOptions = [
-        { value: 'all', label: 'All seasons' },
-        ...(seasons.data?.seasons ?? []).map((s) => ({
-            value: String(s.id),
-            label: `${seasonLabel(s.id)}${s.live ? ' (live)' : ''}`,
-        })),
-    ];
-    const seasonValue = season === undefined ? String(liveSeason ?? '') : String(season);
-    const setSeason = (value: string) =>
-        onChange({
-            season:
-                value === 'all' ? 'all' : Number(value) === liveSeason ? undefined : Number(value),
-        });
-
-    const vsLabel = `${vsName}${vsAlias ? ` (${vsAlias})` : ''}`;
-    const playerLabel = (o: MetOpponent) => `${o.name} ${getAlias(o) ? `(${getAlias(o)})` : ''}`;
     const playerOptions = useMemo(() => {
-        const list = (met.data ?? []).map((o) => ({
-            value: o.userId,
-            label: `${playerLabel(o)} · ${gamesOf(o.record)} ${gamesOf(o.record) === 1 ? 'game' : 'games'} · ${formatRecord(o.record)}`,
-        }));
+        const list = (met.data ?? []).map((o) => {
+            const games = gamesOf(o.record);
+            return {
+                value: o.userId,
+                label: `${nameWithAlias(o)} · ${games} ${plural(games, 'game')} · ${formatRecord(o.record)}`,
+            };
+        });
         if (vs && !list.some((o) => o.value === vs)) {
-            list.unshift({ value: vs, label: `${vsLabel ?? 'Unknown player'} · never met` });
+            const name = vsPlayer?.name ? nameWithAlias(vsPlayer) : 'Unknown player';
+            list.unshift({ value: vs, label: `${name} · never met` });
         }
         return list;
-    }, [met.data, vs, vsLabel]);
+    }, [met.data, vs, vsPlayer]);
 
     return (
-        <div className='versus-controls'>
-            <div className='versus-controls__group'>
-                <span className='versus-controls__label' id='versus-mode'>
-                    Compare against
-                </span>
-                <div className='h2h-scope' role='group' aria-labelledby='versus-mode'>
-                    <button
-                        type='button'
-                        className='h2h-scope__option'
-                        aria-pressed={!playerMode}
-                        onClick={() => onChange({ vs: undefined })}
-                    >
-                        Top players
-                    </button>
-                    <button
-                        type='button'
-                        className='h2h-scope__option'
-                        aria-pressed={playerMode}
-                        onClick={onPlayerMode}
-                    >
-                        One player
-                    </button>
-                </div>
-            </div>
+        <Controls>
+            <ControlGroup label='Compare against' labelId='versus-mode'>
+                <SegmentedControl
+                    aria-labelledby='versus-mode'
+                    options={COMPARE_MODES}
+                    value={playerMode ? 'player' : 'top'}
+                    onChange={(mode) =>
+                        mode === 'player' ? onPlayerMode() : onChange({ vs: undefined })
+                    }
+                />
+            </ControlGroup>
 
             {playerMode ? (
-                <div className='versus-controls__group versus-controls__group--grow'>
-                    <span className='versus-controls__label'>Player</span>
+                <ControlGroup label='Player' grow>
                     <Dropdown
-                        className='versus-controls__player'
+                        className='controls__player'
                         variant='compact'
                         options={playerOptions}
                         value={vs ?? ''}
@@ -105,46 +82,32 @@ export default function VersusControls(props: VersusControlsProps) {
                         noResultsText='No opponent with that name'
                         onSelect={(id) => onChange({ vs: id })}
                     />
-                </div>
+                </ControlGroup>
             ) : (
-                <>
-                    <div className='versus-controls__group'>
-                        <span className='versus-controls__label'>Range</span>
-                        <Dropdown
-                            className='versus-controls__range'
-                            variant='compact'
-                            options={COMPARE_RANGES}
-                            value={range}
-                            aria-label='Players compared'
-                            onSelect={(next) => onChange({ range: next })}
-                        />
-                    </div>
-                    {previous && (
-                        <label className='versus-controls__band'>
-                            <input
-                                type='checkbox'
-                                checked={band}
-                                onChange={(event) => onChange({ band: event.target.checked })}
-                            />
-                            Leave out the {previous.label.replace('Top', 'top')}
-                        </label>
-                    )}
-                </>
+                <RangeControl
+                    aria-label='Players compared'
+                    range={range}
+                    exclude={exclude}
+                    onRange={(next) => onChange({ range: next })}
+                    onExclude={(next) => onChange({ exclude: next })}
+                />
             )}
 
-            <div className='versus-controls__group'>
-                <span className='versus-controls__label'>Season</span>
-                {seasonValue && (
-                    <Dropdown
-                        className='versus-controls__season'
+            <ControlGroup label='Season'>
+                {(season ?? seasons.data?.liveSeason) !== undefined && (
+                    <SeasonSelect
+                        className='controls__season'
                         variant='compact'
-                        options={seasonOptions}
-                        value={seasonValue}
-                        aria-label='Season'
-                        onSelect={setSeason}
+                        allowAll
+                        seasons={seasons.data?.seasons ?? []}
+                        liveSeason={seasons.data?.liveSeason}
+                        value={season}
+                        onChange={(next) =>
+                            onChange({ season: urlSeason(next, seasons.data?.liveSeason) })
+                        }
                     />
                 )}
-            </div>
-        </div>
+            </ControlGroup>
+        </Controls>
     );
 }

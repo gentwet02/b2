@@ -6,12 +6,6 @@
     gap: $space-2xs;
 }
 
-.h2h-highlights__split {
-    justify-self: end;
-    font-size: $text-sm;
-    @include components.toggle;
-}
-
 .h2h-highlights {
     display: grid;
     grid-template-columns: repeat(3, minmax(0, 1fr));

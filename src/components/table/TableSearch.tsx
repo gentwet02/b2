@@ -1,5 +1,5 @@
-import { SearchIcon } from '@/components/icons';
 import { convertString } from 'str-case-converter';
+import { SearchIcon } from '@/components/icons';
 
 interface TableSearchProps {
     searchTerm: string;

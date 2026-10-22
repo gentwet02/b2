@@ -1,16 +1,16 @@
-import type { HeadToHead, RankBounds, Wld } from './compare';
-import type { SideFilterOptions } from './match';
-import type { HeroPick } from './tower';
+import type { ReactNode } from 'react';
+import type { BaseApiResponse } from '@/types/api';
+import type { Labels, RankBounds } from '@/types/compare';
+import type { HeroPick } from '@/types/hero';
+import type { MapVariant } from '@/types/map';
+import type { SideFilterOptions } from '@/types/match';
+import type { RecordRow, Wld } from '@/types/record';
+import type { GroupMode, SeasonScope } from '@/types/season';
 
-export type StatsSeason = number | 'all';
-export type StatsMode = 'player' | 'top';
 export type StatsView = 'heroes' | 'towers' | 'loadouts' | 'maps';
 
 /** A hero base, a tower, a loadout key ("Quincy|Alchemist,Druid,Ninja") or a map key. */
-export interface StatsRow {
-    key: string;
-    record: Wld;
-}
+export type StatsRow = RecordRow;
 
 export interface StatsMapRow extends StatsRow {
     /** the group's games on that map, focus or not */
@@ -23,16 +23,18 @@ export interface StatsOption {
 }
 
 /** GET /stats */
-export interface Stats {
-    season: StatsSeason;
+export interface Stats extends BaseApiResponse {
+    season: SeasonScope;
     seasonName: string;
-    mode: StatsMode;
+    mode: GroupMode;
     /** leaderboard range (top mode) */
     players: string | null;
+    /** the smaller range left out at the top */
+    exclude?: string | null | undefined;
     band: boolean;
     player: { userId: string; name: string | null; alias: string | null } | null;
     filters: {
-        map: { base: string; variant?: 'classic' | 'reversed' } | null;
+        map: { base: string; variant?: MapVariant } | null;
         hero: HeroPick | null;
         towers: string[];
     };
@@ -68,21 +70,19 @@ export interface Stats {
     /** heroes (with variants) and towers in the match filters' shape */
     options: SideFilterOptions & {
         /** base maps, with their classic / reversed games */
-        maps: (StatsOption & { variants: { variant: 'classic' | 'reversed'; count: number }[] })[];
+        maps: (StatsOption & { variants: { variant: MapVariant; count: number }[] })[];
     };
-    labels: HeadToHead['labels'] & {
+    labels: Labels & {
         /** raw hero → its base and portrait */
         variants: Record<string, { base: string; portrait: string | null }>;
     };
-    message?: string | null;
-    error?: string | null;
 }
 
 export interface StatsParams {
-    season?: StatsSeason | undefined;
+    season?: SeasonScope | undefined;
     player?: string | undefined;
     players?: string | undefined;
-    band?: boolean | undefined;
+    exclude?: string | undefined;
     map?: string | undefined;
     hero?: string | undefined;
     towers?: string[] | undefined;
@@ -90,12 +90,13 @@ export interface StatsParams {
 
 /** /stats URL search */
 export interface StatsSearch {
-    season?: StatsSeason | undefined;
+    season?: SeasonScope | undefined;
     /** one player's id */
     player?: string | undefined;
     /** a leaderboard range (default top 25) */
     players?: string | undefined;
-    band?: true | undefined;
+    /** a smaller range left out at the top */
+    exclude?: string | undefined;
     /** "oasis" (both versions), "oasis:classic" or "oasis:reversed" */
     map?: string | undefined;
     /** "Quincy" (any variant) or "Quincy:Quincy_Cyber" */
@@ -107,8 +108,23 @@ export interface StatsSearch {
     min?: number | undefined;
     /** minimum pick rate, in % */
     pick?: number | undefined;
-    /** heroes, strats and maps tables: one row per variant (skin, classic / reversed) */
-    variants?: true | undefined;
+    /** false: variants together in the heroes, strats and maps tables (split by default) */
+    variants?: false | undefined;
     /** strats table: the 3 towers only */
     towersOnly?: true | undefined;
+}
+
+/** One of the stats tables: its rows and how they read, sort and focus. */
+export interface StatsTableSpec {
+    id: string;
+    rows: StatsRow[];
+    title: string;
+    render: (r: StatsRow) => ReactNode;
+    /** the row's name, for the A–Z sort */
+    name: (r: StatsRow) => string;
+    /** the filters "Focus →" sets, null: already focused */
+    focus: (r: StatsRow) => Partial<StatsSearch> | null;
+    pageSize?: number;
+    /** rows sent / rows there are, and what they are */
+    cut?: { total: number; noun: string };
 }

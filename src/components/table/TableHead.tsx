@@ -1,12 +1,12 @@
 import { convertString } from 'str-case-converter';
 import { ChevronDownIcon } from '@/components/icons';
-import type { Category } from '@/types/table';
+import type { Category, TableSort } from '@/types/table';
 
 interface TableHeadProps {
     categories: Category[];
     disableSorting: boolean;
     handleSort: (category: Category) => void;
-    sortConfig: { key: null | string; direction: string };
+    sortConfig: TableSort;
     isSortable?: (key: string) => boolean;
 }
 

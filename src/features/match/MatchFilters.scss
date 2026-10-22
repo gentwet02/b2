@@ -65,44 +65,13 @@
         text-align: center;
     }
 
-    &__chips {
-        display: flex;
-        flex-wrap: wrap;
-        align-items: center;
-        gap: $space-2xs;
-    }
-
-    &__add {
-        width: 13rem;
-        min-width: 0;
-
-        .dropdown__input {
-            padding-block: 0.35rem;
-            font-size: $text-md;
-            border-style: dashed;
-            background-color: transparent;
-
-            &::placeholder {
-                font-weight: 600;
-                color: colors.$ink;
-            }
-        }
-
-        &.dropdown--open .dropdown__input {
-            border-style: solid;
-            background-color: colors.$paper;
-        }
-
-        .dropdown__list {
-            font-size: $text-md;
-        }
-    }
-
     &__toggle {
         @include components.toggle;
+    }
 
-        &--off {
-            opacity: 0.6;
+    @include breakpoint-up(medium) {
+        &__toggle + &__toggle {
+            margin-left: $space-m;
         }
     }
 
@@ -112,29 +81,5 @@
         &__field--map {
             max-width: none;
         }
-
-        &__add {
-            flex: 1 1 100%;
-            width: auto;
-        }
-    }
-}
-
-.chip-filter {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.35rem;
-    padding: 0.2rem 0.3rem 0.2rem 0.75rem;
-    font-size: $text-md;
-    font-weight: 600;
-    background: colors.$banana;
-    border: 2px solid colors.$ink;
-    border-radius: $radius-pill;
-    @include enter($anim-pop-in, $duration-base);
-
-    &__remove {
-        font-size: $text-base;
-        border: none;
-        @include icon-button(1.4rem, transparent);
     }
 }

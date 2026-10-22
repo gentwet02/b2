@@ -1,11 +1,15 @@
-import { ErrorState, Loading } from '@/components/status/Status';
+import { Link } from '@tanstack/react-router';
+import Page from '@/components/page/Page';
+import PageHeader from '@/components/page/PageHeader';
+import ErrorState from '@/components/status/ErrorState';
+import Loading from '@/components/status/Loading';
 import LeaderboardScore from '@/features/leaderboard/LeaderboardScore';
 import Podium from '@/features/podium/Podium';
-import useLeaderboardStats from '@/hooks/useLeaderboardStats';
-import { useRankedPlayers } from '@/hooks/useRankedPlayers';
-import useSeasons from '@/hooks/useSeasons';
-import { formatNumber, seasonLabel, seasonTitle, timeAgo } from '@/utils/format';
-import { Link } from '@tanstack/react-router';
+import useLeaderboardStats from '@/hooks/queries/useLeaderboardStats';
+import useRankedPlayers from '@/hooks/queries/useRankedPlayers';
+import useSeasons from '@/hooks/queries/useSeasons';
+import { formatNumber, timeAgo } from '@/utils/format';
+import { seasonLabel, seasonTitle } from '@/utils/season';
 
 export default function Home() {
     const seasons = useSeasons();
@@ -16,13 +20,13 @@ export default function Home() {
     if (seasons.isLoading) return <Loading label='Finding the live season…' />;
     if (seasons.error || liveSeason === undefined) {
         return (
-            <main className='page'>
+            <Page>
                 <ErrorState
                     title='Could not reach the server'
                     error={seasons.error}
                     onRetry={() => seasons.refetch()}
                 />
-            </main>
+            </Page>
         );
     }
 
@@ -32,7 +36,7 @@ export default function Home() {
     const updated = timeAgo(data?.lastUpdated);
 
     return (
-        <main className='page home'>
+        <Page className='home'>
             <section className='home__hero' aria-labelledby='home-title'>
                 <div className='home__intro'>
                     <h1 id='home-title' className='home__title'>
@@ -59,23 +63,25 @@ export default function Home() {
 
             {players.length > 3 && (
                 <section className='home__section' aria-labelledby='home-next'>
-                    <div className='page__head'>
-                        <div className='page__actions'>
-                            <Link to='/matches-history' className='button button--quiet'>
-                                Recent matches
-                            </Link>
-                            <Link
-                                to='/leaderboard/$season'
-                                params={{ season: liveSeason }}
-                                className='button'
-                            >
-                                Full leaderboard
-                            </Link>
-                        </div>
-                    </div>
+                    <PageHeader
+                        actions={
+                            <>
+                                <Link to='/matches-history' className='button button--quiet'>
+                                    Recent matches
+                                </Link>
+                                <Link
+                                    to='/leaderboard/$season'
+                                    params={{ season: liveSeason }}
+                                    className='button'
+                                >
+                                    Full leaderboard
+                                </Link>
+                            </>
+                        }
+                    />
                     <LeaderboardScore season={liveSeason} live range={[4, 25]} />
                 </section>
             )}
-        </main>
+        </Page>
     );
 }

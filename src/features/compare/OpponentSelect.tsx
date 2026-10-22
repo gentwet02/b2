@@ -1,8 +1,8 @@
-import Dropdown from '@/components/dropdown/Dropdown';
-import type { RankedPlayer } from '@/features/leaderboard/LeaderboardScore';
-import type { OpponentSlot } from '@/hooks/useOpponentSlots';
-import { getAlias } from '@/utils/format';
 import { useMemo } from 'react';
+import Dropdown from '@/components/dropdown/Dropdown';
+import type { OpponentSlot } from '@/hooks/useOpponentSlots';
+import type { RankedPlayer } from '@/types/leaderboard';
+import { rankedLabel } from '@/utils/player';
 
 interface OpponentSelectProps {
     slot: OpponentSlot;
@@ -15,9 +15,6 @@ interface OpponentSelectProps {
     onChange: (id: string | null) => void;
 }
 
-const optionLabel = (p: RankedPlayer) =>
-    `#${p.rank} ${p.name}${getAlias(p) ? ` (${p.alias})` : ''}`;
-
 /** One opponent slot: a searchable select, and a way back to the default player once replaced. */
 export default function OpponentSelect(props: OpponentSelectProps) {
     const { slot, players, taken, fallbackName, onChange } = props;
@@ -25,7 +22,7 @@ export default function OpponentSelect(props: OpponentSelectProps) {
     const options = useMemo(() => {
         const list = players
             .filter((p) => p.id === slot.id || !taken.has(p.id))
-            .map((p) => ({ value: p.id, label: optionLabel(p) }));
+            .map((p) => ({ value: p.id, label: rankedLabel(p) }));
         // a pick from another season's leaderboard still needs a label
         if (!list.some((o) => o.value === slot.id)) {
             list.unshift({ value: slot.id, label: fallbackName ?? 'Unknown player' });

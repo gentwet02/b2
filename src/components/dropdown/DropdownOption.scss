@@ -1,0 +1,33 @@
+@use '@/styles/utils/colors';
+@use '@/styles/utils' as *;
+
+.dropdown {
+    &__option {
+        padding: 0.5rem 0.75rem;
+        cursor: pointer;
+        overflow-wrap: anywhere;
+        @include transition((background-color, padding-inline-start), $duration-instant);
+
+        @include when-touch {
+            padding-block: 0.7rem;
+        }
+
+        & + & {
+            border-top: 1px solid colors.$line;
+        }
+
+        &--active {
+            padding-inline-start: 1rem;
+            background: colors.with-opacity('sky', 0.6);
+        }
+
+        &--current {
+            font-weight: 700;
+            background: color-mix(in srgb, colors.$banana 30%, colors.$paper);
+        }
+
+        &--current.dropdown__option--active {
+            background: color-mix(in srgb, colors.$banana 55%, colors.$paper);
+        }
+    }
+}

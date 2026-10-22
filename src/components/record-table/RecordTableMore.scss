@@ -1,0 +1,26 @@
+@use '@/styles/utils/colors';
+@use '@/styles/utils' as *;
+
+.record-table {
+    &__more {
+        position: sticky;
+        left: 0;
+        display: block;
+        width: 100%;
+        padding: $space-2xs;
+        font: inherit;
+        font-size: $text-md;
+        font-weight: 600;
+        color: colors.$ink;
+        background: colors.$paper-dim;
+        border: none;
+        border-top: 1px solid colors.$line;
+        cursor: pointer;
+        @include transition((color, background-color), $duration-fast);
+
+        @include when-hover {
+            color: colors.$bloon;
+            background: color-mix(in srgb, colors.$paper-dim 60%, colors.$sky);
+        }
+    }
+}

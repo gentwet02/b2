@@ -1,0 +1,23 @@
+@use '@/styles/utils' as *;
+
+.page {
+    @include container;
+    padding-block: $space-s-l $space-l-xl;
+    display: grid;
+    // flex: 1 makes the page at least as tall as the screen: keep the rows at
+    // their own height at the top instead of stretching them over the free
+    // space (a short table, like an empty search, spread the page down)
+    align-content: start;
+    gap: $space-m-l;
+    flex: 1;
+
+    > * {
+        @include enter($anim-fade-up, $duration-slow);
+        @include stagger(6, 60ms);
+    }
+
+    @include breakpoint-down(small) {
+        width: 100%;
+        margin-inline: revert;
+    }
+}

@@ -1,38 +1,18 @@
-import { useSyncExternalStore } from 'react';
+import { COMPARE_SPLIT_MAPS_DEFAULT } from '@/config/compare';
+import { STORAGE_KEYS } from '@/config/storage';
+import { createStoredValue } from '@/hooks/createStoredValue';
 
 /**
- * Head to head maps: classic and reversed versions apart, or together (the default).
+ * Head to head maps: classic and reversed versions apart (the default), or together.
  * One setting for every card on the page, remembered in this browser.
  */
-const KEY = 'btdb2:splitReversedMaps';
-const listeners = new Set<() => void>();
-
-function read() {
-    try {
-        return localStorage.getItem(KEY) === '1';
-    } catch {
-        return false;
-    }
-}
-
-let value = read();
-
-function setSplitMaps(next: boolean) {
-    value = next;
-    try {
-        localStorage.setItem(KEY, next ? '1' : '0');
-    } catch {
-        // private mode: kept for this visit only
-    }
-    listeners.forEach((listener) => listener());
-}
-
-function subscribe(listener: () => void) {
-    listeners.add(listener);
-    return () => listeners.delete(listener);
-}
+const splitMaps = createStoredValue({
+    key: STORAGE_KEYS.splitMaps,
+    fallback: COMPARE_SPLIT_MAPS_DEFAULT,
+    read: (raw) => raw === '1',
+    write: (value) => (value ? '1' : '0'),
+});
 
 export default function useSplitMaps() {
-    const split = useSyncExternalStore(subscribe, () => value);
-    return [split, setSplitMaps] as const;
+    return [splitMaps.useValue(), splitMaps.set] as const;
 }

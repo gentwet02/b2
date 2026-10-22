@@ -1,0 +1,38 @@
+@use '@/styles/utils/colors';
+@use '@/styles/utils' as *;
+
+.dropdown {
+    &__list {
+        position: absolute;
+        top: 100%;
+        left: 0;
+        z-index: z('dropdown');
+        width: 100%;
+        max-height: 20rem;
+        margin-top: -2px; // overlap the input's bottom border
+        overflow-y: auto;
+        overscroll-behavior: contain;
+        background: colors.$paper;
+        border: 2px solid colors.$ink;
+        border-radius: 0 0 var(--dropdown-radius) var(--dropdown-radius);
+        box-shadow: var(--dropdown-shadow) var(--dropdown-shadow) 0 colors.$ink;
+        transform-origin: top center;
+        scrollbar-width: thin;
+
+        // replays each time `hidden` is removed
+        @include animate($anim-unfold, $duration-base);
+
+        // not gated on reduced motion: React waits for animationend to hide the list
+        &--closing {
+            pointer-events: none;
+            animation: $anim-fold $duration-fast $ease-out both;
+        }
+    }
+
+    &__empty {
+        padding: $space-xs;
+        font-style: italic;
+        color: colors.$ink-soft;
+        cursor: default;
+    }
+}

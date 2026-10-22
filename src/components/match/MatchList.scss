@@ -1,0 +1,10 @@
+@use '@/styles/utils' as *;
+
+.match-list {
+    display: grid;
+    gap: $space-xs;
+
+    > li {
+        max-width: 100%;
+    }
+}

@@ -1,0 +1,11 @@
+@use '@/styles/utils' as *;
+
+.results {
+    display: grid;
+    gap: $space-l;
+    @include transition(opacity, $duration-fast);
+
+    &--updating {
+        opacity: 0.6;
+    }
+}

@@ -1,3 +1,4 @@
+import Panel from '@/components/panel/Panel';
 import type { Accolade } from '@/types/profile';
 import { formatLabel, formatNumber } from '@/utils/format';
 
@@ -11,8 +12,7 @@ export default function Accolades(props: AccoladesProps) {
     if (accolades.length === 0) return null;
 
     return (
-        <section className='profile-panel'>
-            <h2 className='profile-panel__title'>Accolades</h2>
+        <Panel title='Accolades'>
             <ul className='accolades'>
                 {accolades.map((accolade, i) => (
                     <li
@@ -29,6 +29,6 @@ export default function Accolades(props: AccoladesProps) {
                     </li>
                 ))}
             </ul>
-        </section>
+        </Panel>
     );
 }

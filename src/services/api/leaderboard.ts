@@ -1,5 +1,5 @@
+import { getFromApi } from '@/services/api/client';
 import type { LeaderboardResponse, LeaderboardStats } from '@/types/leaderboard';
-import { getFromApi } from '@/services/api/utils';
 
 export const leaderboardService = {
     getLeaderboard: (seasonId: number) =>

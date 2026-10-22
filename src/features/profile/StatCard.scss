@@ -1,0 +1,45 @@
+@use '@/styles/utils/colors';
+@use '@/styles/components';
+@use '@/styles/utils' as *;
+
+.stats-panel {
+    display: grid;
+    align-content: start;
+    gap: $space-s;
+    padding: $space-s-m $space-m $space-m;
+    @include components.panel;
+
+    @include breakpoint-down(small) {
+        padding: $space-s $gutter $space-s-m;
+    }
+
+    &--accent {
+        background: color-mix(in srgb, colors.$banana 18%, colors.$paper);
+    }
+
+    &--loading {
+        min-height: 12rem;
+        background-image: linear-gradient(
+            100deg,
+            transparent 30%,
+            colors.with-opacity('paper', 0.8) 50%,
+            transparent 70%
+        );
+        background-size: 200% 100%;
+        background-repeat: no-repeat;
+
+        @include when-motion-ok {
+            animation: $anim-shimmer 1.4s $ease-linear infinite;
+        }
+    }
+
+    &__title {
+        @include display($text-2xl);
+    }
+
+    &__sub {
+        font-size: $text-sm;
+        font-weight: 500;
+        color: colors.$ink-soft;
+    }
+}

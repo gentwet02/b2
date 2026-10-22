@@ -1,24 +1,21 @@
+import type { LeaderboardRange } from '@/config/ranges';
+
+/** Opponents on the profile's head to head card. */
 export const COMPARE_SLOTS = 10;
 
-export const COMPARE_RANGES = [
-    { value: 't10', label: 'Top 10' },
-    { value: 't25', label: 'Top 25' },
-    { value: 't50', label: 'Top 50' },
-    { value: 't100', label: 'Top 100' },
-    { value: 't25p', label: 'Top 25%' },
-    { value: 't50p', label: 'Top 50%' },
-    { value: 't75p', label: 'Top 75%' },
-    { value: 'all', label: 'All HoM players' },
+/** Player mode: the latest games between the two (the server sends at most this many). */
+export const COMPARE_MAX_MATCHES = 30;
+
+/** Range mode: opponents per "show more". */
+export const COMPARE_OPPONENTS_PAGE_SIZE = 100;
+
+/** Head to head maps: classic and reversed versions apart (until the visitor changes it). */
+export const COMPARE_SPLIT_MAPS_DEFAULT = true;
+
+export const COMPARE_RANGE_DEFAULT: LeaderboardRange = 't10';
+
+/** Compare against a range of each leaderboard, or one player. */
+export const COMPARE_MODES = [
+    { value: 'top', label: 'Top players' },
+    { value: 'player', label: 'One player' },
 ] as const;
-
-export type CompareRange = (typeof COMPARE_RANGES)[number]['value'];
-export const COMPARE_RANGE_DEFAULT: CompareRange = 't10';
-
-export const rangeLabel = (range: string) =>
-    COMPARE_RANGES.find((r) => r.value === range)?.label ?? range;
-
-/** The range before this one in the list (what the band leaves out), or null for the first. */
-export const previousRange = (range: string) => {
-    const i = COMPARE_RANGES.findIndex((r) => r.value === range);
-    return i > 0 ? COMPARE_RANGES[i - 1] : null;
-};

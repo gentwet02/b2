@@ -1,17 +1,12 @@
-import type { RankedPlayer } from '@/features/leaderboard/LeaderboardScore';
-import type { MetOpponent, VersusOpponent } from '@/types/compare';
-import type { LeaderboardPlayer } from '@/types/leaderboard';
-import type { MatchPlayer } from '@/types/match';
-import type { HeroPick } from '@/types/tower';
-
-const PROFILE_PREFIX = 'https://data.ninjakiwi.com/battles2/users/';
-
-export function extractUserId(profileUrl: string): string {
-    return profileUrl.replace(PROFILE_PREFIX, '').replace(/\/.*$/, '');
-}
-
 const numberFormat = new Intl.NumberFormat();
 export const formatNumber = (value: number) => numberFormat.format(value);
+
+/** "1 game", "3 games" */
+export const plural = (count: number, word: string, many = `${word}s`) =>
+    count === 1 ? word : many;
+
+/** "Top 25" → "top 25", to use a label inside a sentence. */
+export const lowerFirst = (text: string) => text.charAt(0).toLowerCase() + text.slice(1);
 
 /** "DartMonkey" → "Dart Monkey", "thin_ice" → "Thin ice", "MOAB" stays "MOAB". */
 export function formatLabel(value: string): string {
@@ -27,45 +22,10 @@ export function formatLabel(value: string): string {
     return words.charAt(0).toUpperCase() + words.slice(1);
 }
 
-/** Map ids are snake_case: give every word a capital, like the game does. */
-export function formatMap(map: string): string {
-    return map
-        .replace(/_(scene|map_01)$/, '')
-        .split('_')
-        .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
-        .join(' ');
-}
-
-export function heroKey(name: string): string {
-    return name.toLowerCase().replace(/[_\s]/g, '');
-}
-
-/** "Quincy_Cyber" → "Cyber Quincy", the way the game names skins. */
-export function formatHero(hero: string | undefined): string {
-    if (!hero) return '';
-    const [base, skin] = hero.split('_');
-    const name = formatLabel(base || '');
-    return skin ? `${formatLabel(skin)} ${name}` : name;
-}
-
-/** { base, hero } → "Quincy" or "Quincy:Quincy_Cyber" */
-export const formatHeroPick = ({ base, hero }: HeroPick) => (hero ? `${base}:${hero}` : base);
-
-/** "Quincy" or "Quincy:Quincy_Cyber" ⇄ { base, hero } */
-export function parseHero(item: string): HeroPick {
-    const [base = '', hero] = item.split(':');
-    return hero ? { base, hero } : { base };
-}
-
 export function formatDuration(seconds: number): string {
     const m = Math.floor(seconds / 60);
     const s = Math.round(seconds % 60);
     return `${m}:${String(s).padStart(2, '0')}`;
-}
-
-export function winRate(wins: number, losses: number): number | null {
-    const total = wins + losses;
-    return total > 0 ? (wins / total) * 100 : null;
 }
 
 const relative = new Intl.RelativeTimeFormat(undefined, { numeric: 'auto' });
@@ -80,59 +40,3 @@ export function timeAgo(date: string | Date | null | undefined): string | null {
     if (Math.abs(hours) < 48) return relative.format(hours, 'hour');
     return relative.format(Math.round(hours / 24), 'day');
 }
-
-export const seasonLabel = (seasonId: number) => `Season ${seasonId + 1}`;
-
-/** NK's season name without its "Event" suffix: "Season 31 Event" → "Season 31". */
-export const seasonTitle = (name: string) => name.replace(/\s*\bevent\b/gi, '').trim();
-
-/**
- * Maps NK renamed over time: old id → current id. Same list as the server's (matchLabels.ts).
- */
-const MAP_RENAMES: Record<string, string> = {
-    le_ruins: 'castle_ruins',
-    salmon_pool: 'salmon_ladder',
-    bloon_bot_factory: 'bot_factory',
-};
-
-/** The current id of a map: "salmon_pool" → "salmon_ladder" (the version suffix is kept). */
-export function currentMapId(map: string): string {
-    const [, base = map, suffix = ''] = /^(.*?)(_reversed)?$/.exec(map) ?? [];
-    return (MAP_RENAMES[base] ?? base) + suffix;
-}
-
-/** One key for every id of a map ("off_tide" / "offtide", "le_ruins" / "castle_ruins"…). */
-export function mapKey(map: string): string {
-    return currentMapId(map)
-        .toLowerCase()
-        .replace(/_(scene|map_01)$/, '')
-        .replace(/_/g, '');
-}
-
-/** Comma lists in the URL ("Druid,Alchemist") ⇄ arrays. */
-export const splitList = (value?: string) => (value ? value.split(',').filter(Boolean) : []);
-export const joinList = (items: string[]) => (items.length ? items.join(',') : undefined);
-
-function cleanStr(str: string) {
-    return str.replace(' ', '').toLowerCase();
-}
-
-export function getAlias(
-    player: MatchPlayer | LeaderboardPlayer | RankedPlayer | VersusOpponent | MetOpponent,
-): string | null {
-    const name = 'name' in player ? player.name : player.displayName;
-    if (!name) return null;
-    return player.alias && !cleanStr(player.alias).match(cleanStr(name)) ? player.alias : null;
-}
-
-const REVERSED_MAP = /_reversed$/;
-
-/** "oasis_reversed" is the reversed version of "oasis". */
-export const isReversedMap = (map: string) => REVERSED_MAP.test(map);
-
-/** Key of a map's base, both versions together: "oasis_reversed" → "oasis". */
-export const mapBaseKey = (map: string) => mapKey(map.replace(REVERSED_MAP, ''));
-
-/** The map filter that picks exactly this map: "oasis:reversed" or "oasis:classic". */
-export const mapFilterOf = (map: string) =>
-    `${mapBaseKey(map)}:${isReversedMap(map) ? 'reversed' : 'classic'}`;

@@ -1,0 +1,8 @@
+@use '@/styles/components';
+@use '@/styles/utils' as *;
+
+.split-maps-toggle {
+    justify-self: end;
+    font-size: $text-sm;
+    @include components.toggle;
+}

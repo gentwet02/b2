@@ -1,12 +1,14 @@
 import { useMemo } from 'react';
 import useSplitMaps from '@/hooks/useSplitMaps';
-import type { H2hSummary, HeadToHead } from '@/types/compare';
-import { mergeMapVersions, pickExtremes } from '@/utils/compare';
-import { H2hTile } from './H2hTile';
+import type { H2hSummary, Labels } from '@/types/compare';
+import { mergeMapVersions } from '@/utils/map';
+import { pickExtremes } from '@/utils/record';
+import H2hTile from './H2hTile';
+import SplitMapsToggle from './SplitMapsToggle';
 
 interface H2hHighlightsProps {
     summary: H2hSummary;
-    labels: HeadToHead['labels'];
+    labels: Labels;
     /** games needed for a best / worst */
     min: number;
 }
@@ -15,9 +17,11 @@ interface H2hHighlightsProps {
  * Maps and loadouts of the games against one opponent (or all of them):
  * records are the profile player's, on their loadouts and against the opponent's.
  */
-export default function H2hHighlights({ summary, labels, min }: H2hHighlightsProps) {
+export default function H2hHighlights(props: H2hHighlightsProps) {
+    const { summary, labels, min } = props;
+
     const need = `Needs ${min}+ games on one`;
-    const [split, setSplit] = useSplitMaps();
+    const [split] = useSplitMaps();
     // classic and reversed versions of a map together, unless split
     const merged = useMemo(() => mergeMapVersions(summary.maps, labels), [summary.maps, labels]);
     const maps = useMemo(
@@ -27,18 +31,10 @@ export default function H2hHighlights({ summary, labels, min }: H2hHighlightsPro
                 : { ...pickExtremes(merged.maps, min), labels: merged.labels },
         [split, merged, summary.best.map, summary.worst.map, labels, min],
     );
+
     return (
         <div className='h2h-highlights-wrap'>
-            {merged.hasReversed && (
-                <label className='h2h-highlights__split'>
-                    <input
-                        type='checkbox'
-                        checked={split}
-                        onChange={(event) => setSplit(event.target.checked)}
-                    />
-                    Split reversed maps
-                </label>
-            )}
+            {merged.hasReversed && <SplitMapsToggle />}
             <div className='h2h-highlights'>
                 <H2hTile
                     label='Best map'

@@ -1,11 +1,20 @@
-import { isValidElement, useMemo, useState, type ReactNode } from 'react';
+import { useMemo, useState, type ReactNode } from 'react';
 import { convertString } from 'str-case-converter';
+import { TABLE_DEFAULT_PAGE_SIZE, TABLE_PAGE_SIZES } from '@/config/table';
+import type {
+    Category,
+    Row,
+    TableSort,
+    TableState,
+    TableStateCause,
+    TableStateInput,
+} from '@/types/table';
+import { categoryKey, nodeText, sortValue } from '@/utils/table';
 import TableBody from './TableBody';
 import TableHead from './TableHead';
 import TablePageSizeSelector from './TablePageSizeSelector';
 import TablePagination from './TablePagination';
 import TableSearch from './TableSearch';
-import type { Category, Row, TableState, TableStateCause, TableStateInput } from '@/types/table';
 
 interface TableProps {
     categories?: Category[];
@@ -28,34 +37,13 @@ interface TableProps {
     onStateChange?: ((next: TableState, cause: TableStateCause) => void) | undefined;
 }
 
-type SortConfig = { key: string | null; direction: 'asc' | 'desc' };
-
-/** Visible text of a cell, so search also matches cells holding links or badges. */
-function nodeText(node: ReactNode): string {
-    if (node === null || node === undefined || typeof node === 'boolean') return '';
-    if (typeof node === 'string' || typeof node === 'number') return String(node);
-    if (Array.isArray(node)) return node.map(nodeText).join(' ');
-    if (isValidElement<{ children?: ReactNode }>(node)) return nodeText(node.props.children);
-    return '';
-}
-
-function sortValue(node: ReactNode): string | number {
-    if (typeof node === 'number') return node;
-    const text = nodeText(node);
-    const asNumber = Number(text.replace(/[\s,]/g, ''));
-    return text !== '' && Number.isFinite(asNumber) ? asNumber : text.toLowerCase();
-}
-
-const categoryKey = (category: Category) =>
-    typeof category === 'string' ? category : category.name;
-
 export default function Table(props: TableProps) {
     const {
         categories,
         data = [],
         name = '',
-        itemsPerPage = 10,
-        pageSizeOptions = [5, 10, 25, 50],
+        itemsPerPage = TABLE_DEFAULT_PAGE_SIZE,
+        pageSizeOptions = TABLE_PAGE_SIZES,
         searchAriaLabel = 'Search table entries',
         searchPlaceHolder = 'Search...',
         disableSearch = false,
@@ -71,7 +59,7 @@ export default function Table(props: TableProps) {
         controls,
     } = props;
 
-    const [sortConfig, setSortConfig] = useState<SortConfig>({ key: null, direction: 'asc' });
+    const [sortConfig, setSortConfig] = useState<TableSort>({ key: null, direction: 'asc' });
     const [ownSearch, setOwnSearch] = useState('');
     const [ownPage, setOwnPage] = useState(1);
     const [ownPageSize, setOwnPageSize] = useState(itemsPerPage);

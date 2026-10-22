@@ -1,0 +1,6 @@
+@use '@/styles/components';
+
+.controls__check {
+    min-height: 2.4rem;
+    @include components.toggle;
+}

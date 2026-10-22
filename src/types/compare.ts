@@ -1,13 +1,10 @@
-import type { Match } from './match';
-
-/** wins, losses, draws, always from the profile player's side */
-export type Wld = [number, number, number];
+import type { BaseApiResponse } from '@/types/api';
+import type { Match } from '@/types/match';
+import type { RecordRow, Wld } from '@/types/record';
+import type { GroupMode, SeasonScope } from '@/types/season';
 
 /** A map key or a loadout key ("Quincy|Alchemist,Druid,Ninja") with the record on it. */
-export interface H2hPick {
-    key: string;
-    record: Wld;
-}
+export type H2hPick = RecordRow;
 
 interface H2hPicks {
     map: H2hPick | null;
@@ -36,28 +33,25 @@ export interface H2hOpponent extends H2hSummary {
     rank: number | null;
 }
 
-export type CompareSeason = number | 'all';
+/** Names and pictures of the maps and heroes in a response, by key. */
+export interface Labels {
+    maps: Record<string, { map: string; image: string | null }>;
+    heroes: Record<string, { hero: string; portrait: string | null }>;
+}
 
 /** GET /users/:id/compare */
-export interface HeadToHead {
+export interface HeadToHead extends BaseApiResponse {
     userId: string;
-    season: CompareSeason;
+    season: SeasonScope;
     seasonName: string;
     minGames: { opponent: number; total: number };
-    labels: {
-        maps: Record<string, { map: string; image: string | null }>;
-        heroes: Record<string, { hero: string; portrait: string | null }>;
-    };
+    labels: Labels;
     name: string | null;
     alias: string | null;
     /** against every opponent together */
     total: H2hSummary;
     opponents: H2hOpponent[];
-    message?: string | null;
-    error?: string | null;
 }
-
-export type VersusMode = 'player' | 'top';
 
 export interface VersusOpponent {
     userId: string;
@@ -90,19 +84,21 @@ export interface VersusSeasonRow {
 }
 
 /** GET /users/:id/versus */
-export interface Versus {
+export interface Versus extends BaseApiResponse {
     userId: string;
     name: string | null;
     alias: string | null;
-    season: CompareSeason;
+    season: SeasonScope;
     seasonName: string;
-    mode: VersusMode;
+    mode: GroupMode;
     vs: string | null;
     range: string | null;
+    /** the smaller range left out at the top */
+    exclude?: string | null | undefined;
     band: boolean;
     missingSeasons: number[];
     minGames: { opponent: number; total: number };
-    labels: HeadToHead['labels'];
+    labels: Labels;
     total: H2hSummary & {
         mapList: H2hPick[];
         /** the profile player's loadouts, most played first */
@@ -116,8 +112,6 @@ export interface Versus {
     seasons: VersusSeasonRow[];
     /** player mode: latest games between the two, newest first */
     matches: Match[] | null;
-    message?: string | null;
-    error?: string | null;
 }
 
 export interface MetOpponent {
@@ -128,18 +122,19 @@ export interface MetOpponent {
 }
 
 /** GET /users/:id/opponents */
-export interface OpponentsMet {
+export interface OpponentsMet extends BaseApiResponse {
     opponents: MetOpponent[];
-    message?: string | null;
-    error?: string | null;
 }
 
 export interface CompareSearch {
-    season?: CompareSeason | undefined;
+    season?: SeasonScope | undefined;
     /** one opponent */
     vs?: string | undefined;
     /** or a range of each season's leaderboard */
     range?: string | undefined;
-    /** only the ranks between the previous range and this one */
-    band?: boolean | undefined;
+    /** a smaller range left out at the top */
+    exclude?: string | undefined;
 }
+
+/** What a head to head tile shows. */
+export type H2hTileKind = 'map' | 'loadout';

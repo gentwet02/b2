@@ -1,7 +1,13 @@
 import type { UserProfile } from '@/types/profile';
 import { formatLabel, formatNumber } from '@/utils/format';
 
-export default function SeasonStrip({ profile }: { profile: UserProfile }) {
+interface SeasonStripProps {
+    profile: UserProfile;
+}
+
+export default function SeasonStrip(props: SeasonStripProps) {
+    const { profile } = props;
+
     const tiles = [
         {
             label: 'Trophies this season',

@@ -1,0 +1,8 @@
+@use '@/styles/utils/colors';
+@use '@/styles/utils' as *;
+
+.note {
+    max-width: none;
+    font-size: $text-md;
+    color: colors.$ink-soft;
+}
