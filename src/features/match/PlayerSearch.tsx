@@ -9,6 +9,7 @@ interface PlayerSearchProps {
 
 export default function PlayerSearch(props: PlayerSearchProps) {
     const { label, value, placeholder, onChange } = props;
+
     return (
         <label className='match-filters__search'>
             <span className='visually-hidden'>{label}</span>

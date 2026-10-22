@@ -2,7 +2,7 @@
 @use '@/styles/components';
 @use '@/styles/utils' as *;
 
-// [ left player | map and match info | right player ]: both players get equal room
+// [ left player | map and match info | right player ]
 .match-card {
     display: grid;
     grid-template-columns: minmax(0, 1fr) minmax(8.5rem, 10.5rem) minmax(0, 1fr);

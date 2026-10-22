@@ -401,8 +401,7 @@ export default function Compare() {
                 <div>
                     <h1 className='page__title'>{name}, head to head</h1>
                     <p className='page__subtitle'>
-                        Only the games {name} played against these players. Records are from {name}
-                        &rsquo;s side.
+                        Only the games {name} played against these players.
                     </p>
                 </div>
                 <div className='page__actions'>

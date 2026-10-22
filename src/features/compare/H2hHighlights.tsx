@@ -1,7 +1,7 @@
-import type { H2hSummary, HeadToHead } from '@/types/compare';
-import useSplitMaps from '@/hooks/useSplitMaps';
-import { mergeMapVersions, pickExtremes } from '@/utils/compare';
 import { useMemo } from 'react';
+import useSplitMaps from '@/hooks/useSplitMaps';
+import type { H2hSummary, HeadToHead } from '@/types/compare';
+import { mergeMapVersions, pickExtremes } from '@/utils/compare';
 import { H2hTile } from './H2hTile';
 
 interface H2hHighlightsProps {

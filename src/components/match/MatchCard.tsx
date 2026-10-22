@@ -1,3 +1,4 @@
+import { NEUTRAL_TEXT } from '@/config/match';
 import type { Match, MatchPick, Outcome } from '@/types/match';
 import { mapImage } from '@/utils/assetOverrides';
 import { extractUserId, formatDuration, formatLabel, formatMap, timeAgo } from '@/utils/format';
@@ -25,13 +26,9 @@ function outcome(result: string): Outcome {
     }
 }
 
-/** What the middle of the card says when nobody won. */
-const NEUTRAL_TEXT: Record<string, string> = {
-    draw: 'Draw',
-    cancelled: 'Cancelled',
-};
+export default function MatchCard(props: MatchCardProps) {
+    const { match, perspectiveId, onPick } = props;
 
-export default function MatchCard({ match, perspectiveId, onPick }: MatchCardProps) {
     let [left, right] = [match.playerLeft, match.playerRight];
     if (perspectiveId && extractUserId(right.profileURL) === perspectiveId) {
         [left, right] = [right, left];

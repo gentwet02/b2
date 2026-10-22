@@ -1,3 +1,4 @@
+import type { ReactNode } from 'react';
 import type { H2hPick, HeadToHead } from '@/types/compare';
 import { heroImage, mapImage } from '@/utils/assetOverrides';
 import {
@@ -9,7 +10,6 @@ import {
     recordTitle,
 } from '@/utils/compare';
 import { formatMap } from '@/utils/format';
-import type { ReactNode } from 'react';
 
 type Kind = 'map' | 'loadout';
 

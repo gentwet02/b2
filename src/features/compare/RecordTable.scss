@@ -94,6 +94,18 @@
         &--on {
             color: colors.$ink;
         }
+
+        .cmp-table__num > & {
+            flex-direction: row-reverse;
+        }
+
+        &-icon {
+            flex-shrink: 0;
+
+            &--off {
+                visibility: hidden;
+            }
+        }
     }
 
     &__map {

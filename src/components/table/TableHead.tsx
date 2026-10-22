@@ -53,10 +53,11 @@ export default function TableHead(props: TableHeadProps) {
                         >
                             <div className='table__table__header-cell-content'>
                                 <span>{convertString.toTitle(categoryTitle)}</span>
-                                {active && (
+                                {sortable && (
                                     <ChevronDownIcon
-                                        className='table__table__header-cell-icon'
-                                        rotate={sortConfig.direction === 'asc' ? true : false}
+                                        key={active ? 'on' : 'off'}
+                                        className={`table__table__header-cell-icon${active ? '' : ' table__table__header-cell-icon--off'}`}
+                                        rotate={active && sortConfig.direction === 'asc'}
                                     />
                                 )}
                             </div>
@@ -66,27 +67,4 @@ export default function TableHead(props: TableHeadProps) {
             </tr>
         </thead>
     );
-}
-{
-    /* <thead>
-    <tr>
-        {columns.map((column) => (
-            <th
-                key={column}
-                onClick={() => handleSort(column)}
-                className='table__table__header-cell'
-            >
-                <div className='table__table__header-cell-content'>
-                    <span>{convertString.toTitle(column)}</span>
-                    {sortConfig.key === column && (
-                        <ChevronDownIcon
-                            className='table__table__header-cell-icon'
-                            rotate={sortConfig.direction === 'asc' ? true : false}
-                        />
-                    )}
-                </div>
-            </th>
-        ))}
-    </tr>
-</thead>; */
 }

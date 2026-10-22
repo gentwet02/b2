@@ -1,48 +1,16 @@
-import PlayerAvatar from '@/components/avatar/PlayerAvatar';
+import { useMemo, type ReactNode } from 'react';
 import { ErrorState, Loading, StatusMessage } from '@/components/status/Status';
 import Table from '@/components/table/Table';
 import useLeaderboardStats from '@/hooks/useLeaderboardStats';
-import usePlayerAvatar from '@/hooks/usePlayerAvatar';
 import usePlayerAvatars from '@/hooks/usePlayerAvatars';
 import { useRankedPlayers } from '@/hooks/useRankedPlayers';
 import type { LeaderboardPlayer, LeaderboardSort, LeaderboardView } from '@/types/leaderboard';
 import type { Row, TableState, TableStateCause, TableStateInput } from '@/types/table';
-import { formatNumber, getAlias } from '@/utils/format';
-import { Link } from '@tanstack/react-router';
-import { useMemo, type ReactNode } from 'react';
+import { formatNumber } from '@/utils/format';
+import { PlayerName } from './PlayerName';
 
 export interface RankedPlayer extends LeaderboardPlayer {
     rank: number;
-}
-
-interface PlayerNameProps {
-    player: LeaderboardPlayer;
-    avatar?: string | undefined;
-    avatarReady?: boolean;
-}
-export function PlayerName(props: PlayerNameProps) {
-    const { player, avatar, avatarReady = true } = props;
-
-    const src = usePlayerAvatar(player.id, avatar, avatarReady);
-    const alias = getAlias(player);
-
-    return (
-        <span className='lb-player'>
-            <PlayerAvatar
-                className='lb-player__avatar'
-                src={src}
-                name={player.name}
-                size={36}
-                lazy
-            />
-            <span className='lb-player__names'>
-                <Link to='/user/$userId' params={{ userId: player.id }} className='lb-player__name'>
-                    {player.name}
-                </Link>
-                {alias && <span className='lb-player__alias'>{alias}</span>}
-            </span>
-        </span>
-    );
 }
 
 interface LeaderboardScoreProps {
@@ -106,7 +74,6 @@ function order(sort: LeaderboardView['sort'], a: Line, b: Line) {
 const HEADER_SORTS: Record<string, { sort: LeaderboardSort; first: 'asc' | 'desc' }> = {
     rank: { sort: 'rank', first: 'asc' },
     player: { sort: 'name', first: 'asc' },
-    // the score order is the rank order: highest first
     score: { sort: 'score', first: 'desc' },
     games: { sort: 'games', first: 'desc' },
     'win-rate': { sort: 'winrate', first: 'desc' },
@@ -124,14 +91,13 @@ export default function LeaderboardScore(props: LeaderboardScoreProps) {
         tableState,
         onTableStateChange,
     } = props;
+
     const { players, isLoading, error, refetch } = useRankedPlayers(season, live);
     const { data: stats, isPending: statsPending } = useLeaderboardStats(season);
     const avatars = usePlayerAvatars(stats?.avatars);
 
     const sort = view?.sort ?? 'rank';
     const minGames = view?.minGames ?? 0;
-
-    // the header shows the current sort; a second click on it reverses the order
     const headerKey = Object.keys(HEADER_SORTS).find((key) => HEADER_SORTS[key]!.sort === sort);
     const headerSort = headerKey
         ? {

@@ -153,45 +153,6 @@ $lift-ease: $duration-slow $ease-spring;
         }
     }
 
-    &__stats {
-        align-self: stretch;
-        justify-self: stretch;
-        margin-bottom: calc(-1 * var(--podium-lift));
-        display: grid;
-        align-content: center;
-        gap: 0.15rem;
-        padding: $space-4xs $space-3xs;
-        font-family: $font-body;
-        font-size: $text-xs;
-        line-height: 1.15;
-        letter-spacing: normal;
-        opacity: 0;
-        translate: 0 0.4rem;
-        transition:
-            opacity $duration-fast $ease-out,
-            translate $duration-base $ease-out;
-
-        div {
-            display: flex;
-            justify-content: center;
-            align-items: baseline;
-            gap: 0.3em;
-            min-width: 0;
-            white-space: nowrap;
-        }
-
-        dd {
-            order: -1;
-            font-family: $font-display;
-            font-size: $text-base;
-        }
-
-        dt {
-            color: colors.$ink-soft;
-            font-weight: 600;
-        }
-    }
-
     &__spot--3 {
         --podium-delay: 0ms;
     }
@@ -235,14 +196,6 @@ $lift-ease: $duration-slow $ease-spring;
     @include breakpoint-down(small) {
         &__name {
             font-weight: 600;
-        }
-
-        &__stats {
-            font-size: $text-2xs;
-
-            dd {
-                font-size: $text-sm;
-            }
         }
     }
 }

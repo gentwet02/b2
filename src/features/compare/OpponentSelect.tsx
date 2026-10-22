@@ -1,5 +1,5 @@
 import Dropdown from '@/components/dropdown/Dropdown';
-import type { RankedPlayer } from '@/features/LeaderboardScore';
+import type { RankedPlayer } from '@/features/leaderboard/LeaderboardScore';
 import type { OpponentSlot } from '@/hooks/useOpponentSlots';
 import { getAlias } from '@/utils/format';
 import { useMemo } from 'react';

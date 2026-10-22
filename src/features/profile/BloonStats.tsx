@@ -1,7 +1,13 @@
 import type { BloonStat } from '@/types/profile';
 import { formatLabel, formatNumber } from '@/utils/format';
 
-export default function BloonStats({ bloons }: { bloons: BloonStat[] }) {
+interface BloonStatsProps {
+    bloons: BloonStat[];
+}
+
+export default function BloonStats(props: BloonStatsProps) {
+    const { bloons } = props;
+
     const top = [...bloons].sort((a, b) => b.sends - a.sends).slice(0, 10);
 
     return (

@@ -1,0 +1,54 @@
+.lb-player {
+    display: flex;
+    align-items: center;
+    gap: $space-xs;
+    line-height: 1.25;
+
+    &__avatar {
+        flex: none;
+        @include size(2.25rem);
+        border-radius: 50%;
+        border: 1.5px solid colors.$ink;
+        background: colors.$paper-dim;
+        object-fit: cover;
+        @include components.avatar-pop;
+
+        &--empty {
+            @include components.avatar-fallback;
+        }
+    }
+
+    @include when-hover {
+        .lb-player__avatar {
+            @include components.avatar-popped;
+        }
+    }
+
+    &__names {
+        display: grid;
+        min-width: 0;
+    }
+
+    &__name {
+        font-weight: 600;
+        text-decoration: underline transparent;
+        @include transition((color, text-decoration-color), $duration-fast);
+
+        @include when-hover {
+            color: colors.$bloon;
+            text-decoration-color: currentColor;
+        }
+    }
+
+    &__alias {
+        font-size: $text-sm;
+        font-weight: 500;
+        color: colors.$ink-soft;
+    }
+}
+
+@include breakpoint-down(medium) {
+    .lb-player__avatar {
+        @include size(2rem);
+    }
+}

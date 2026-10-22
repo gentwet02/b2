@@ -28,6 +28,12 @@
     }
 
     &__header-cell-icon {
+        flex-shrink: 0;
+
+        &--off {
+            visibility: hidden;
+        }
+
         @include animate($anim-pop-in, $duration-base, $ease-spring);
     }
 }

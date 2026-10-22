@@ -1,7 +1,13 @@
 import type { Accolade } from '@/types/profile';
 import { formatLabel, formatNumber } from '@/utils/format';
 
-export default function Accolades({ accolades }: { accolades: Accolade[] }) {
+interface AccoladesProps {
+    accolades: Accolade[];
+}
+
+export default function Accolades(props: AccoladesProps) {
+    const { accolades } = props;
+
     if (accolades.length === 0) return null;
 
     return (

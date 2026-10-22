@@ -1,7 +1,6 @@
 @use '@/styles/utils/colors';
 @use '@/styles/utils' as *;
 
-// same as the stats page's small selectors: label on the left, narrow dropdown
 .leaderboard-filters {
     display: flex;
     align-items: center;

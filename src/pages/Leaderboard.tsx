@@ -1,7 +1,7 @@
 import Dropdown from '@/components/dropdown/Dropdown';
 import { LEADERBOARD_DEFAULT_SIZE } from '@/config/leaderboard';
-import LeaderboardFilters from '@/features/LeaderboardFilters';
-import LeaderboardScore from '@/features/LeaderboardScore';
+import LeaderboardFilters from '@/features/leaderboard/LeaderboardFilters';
+import LeaderboardScore from '@/features/leaderboard/LeaderboardScore';
 import useLeaderboard, { leaderboardKey } from '@/hooks/useLeaderboard';
 import useSeasons from '@/hooks/useSeasons';
 import { useThrottle } from '@/hooks/useThrottle';

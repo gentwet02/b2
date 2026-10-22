@@ -2,7 +2,6 @@
 @use '@/styles/utils' as *;
 
 .match-card {
-    // hero, tower or map that filters the list when clicked
     &__pick {
         font: inherit;
         color: inherit;

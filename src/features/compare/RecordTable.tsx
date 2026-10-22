@@ -7,7 +7,6 @@ import { Fragment, useState, type ReactNode } from 'react';
 export interface RecordColumn<T> {
     title: string;
     render: (row: T) => ReactNode;
-    /** the column's first order (the header becomes a sort button; a second click reverses it) */
     sort?: (a: T, b: T) => number;
     numeric?: boolean;
 }
@@ -15,26 +14,17 @@ export interface RecordColumn<T> {
 interface RecordTableProps<T extends { record: Wld }> {
     rows: T[];
     rowKey: (row: T) => string;
-    /**
-     * First column, pinned while scrolling sideways.
-     * `sort`: A–Z order (the header becomes a sort button), see `byText`.
-     */
     label: { title: string; render: (row: T) => ReactNode; sort?: (a: T, b: T) => number };
-    /** between the label and the record columns */
     columns?: RecordColumn<T>[];
-    /** after the record columns */
     after?: RecordColumn<T>[];
     empty?: ReactNode;
-    /** 'none' keeps the rows' order until a header is clicked */
     initialSort?: 'games' | 'rate' | 'none';
-    /** rows shown at first, then this many more per click */
     pageSize?: number;
 }
 
 type SortKey = 'games' | 'rate' | 'none' | 'label' | `col:${number}`;
 interface SortState {
     key: SortKey;
-    /** reversed: the opposite of the column's first order */
     reversed: boolean;
 }
 
@@ -42,7 +32,6 @@ const byGames = (a: { record: Wld }, b: { record: Wld }) => gamesOf(b.record) - 
 const byRate = (a: { record: Wld }, b: { record: Wld }) =>
     (rateOf(b.record) ?? -1) - (rateOf(a.record) ?? -1) || byGames(a, b);
 
-/** Rows with a record: games, W–D–L, win rate; sortable both ways, sticky head and first column. */
 export default function RecordTable<T extends { record: Wld }>(props: RecordTableProps<T>) {
     const { rows, rowKey, label, columns = [], after = [], empty } = props;
     const [sort, setSort] = useState<SortState>({
@@ -66,7 +55,6 @@ export default function RecordTable<T extends { record: Wld }>(props: RecordTabl
     if (compare) {
         const dir = sort.reversed ? -1 : 1;
         sorted.sort((a, b) => {
-            // no win rate (draws only): always last
             if (sort.key === 'rate') {
                 const none = Number(rateOf(a.record) === null) - Number(rateOf(b.record) === null);
                 if (none) return none;
@@ -83,7 +71,6 @@ export default function RecordTable<T extends { record: Wld }>(props: RecordTabl
 
     const header = (title: string, key: SortKey | null, numeric?: boolean) => {
         const on = key !== null && sort.key === key;
-        // what the arrow shows: the label column starts A–Z (up), the others highest first (down)
         const ascending = on && (key === 'label' ? !sort.reversed : sort.reversed);
         return (
             <th
@@ -99,14 +86,13 @@ export default function RecordTable<T extends { record: Wld }>(props: RecordTabl
                         title={on ? 'Reverse the order' : `Sort by ${title.toLowerCase()}`}
                     >
                         {title}
-                        {on && (
-                            <ChevronDownIcon
-                                className='cmp-table__sort-icon'
-                                width={10}
-                                height={10}
-                                rotate={ascending}
-                            />
-                        )}
+                        <ChevronDownIcon
+                            key={on ? 'on' : 'off'}
+                            className={`cmp-table__sort-icon${on ? '' : ' cmp-table__sort-icon--off'}`}
+                            width={10}
+                            height={10}
+                            rotate={ascending}
+                        />
                     </button>
                 ) : (
                     title

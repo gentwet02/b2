@@ -26,20 +26,8 @@ export function ProfileHeroPlaceholder({
     );
 }
 
-interface ProfileHeroProps {
-    profile: UserProfile;
-    alias?: string | null | undefined;
-    actions?: ReactNode;
-    /** e.g. "Updated 3 minutes ago" */
-    note?: string | null;
-}
-
 const IMAGE_URL = /^https?:\/\/\S+\.(png|jpe?g|webp|gif|svg)(\?\S*)?$/i;
 
-/**
- * Equipped badges as Ninja Kiwi sends them. Their exact shape isn't documented, so read
- * defensively: an image URL anywhere in the item becomes a picture, otherwise its name.
- */
 interface Badge {
     key: string;
     name: string;
@@ -68,7 +56,17 @@ function readBadges(raw: unknown[] | undefined): Badge[] {
     });
 }
 
-export default function ProfileHero({ profile, alias, actions, note }: ProfileHeroProps) {
+interface ProfileHeroProps {
+    profile: UserProfile;
+    alias?: string | null | undefined;
+    actions?: ReactNode;
+    /** e.g. "Updated 3 minutes ago" */
+    note?: string | null;
+}
+
+export default function ProfileHero(props: ProfileHeroProps) {
+    const { profile, alias, actions, note } = props;
+
     const badges = readBadges(profile.badges_equipped);
     const knownAs = alias && alias !== profile.displayName ? alias : null;
     const title =

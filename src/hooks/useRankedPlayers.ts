@@ -1,6 +1,6 @@
 import { useMemo } from 'react';
 import useLeaderboard from '@/hooks/useLeaderboard';
-import type { RankedPlayer } from '@/features/LeaderboardScore';
+import type { RankedPlayer } from '@/features/leaderboard/LeaderboardScore';
 import { decodeLeaderboardPlayer } from '@/utils/decode';
 
 /** Decoded, ranked players of a season. Shares its cache with every other caller. */

@@ -1,29 +1,20 @@
-import type { MatchPick, MatchPlayer, MatchResult, Outcome } from '@/types/match';
+import { Link } from '@tanstack/react-router';
+import { RESULT_TEXT } from '@/config/match';
+import type { MatchPick, MatchPlayer, Outcome } from '@/types/match';
+import { heroImage } from '@/utils/assetOverrides';
 import { extractUserId, formatHero, formatLabel, getAlias } from '@/utils/format';
 import Pickable from './Pickable';
-import { Link } from '@tanstack/react-router';
-import { heroImage } from '@/utils/assetOverrides';
 
-const RESULT_TEXT: Record<MatchResult, string> = {
-    win: 'Won',
-    lose: 'Lost',
-    draw: 'Draw',
-    cancelled: 'Cancelled',
-    lobbyDC: 'Left lobby',
-    opponentLobbyDC: 'Opponent left',
-};
-
-export default function PlayerSide({
-    player,
-    align,
-    outcome,
-    onPick,
-}: {
+interface PlayerSideProps {
     player: MatchPlayer;
     align: 'left' | 'right';
     outcome: Outcome;
     onPick?: ((pick: MatchPick) => void) | undefined;
-}) {
+}
+
+export default function PlayerSide(props: PlayerSideProps) {
+    const { player, align, outcome, onPick } = props;
+
     const userId = extractUserId(player.profileURL);
     const towers = [player.towerone, player.towertwo, player.towerthree];
     const alias = getAlias(player);

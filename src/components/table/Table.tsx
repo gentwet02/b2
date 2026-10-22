@@ -18,14 +18,9 @@ interface TableProps {
     disableSearch?: boolean;
     disablePageSize?: boolean;
     disableSorting?: boolean;
-    /**
-     * Sorting done by the parent: the header shows `sort`, a click calls `onSort` with the
-     * column key (only for `sortable` columns). The rows are then shown in the given order.
-     */
     sort?: { key: string; direction: 'asc' | 'desc' } | null | undefined;
     onSort?: ((key: string) => void) | undefined;
     sortable?: string[] | undefined;
-    /** extra controls, on the left of the page size selector */
     controls?: ReactNode;
     searchText?: string[] | undefined;
     searchExact?: (string | undefined)[] | undefined;

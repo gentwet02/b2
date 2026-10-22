@@ -1,4 +1,4 @@
-import type { RankedPlayer } from '@/features/LeaderboardScore';
+import type { RankedPlayer } from '@/features/leaderboard/LeaderboardScore';
 import type { MetOpponent, VersusOpponent } from '@/types/compare';
 import type { LeaderboardPlayer } from '@/types/leaderboard';
 import type { MatchPlayer } from '@/types/match';

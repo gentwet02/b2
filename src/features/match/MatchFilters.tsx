@@ -1,5 +1,5 @@
-import Dropdown from '@/components/dropdown/Dropdown';
 import type { NavigateOptions } from '@tanstack/react-router';
+import Dropdown from '@/components/dropdown/Dropdown';
 import { SIDE_MAX_HEROES, SIDE_MAX_TOWERS } from '@/config/match';
 import type { SeasonSummary } from '@/types/info';
 import {
@@ -10,11 +10,11 @@ import {
 } from '@/types/match';
 import type { HeroPick } from '@/types/tower';
 import { formatHeroPick, joinList, parseHero, seasonLabel, splitList } from '@/utils/format';
+import HeroChips from './HeorChips';
+import MapChip from './MapChip';
 import PlayerSearch from './PlayerSearch';
 import SideFilters from './SideFilters';
-import HeroChips from './HeorChips';
 import TowerChips from './TowerChips';
-import MapChip from './MapChip';
 
 const SORT_OPTIONS = (Object.keys(SORT_LABELS) as MatchSort[]).map((value) => ({
     value,

@@ -1,6 +1,6 @@
 import { ErrorState, Loading } from '@/components/status/Status';
-import LeaderboardScore from '@/features/LeaderboardScore';
-import Podium from '@/features/Podium';
+import LeaderboardScore from '@/features/leaderboard/LeaderboardScore';
+import Podium from '@/features/podium/Podium';
 import useLeaderboardStats from '@/hooks/useLeaderboardStats';
 import { useRankedPlayers } from '@/hooks/useRankedPlayers';
 import useSeasons from '@/hooks/useSeasons';
@@ -48,7 +48,11 @@ export default function Home() {
                     {isLoading && <Loading label='Loading leaderboard…' />}
                     {error && <ErrorState error={error} onRetry={() => refetch()} />}
                     {players.length > 0 && (
-                        <Podium players={players} avatars={stats?.avatars} records={stats?.records} />
+                        <Podium
+                            players={players}
+                            avatars={stats?.avatars}
+                            records={stats?.records}
+                        />
                     )}
                 </div>
             </section>

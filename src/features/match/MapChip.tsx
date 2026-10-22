@@ -1,8 +1,7 @@
 import Dropdown from '@/components/dropdown/Dropdown';
+import type { MapVariant } from '@/types/map';
 import { mapImage } from '@/utils/assetOverrides';
 import { formatMap, formatNumber } from '@/utils/format';
-
-export type MapVariant = 'classic' | 'reversed';
 
 export interface MapChipOption {
     /** base map key: classic and reversed versions together */
@@ -23,7 +22,9 @@ interface MapChipProps {
 }
 
 /** One map, both versions or only its classic / reversed one, styled like the hero chip. */
-export default function MapChip({ value, options, onChange, placeholder }: MapChipProps) {
+export default function MapChip(props: MapChipProps) {
+    const { value, options, onChange, placeholder } = props;
+
     const [base = '', variant] = (value ?? '').split(':');
     const option = options.find((m) => m.key === base);
 

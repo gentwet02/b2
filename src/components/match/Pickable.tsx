@@ -1,16 +1,15 @@
 import type { MatchPick } from '@/types/match';
 
-export default function Pickable({
-    pick,
-    onPick,
-    className,
-    children,
-}: {
+interface PickableProps {
     pick: MatchPick;
     onPick?: ((pick: MatchPick) => void) | undefined;
     className: string;
     children: string;
-}) {
+}
+
+export default function Pickable(props: PickableProps) {
+    const { pick, onPick, className, children } = props;
+
     if (!onPick) return <span className={className}>{children}</span>;
     return (
         <button
