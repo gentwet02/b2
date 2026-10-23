@@ -15,8 +15,8 @@ export const MATCH_SORTS = ['newest', 'oldest', 'longest', 'shortest', 'rounds']
 export const MATCH_SORT_DEFAULT: MatchSort = 'newest';
 
 export const MATCH_SORT_LABELS: Record<MatchSort, string> = {
-    newest: 'Newest first',
-    oldest: 'Oldest first',
+    newest: 'Newest',
+    oldest: 'Oldest',
     longest: 'Longest',
     shortest: 'Shortest',
     rounds: 'Most rounds',
