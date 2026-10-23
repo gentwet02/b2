@@ -2,12 +2,6 @@
 @use '@/styles/utils' as *;
 
 .hero-chips {
-    &__wrap {
-        display: inline-flex;
-        align-items: center;
-        gap: $space-2xs;
-    }
-
     &__vs {
         font-family: $font-display;
         color: colors.$ink-soft;

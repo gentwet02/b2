@@ -11,14 +11,38 @@ interface SideFiltersProps {
     onPlayerText: (value: string) => void;
     heroes: HeroPick[];
     towers: string[];
+    exHeroes: HeroPick[];
+    exTowers: string[];
+    maxExcluded: { heroes: number; towers: number };
     options?: SideFilterOptions | undefined;
     onHeroes: (next: HeroPick[]) => void;
     onTowers: (next: string[]) => void;
+    onExHeroes: (next: HeroPick[]) => void;
+    onExTowers: (next: string[]) => void;
+    /** empty the hero / towers picks and exclusions in one change */
+    onClearHeroes: () => void;
+    onClearTowers: () => void;
 }
 
-/** "Filter sides separately": one player's name, hero and towers. */
+/** "Filter sides separately": one player's name, hero and towers, and what they didn't use. */
 export default function SideFilters(props: SideFiltersProps) {
-    const { title, playerText, onPlayerText, heroes, onHeroes, towers, onTowers, options } = props;
+    const {
+        title,
+        playerText,
+        onPlayerText,
+        heroes,
+        onHeroes,
+        towers,
+        onTowers,
+        exHeroes,
+        onExHeroes,
+        exTowers,
+        onExTowers,
+        maxExcluded,
+        options,
+        onClearHeroes,
+        onClearTowers,
+    } = props;
 
     return (
         <div className='match-filters__side' role='group' aria-label={title}>
@@ -36,6 +60,8 @@ export default function SideFilters(props: SideFiltersProps) {
                     max={SIDE_MAX_HEROES}
                     options={options}
                     onChange={onHeroes}
+                    exclude={{ items: exHeroes, max: maxExcluded.heroes, onChange: onExHeroes }}
+                    onClear={onClearHeroes}
                 />
             </div>
             <div className='match-filters__side-group'>
@@ -48,6 +74,8 @@ export default function SideFilters(props: SideFiltersProps) {
                     max={SIDE_MAX_TOWERS}
                     options={options}
                     onChange={onTowers}
+                    exclude={{ items: exTowers, max: maxExcluded.towers, onChange: onExTowers }}
+                    onClear={onClearTowers}
                 />
             </div>
         </div>

@@ -9,6 +9,7 @@ import TowerChips from '@/components/filter-chips/TowerChips';
 import Panel from '@/components/panel/Panel';
 import SeasonSelect from '@/components/season-select/SeasonSelect';
 import SegmentedControl from '@/components/segmented-control/SegmentedControl';
+import { MAX_EXCLUDED } from '@/config/filters';
 import { STATS_MAX_TOWERS, STATS_MODES } from '@/config/stats';
 import useRankedPlayers from '@/hooks/queries/useRankedPlayers';
 import useSeasons from '@/hooks/queries/useSeasons';
@@ -16,7 +17,7 @@ import type { MapChipOption } from '@/types/map';
 import type { Stats, StatsSearch } from '@/types/stats';
 import { formatHeroPick, parseHero } from '@/utils/hero';
 import { playerLabel, rankedLabel } from '@/utils/player';
-import { joinList } from '@/utils/search';
+import { joinList, splitList } from '@/utils/search';
 import { urlSeason } from '@/utils/season';
 
 interface StatsControlsProps {
@@ -63,7 +64,17 @@ export default function StatsControls(props: StatsControlsProps) {
         map: data?.labels.maps[m.key]?.map ?? m.key,
         image: data?.labels.maps[m.key]?.image,
     }));
-    const hasFocus = !!search.map || !!search.hero || towers.length > 0;
+    const exHeroes = splitList(search.exHeroes).map(parseHero);
+    const exTowers = splitList(search.exTowers);
+    const exMaps = splitList(search.exMaps);
+    const maxExcluded = data?.maxExcluded ?? MAX_EXCLUDED;
+    const hasFocus =
+        !!search.map ||
+        !!search.hero ||
+        towers.length > 0 ||
+        !!search.exHeroes ||
+        !!search.exTowers ||
+        !!search.exMaps;
 
     return (
         <Panel className='stats-controls'>
@@ -131,6 +142,12 @@ export default function StatsControls(props: StatsControlsProps) {
                         value={search.map}
                         options={mapOptions}
                         onChange={(map) => onChange({ map })}
+                        exclude={{
+                            items: exMaps,
+                            max: maxExcluded.maps,
+                            onChange: (next) => onChange({ exMaps: joinList(next) }),
+                        }}
+                        onClear={() => onChange({ map: undefined, exMaps: undefined })}
                     />
                 </ControlGroup>
                 <ControlGroup label='Hero'>
@@ -141,6 +158,13 @@ export default function StatsControls(props: StatsControlsProps) {
                         onChange={(next) =>
                             onChange({ hero: next[0] ? formatHeroPick(next[0]) : undefined })
                         }
+                        exclude={{
+                            items: exHeroes,
+                            max: maxExcluded.heroes,
+                            onChange: (next) =>
+                                onChange({ exHeroes: joinList(next.map(formatHeroPick)) }),
+                        }}
+                        onClear={() => onChange({ hero: undefined, exHeroes: undefined })}
                     />
                 </ControlGroup>
                 <ControlGroup label='Towers (all of them)' grow>
@@ -149,6 +173,12 @@ export default function StatsControls(props: StatsControlsProps) {
                         max={STATS_MAX_TOWERS}
                         options={options}
                         onChange={(next) => onChange({ towers: joinList(next) })}
+                        exclude={{
+                            items: exTowers,
+                            max: maxExcluded.towers,
+                            onChange: (next) => onChange({ exTowers: joinList(next) }),
+                        }}
+                        onClear={() => onChange({ towers: undefined, exTowers: undefined })}
                     />
                 </ControlGroup>
                 {hasFocus && (
@@ -156,7 +186,14 @@ export default function StatsControls(props: StatsControlsProps) {
                         type='button'
                         className='text-link stats-controls__clear'
                         onClick={() =>
-                            onChange({ map: undefined, hero: undefined, towers: undefined })
+                            onChange({
+                                map: undefined,
+                                hero: undefined,
+                                towers: undefined,
+                                exHeroes: undefined,
+                                exTowers: undefined,
+                                exMaps: undefined,
+                            })
                         }
                     >
                         Clear map, hero and towers

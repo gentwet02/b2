@@ -37,7 +37,11 @@ export interface Stats extends BaseApiResponse {
         map: { base: string; variant?: MapVariant } | null;
         hero: HeroPick | null;
         towers: string[];
+        exHeroes?: HeroPick[];
+        exTowers?: string[];
+        exMaps?: { base: string; variant?: MapVariant }[];
     };
+    maxExcluded?: { heroes: number; towers: number; maps: number };
     seasons: {
         seasonId: number;
         name: string;
@@ -86,6 +90,10 @@ export interface StatsParams {
     map?: string | undefined;
     hero?: string | undefined;
     towers?: string[] | undefined;
+    /** exclusions, comma lists like the URL's */
+    exHeroes?: string | undefined;
+    exTowers?: string | undefined;
+    exMaps?: string | undefined;
 }
 
 /** /stats URL search */
@@ -103,6 +111,10 @@ export interface StatsSearch {
     hero?: string | undefined;
     /** comma separated, ≤ 3 */
     towers?: string | undefined;
+    /** exclusions: loadouts without these heroes / with none of these towers, not these maps */
+    exHeroes?: string | undefined;
+    exTowers?: string | undefined;
+    exMaps?: string | undefined;
     view?: StatsView | undefined;
     /** minimum games for a row */
     min?: number | undefined;

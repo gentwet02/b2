@@ -2,7 +2,7 @@ import { getFromApi, withQuery } from '@/services/api/client';
 import type { Stats, StatsParams } from '@/types/stats';
 
 export const statsService = {
-    getStats: ({ season, player, players, exclude, map, hero, towers }: StatsParams) =>
+    getStats: ({ season, player, players, exclude, map, hero, towers, ...excluded }: StatsParams) =>
         getFromApi<Stats>(
             withQuery('stats', {
                 season,
@@ -10,6 +10,7 @@ export const statsService = {
                 map,
                 hero,
                 towers: towers?.join(','),
+                ...excluded,
             }),
         ),
 };

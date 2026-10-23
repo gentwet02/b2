@@ -3,9 +3,24 @@
 
 .filter-chips {
     display: flex;
+    flex-direction: column;
     flex-wrap: wrap;
-    align-items: center;
     gap: $space-2xs;
+
+    &__selectors,
+    &__list {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: $space-2xs;
+    }
+
+    // "Clear", after the selects
+    &__clear {
+        margin-left: $space-2xs;
+        font-size: $text-sm;
+        color: colors.$ink-soft;
+    }
 }
 
 .filter-chip {
@@ -15,7 +30,7 @@
     padding: 0.2rem 0.3rem 0.2rem 0.75rem;
     font-size: $text-md;
     font-weight: 600;
-    background: colors.$banana;
+    background: colors.$sky;
     border: 2px solid colors.$ink;
     border-radius: $radius-pill;
     @include enter($anim-pop-in, $duration-base);
@@ -24,6 +39,17 @@
     &--image {
         background: colors.$sky;
         padding-left: 0.3rem;
+    }
+
+    // an exclusion: red tint (after --image, so it wins)
+    &--excluded {
+        background: colors.lighten('bloon', 78%);
+        border-color: colors.darken('bloon', 25%);
+
+        .filter-chip__img {
+            filter: grayscale(0.6);
+            opacity: 0.8;
+        }
     }
 
     &__img {

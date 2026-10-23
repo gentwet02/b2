@@ -6,16 +6,18 @@ interface ChipAdderProps<V extends string> {
     placeholder: string;
     onAdd: (value: V) => void;
     searchable?: boolean;
+    /** adds an exclusion: red dashes */
+    excluding?: boolean | undefined;
     'aria-label': string;
 }
 
-/** The dashed "+ Add …" select at the end of a chip list. */
+/** The dashed "+ Add …" (or "− Exclude …") select at the end of a chip list. */
 export default function ChipAdder<V extends string>(props: ChipAdderProps<V>) {
-    const { options, placeholder, onAdd, searchable, 'aria-label': ariaLabel } = props;
+    const { options, placeholder, onAdd, searchable, excluding, 'aria-label': ariaLabel } = props;
 
     return (
         <Dropdown
-            className='chip-adder'
+            className={excluding ? 'chip-adder chip-adder--exclude' : 'chip-adder'}
             aria-label={ariaLabel}
             placeholder={placeholder}
             options={options}

@@ -27,6 +27,18 @@
         font-size: $text-md;
     }
 
+    &--exclude .dropdown__input {
+        border-color: colors.darken('bloon', 10%);
+
+        &::placeholder {
+            color: colors.darken('bloon', 20%);
+        }
+    }
+
+    &--exclude.dropdown--open .dropdown__list {
+        border-top-color: colors.darken('bloon', 10%);
+    }
+
     @include breakpoint-down(small) {
         flex: 1 1 100%;
         width: auto;

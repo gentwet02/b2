@@ -4,6 +4,7 @@ import HeroChips from '@/components/filter-chips/HeroChips';
 import MapChip from '@/components/filter-chips/MapChip';
 import TowerChips from '@/components/filter-chips/TowerChips';
 import SeasonSelect from '@/components/season-select/SeasonSelect';
+import { MAX_EXCLUDED } from '@/config/filters';
 import {
     MATCH_MAX_HEROES,
     MATCH_MAX_TOWERS,
@@ -58,8 +59,19 @@ export default function MatchFilters(props: MatchFiltersProps) {
     const towers2 = splitList(query.towers2);
     const maxHeroes = options?.maxHeroes ?? MATCH_MAX_HEROES;
     const maxTowers = options?.maxTowers ?? MATCH_MAX_TOWERS;
+    const exHeroes = splitList(query.exHeroes).map(parseHero);
+    const exTowers = splitList(query.exTowers);
+    const exHeroes2 = splitList(query.exHeroes2).map(parseHero);
+    const exTowers2 = splitList(query.exTowers2);
+    const exMaps = splitList(query.exMaps);
+    const maxExcluded = options?.maxExcluded ?? MAX_EXCLUDED;
 
     const heroList = (next: HeroPick[]) => joinList(next.map(formatHeroPick));
+    /** both lists' heroes, each base once */
+    const mergeHeroes = (a: HeroPick[], b: HeroPick[]) => [
+        ...a,
+        ...b.filter((h) => !a.some((p) => p.base === h.base)),
+    ];
 
     // turning "same player" on: the first hero and 3 towers go to side 1, the rest to side 2
     const splitSides = () =>
@@ -71,6 +83,9 @@ export default function MatchFilters(props: MatchFiltersProps) {
                 towers: joinList(towers.slice(0, SIDE_MAX_TOWERS)),
                 towers2: joinList(towers.slice(SIDE_MAX_TOWERS, 2 * SIDE_MAX_TOWERS)),
                 player2: undefined,
+                // "nobody uses X" is "neither side uses X"
+                exHeroes2: query.exHeroes,
+                exTowers2: query.exTowers,
             },
             { viewTransition: { types: ['sides'] } },
         );
@@ -82,16 +97,18 @@ export default function MatchFilters(props: MatchFiltersProps) {
             {
                 sameSide: undefined,
                 player: name || undefined,
-                heroes: heroList(
-                    [
-                        ...heroes,
-                        ...heroes2.filter((h) => !heroes.some((p) => p.base === h.base)),
-                    ].slice(0, maxHeroes),
-                ),
+                heroes: heroList(mergeHeroes(heroes, heroes2).slice(0, maxHeroes)),
                 towers: joinList([...new Set([...towers, ...towers2])].slice(0, maxTowers)),
+                // left out on either side: left out for both players
+                exHeroes: heroList(mergeHeroes(exHeroes, exHeroes2).slice(0, maxExcluded.heroes)),
+                exTowers: joinList(
+                    [...new Set([...exTowers, ...exTowers2])].slice(0, maxExcluded.towers),
+                ),
                 player2: undefined,
                 heroes2: undefined,
                 towers2: undefined,
+                exHeroes2: undefined,
+                exTowers2: undefined,
             },
             { viewTransition: { types: ['sides'] } },
         );
@@ -142,6 +159,11 @@ export default function MatchFilters(props: MatchFiltersProps) {
                                     heroes2: undefined,
                                     towers2: undefined,
                                     map: undefined,
+                                    exHeroes: undefined,
+                                    exTowers: undefined,
+                                    exHeroes2: undefined,
+                                    exTowers2: undefined,
+                                    exMaps: undefined,
                                 })
                             }
                         />
@@ -157,9 +179,16 @@ export default function MatchFilters(props: MatchFiltersProps) {
                         onPlayerText={onPlayerText}
                         heroes={heroes}
                         towers={towers}
+                        exHeroes={exHeroes}
+                        exTowers={exTowers}
+                        maxExcluded={maxExcluded}
                         options={options?.sides?.[0] ?? options}
                         onHeroes={(next) => onChange({ heroes: heroList(next) })}
                         onTowers={(next) => onChange({ towers: joinList(next) })}
+                        onExHeroes={(next) => onChange({ exHeroes: heroList(next) })}
+                        onExTowers={(next) => onChange({ exTowers: joinList(next) })}
+                        onClearHeroes={() => onChange({ heroes: undefined, exHeroes: undefined })}
+                        onClearTowers={() => onChange({ towers: undefined, exTowers: undefined })}
                     />
                     <span className='match-filters__sides-vs' aria-hidden='true'>
                         vs
@@ -170,9 +199,16 @@ export default function MatchFilters(props: MatchFiltersProps) {
                         onPlayerText={onPlayer2Text}
                         heroes={heroes2}
                         towers={towers2}
+                        exHeroes={exHeroes2}
+                        exTowers={exTowers2}
+                        maxExcluded={maxExcluded}
                         options={options?.sides?.[1] ?? options}
                         onHeroes={(next) => onChange({ heroes2: heroList(next) })}
                         onTowers={(next) => onChange({ towers2: joinList(next) })}
+                        onExHeroes={(next) => onChange({ exHeroes2: heroList(next) })}
+                        onExTowers={(next) => onChange({ exTowers2: joinList(next) })}
+                        onClearHeroes={() => onChange({ heroes2: undefined, exHeroes2: undefined })}
+                        onClearTowers={() => onChange({ towers2: undefined, exTowers2: undefined })}
                     />
                 </div>
             ) : (
@@ -184,6 +220,12 @@ export default function MatchFilters(props: MatchFiltersProps) {
                             max={maxHeroes}
                             options={options}
                             onChange={(next) => onChange({ heroes: heroList(next) })}
+                            exclude={{
+                                items: exHeroes,
+                                max: maxExcluded.heroes,
+                                onChange: (next) => onChange({ exHeroes: heroList(next) }),
+                            }}
+                            onClear={() => onChange({ heroes: undefined, exHeroes: undefined })}
                         />
                     </div>
                     <div className='match-filters__group'>
@@ -193,6 +235,12 @@ export default function MatchFilters(props: MatchFiltersProps) {
                             max={maxTowers}
                             options={options}
                             onChange={(next) => onChange({ towers: joinList(next) })}
+                            exclude={{
+                                items: exTowers,
+                                max: maxExcluded.towers,
+                                onChange: (next) => onChange({ exTowers: joinList(next) }),
+                            }}
+                            onClear={() => onChange({ towers: undefined, exTowers: undefined })}
                         />
                     </div>
                 </>
@@ -206,6 +254,12 @@ export default function MatchFilters(props: MatchFiltersProps) {
                         options={options?.maps ?? []}
                         placeholder='+ Any map'
                         onChange={(map) => onChange({ map })}
+                        exclude={{
+                            items: exMaps,
+                            max: maxExcluded.maps,
+                            onChange: (next) => onChange({ exMaps: joinList(next) }),
+                        }}
+                        onClear={() => onChange({ map: undefined, exMaps: undefined })}
                     />
                 </div>
                 <label className='match-filters__toggle'>

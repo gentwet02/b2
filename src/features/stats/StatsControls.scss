@@ -3,12 +3,21 @@
 
 // the panel's grid and gap space the two rows
 .stats-controls {
+    // map, hero and towers stacked, like the match filters
     &__focus {
+        flex-direction: column;
+        flex-wrap: nowrap;
+        align-items: stretch;
         padding-top: $space-s;
-        border-top: 2px dashed color-mix(in srgb, colors.$ink 20%, transparent);
+        border-top: 2px solid color-mix(in srgb, colors.$ink 20%, transparent);
+
+        .controls__group {
+            flex: none;
+            max-width: none;
+        }
     }
 
     &__clear {
-        align-self: center;
+        align-self: flex-start;
     }
 }

@@ -18,6 +18,11 @@ function validateSearch(search: Record<string, unknown>): MatchesQuery {
         heroes2: parseText(search.heroes2, 60),
         towers2: parseText(search.towers2, 100),
         allNames: search.allNames === true || search.allNames === 'true' ? true : undefined,
+        exHeroes: parseText(search.exHeroes, 300),
+        exTowers: parseText(search.exTowers, 300),
+        exMaps: parseText(search.exMaps, 300),
+        exHeroes2: parseText(search.exHeroes2, 300),
+        exTowers2: parseText(search.exTowers2, 300),
     };
 }
 

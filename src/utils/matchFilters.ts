@@ -16,7 +16,15 @@ export const isFiltering = (query: MatchesQuery) =>
         query.heroes ||
         query.towers ||
         query.map ||
-        (query.sameSide && (query.player2 || query.heroes2 || query.towers2))
+        query.exHeroes ||
+        query.exTowers ||
+        query.exMaps ||
+        (query.sameSide &&
+            (query.player2 ||
+                query.heroes2 ||
+                query.towers2 ||
+                query.exHeroes2 ||
+                query.exTowers2))
     );
 
 /** Every filter off (the season and sort stay). */
@@ -29,6 +37,11 @@ export const NO_FILTERS: Partial<MatchesQuery> = {
     player2: undefined,
     heroes2: undefined,
     towers2: undefined,
+    exHeroes: undefined,
+    exTowers: undefined,
+    exMaps: undefined,
+    exHeroes2: undefined,
+    exTowers2: undefined,
 };
 
 /** A hero clicked on a card, as a filter item: any variant of its base. */

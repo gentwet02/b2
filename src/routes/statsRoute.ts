@@ -20,6 +20,18 @@ const parseTowerList = (value: unknown, max: number) =>
         ? value.trim().slice(0, max)
         : undefined;
 
+/** "Quincy,Adora:Adora_Fateweaver": heroes, any variant or one. */
+const parseHeroList = (value: unknown, max: number) =>
+    typeof value === 'string' && /^[A-Za-z0-9_:,]+$/.test(value.trim())
+        ? value.trim().slice(0, max)
+        : undefined;
+
+/** "oasis,dino:reversed": map keys, maybe one version. */
+const parseMapList = (value: unknown, max: number) =>
+    typeof value === 'string' && /^[a-z0-9:,]+$/.test(value.trim())
+        ? value.trim().slice(0, max)
+        : undefined;
+
 function validateSearch(search: Record<string, unknown>): StatsSearch {
     const player = parseUserId(search.player);
     const players = player
@@ -45,6 +57,9 @@ function validateSearch(search: Record<string, unknown>): StatsSearch {
                 ? search.hero.slice(0, 82)
                 : undefined,
         towers: parseTowerList(search.towers, 130),
+        exHeroes: parseHeroList(search.exHeroes, 300),
+        exTowers: parseTowerList(search.exTowers, 300),
+        exMaps: parseMapList(search.exMaps, 300),
         view: parseOption(
             search.view,
             STATS_VIEWS.map((v) => v.value),

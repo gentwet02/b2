@@ -27,7 +27,7 @@
 
         &--map {
             flex: 1 1 14rem;
-            max-width: 22rem;
+            max-width: 44rem;
         }
     }
 
@@ -42,6 +42,12 @@
         gap: $space-2xs;
         padding-top: $space-s;
         border-top: 1px solid colors.$line;
+    }
+
+    // heroes then towers: one block under a single line
+    &__group + &__group {
+        padding-top: 0;
+        border-top: none;
     }
 
     &__sides {

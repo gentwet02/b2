@@ -50,6 +50,9 @@ export default function Stats() {
             map: search.map,
             hero: search.hero,
             towers,
+            exHeroes: search.exHeroes,
+            exTowers: search.exTowers,
+            exMaps: search.exMaps,
         },
         !playerMode || !!search.player,
     );
@@ -73,6 +76,9 @@ export default function Stats() {
                     map: merged.map,
                     hero: merged.hero,
                     towers: merged.towers || undefined,
+                    exHeroes: merged.exHeroes || undefined,
+                    exTowers: merged.exTowers || undefined,
+                    exMaps: merged.exMaps || undefined,
                     view:
                         merged.view && merged.view !== STATS_VIEW_DEFAULT ? merged.view : undefined,
                     min: merged.min && merged.min !== STATS_MIN_DEFAULT ? merged.min : undefined,

@@ -72,6 +72,14 @@ export interface MatchesQuery {
     allNames?: boolean | undefined;
     heroes2?: string | undefined;
     towers2?: string | undefined;
+    /** exclusions: no player uses these heroes / towers (same player mode: player 1 doesn't) */
+    exHeroes?: string | undefined;
+    exTowers?: string | undefined;
+    /** exclusions: none of these maps, keys like `map` */
+    exMaps?: string | undefined;
+    /** same player mode only: player 2 doesn't use these */
+    exHeroes2?: string | undefined;
+    exTowers2?: string | undefined;
 }
 
 /** One page of GET /matches-history (read from the database). */
@@ -131,6 +139,7 @@ export interface MatchFilterOptions extends SideFilterOptions, BaseApiResponse {
     sorts: MatchSort[];
     maxHeroes: number;
     maxTowers: number;
+    maxExcluded?: { heroes: number; towers: number; maps: number };
 }
 
 /** GET /users/:id/matches — Ninja Kiwi's latest matches, through the server (rate limited). */
