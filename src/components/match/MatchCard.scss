@@ -16,6 +16,7 @@
     --accent: transparent;
     --lift: 0px;
     --shadowWidth: 5px;
+    --maxImgWidth: 98%;
     box-shadow:
         inset var(--shadowWidth) 0 0 var(--accent),
         var(--lift) var(--lift) 0 colors.$ink;
@@ -101,13 +102,12 @@
             text-align: left;
         }
 
-        --maxWidth: 98%;
         &__map-img {
             aspect-ratio: 3 / 1;
-            max-width: var(--maxWidth);
+            max-width: var(--maxImgWidth);
             max-height: 10rem;
             margin-block: 0;
-            margin-inline-start: calc((100% - var(--maxWidth)) / 2 + var(--shadowWidth) / 2);
+            margin-inline-start: calc((100% - var(--maxImgWidth)) / 2 + var(--shadowWidth) / 2);
         }
 
         &__info {
