@@ -13,7 +13,7 @@ import useUrlText from '@/hooks/useUrlText';
 import type { MatchesQuery, MatchPick } from '@/types/match';
 import { formatNumber, plural, timeAgo } from '@/utils/format';
 import { addPick, isFiltering, NO_FILTERS } from '@/utils/matchFilters';
-import { seasonLabel } from '@/utils/season';
+import { allSeasonsLabel } from '@/utils/season';
 
 const routeApi = getRouteApi('/matches-history');
 
@@ -49,7 +49,8 @@ export default function MatchesHistory() {
     const crawl = first?.crawl ?? null;
     const matches = data?.pages.flatMap((p) => p.matches.items) ?? [];
     const filtering = isFiltering(query);
-    const seasonId = page?.seasonId ?? query.season ?? seasons.data?.liveSeason;
+    const seasonId = query.season ?? page?.seasonId ?? seasons.data?.liveSeason;
+    const seasonText = allSeasonsLabel(seasonId, page);
 
     // clicking a hero, tower or map on a card adds it to the filters
     const pick = (clicked: MatchPick) => {
@@ -73,7 +74,7 @@ export default function MatchesHistory() {
                 title='Ranked matches'
                 subtitle={
                     page
-                        ? `${formatNumber(page.totalMatches)} matches recorded in ${seasonId !== undefined ? seasonLabel(seasonId) : 'this season'}, played by Hall of Masters players`
+                        ? `${formatNumber(page.totalMatches)} matches recorded in ${seasonText}, played by Hall of Masters players`
                         : 'Matches played by Hall of Masters players'
                 }
             />
@@ -150,6 +151,7 @@ export default function MatchesHistory() {
                 <MatchList
                     matches={matches}
                     onPick={pick}
+                    showSeason={query.season === 'all'}
                     className={
                         isPlaceholderData ? 'matches__list matches__list--stale' : 'matches__list'
                     }

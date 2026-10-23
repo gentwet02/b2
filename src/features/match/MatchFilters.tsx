@@ -14,7 +14,7 @@ import {
 } from '@/config/match';
 import type { HeroPick } from '@/types/hero';
 import type { MatchFilterOptions, MatchesQuery } from '@/types/match';
-import type { SeasonSummary } from '@/types/season';
+import type { SeasonScope, SeasonSummary } from '@/types/season';
 import { formatHeroPick, parseHero } from '@/utils/hero';
 import { joinList, splitList } from '@/utils/search';
 import { urlSeason } from '@/utils/season';
@@ -30,7 +30,7 @@ interface MatchFiltersProps {
     options?: MatchFilterOptions | undefined;
     seasons: SeasonSummary[];
     liveSeason?: number | undefined;
-    seasonId?: number | undefined;
+    seasonId?: SeasonScope | undefined;
     playerText: string;
     onPlayerText: (value: string) => void;
     player2Text: string;
@@ -128,6 +128,7 @@ export default function MatchFilters(props: MatchFiltersProps) {
                         </label>
                         <SeasonSelect
                             id='match-filters-season'
+                            allowAll
                             seasons={seasons}
                             liveSeason={liveSeason}
                             value={seasonId}

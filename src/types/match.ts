@@ -1,6 +1,7 @@
 import type { MATCH_SORTS } from '@/config/match';
 import type { BaseApiResponse } from '@/types/api';
 import type { MapVariant } from '@/types/map';
+import type { SeasonScope } from '@/types/season';
 
 export type MatchResult = 'win' | 'lose' | 'draw' | 'cancelled' | 'lobbyDC' | 'opponentLobbyDC';
 export type Outcome = 'win' | 'lose' | 'neutral';
@@ -33,6 +34,8 @@ export interface Match {
     playerRight: MatchPlayer;
     /** Stored matches only: when our crawler first saw the match (NK gives no play date). */
     seenAt?: string;
+    /** Stored matches only: the season the match was recorded in. */
+    seasonId?: number;
 }
 
 export interface CrawlProgress {
@@ -47,7 +50,8 @@ export type MatchSort = (typeof MATCH_SORTS)[number];
  * Lists are comma separated to keep URLs readable.
  */
 export interface MatchesQuery {
-    season?: number | undefined;
+    /** undefined: the live season; "all": every recorded season */
+    season?: SeasonScope | undefined;
     player?: string | undefined;
     /** one player's matches (profiles) */
     playerId?: string | undefined;
@@ -72,8 +76,11 @@ export interface MatchesQuery {
 
 /** One page of GET /matches-history (read from the database). */
 export interface MatchesPage {
-    seasonId: number;
-    /** every match stored for the season */
+    /** null: every season */
+    seasonId: number | null;
+    /** every season only: the oldest season with recorded matches */
+    firstSeasonId?: number | null;
+    /** every match stored for the season (or for every season) */
     totalMatches: number;
     /** matches fitting the filters */
     total: number;
@@ -93,7 +100,7 @@ export interface CrawlInfo {
 
 export interface MatchesResponse extends BaseApiResponse {
     matches: MatchesPage;
-    /** live season only */
+    /** live season (or every season) only */
     crawl: CrawlInfo | null;
 }
 
@@ -109,7 +116,8 @@ export interface SideFilterOptions {
 
 /** GET /matches-history/filters: what the season's stored matches contain. */
 export interface MatchFilterOptions extends SideFilterOptions, BaseApiResponse {
-    seasonId: number;
+    /** null: every season */
+    seasonId: number | null;
     /** same player mode: the options of side 1 and side 2 */
     sides?: [SideFilterOptions, SideFilterOptions];
     /** base maps: classic and reversed versions together, counted apart in `variants` */

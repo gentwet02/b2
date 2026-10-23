@@ -138,13 +138,31 @@
     }
 
     @include breakpoint-down(medium) {
+        &__side {
+            &--left {
+                padding-inline: $space-2xs $space-3xs;
+            }
+            &--right {
+                padding-inline: $space-3xs $space-2xs;
+            }
+        }
         &__name {
             font-size: $text-base;
         }
     }
 
     @include breakpoint-down(small) {
+        // the two players, one under the other
+        &__side {
+            padding-inline: $space-2xs;
+            align-items: flex-start;
+        }
+
         &__side--right {
+            border-top: 1.5px dashed colors.$paper-dim;
+            border-top-left-radius: 0;
+            border-top-right-radius: 0;
+            padding-top: $space-xs;
             flex-direction: row;
             text-align: left;
 

@@ -1,6 +1,19 @@
+import type { MatchesPage } from '@/types/match';
 import type { SeasonScope, SeasonSummary } from '@/types/season';
 
 export const seasonLabel = (seasonId: number) => `Season ${seasonId + 1}`;
+
+export const allSeasonsLabel = (
+    seasonId: SeasonScope | undefined,
+    page: MatchesPage | undefined,
+) => {
+    if (seasonId === 'all') {
+        const first = page?.firstSeasonId;
+        return `all seasons${first ? ` (since ${seasonLabel(first)})` : ''}`;
+    } else {
+        return typeof seasonId === 'number' ? seasonLabel(seasonId) : 'this season';
+    }
+};
 
 /** NK's season name without its "Event" suffix: "Season 31 Event" → "Season 31". */
 export const seasonTitle = (name: string) => name.replace(/\s*\bevent\b/gi, '').trim();

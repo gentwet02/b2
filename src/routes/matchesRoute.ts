@@ -7,7 +7,7 @@ import { rootRoute } from './rootRoute';
 
 function validateSearch(search: Record<string, unknown>): MatchesQuery {
     return {
-        season: parseSeason(search.season),
+        season: parseSeason(search.season, true),
         player: parseText(search.player, 64),
         heroes: parseText(search.heroes, 120),
         towers: parseText(search.towers, 200),

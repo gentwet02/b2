@@ -15,8 +15,9 @@
     // result stripe + (on hover) the hard drop shadow, combined in one box-shadow
     --accent: transparent;
     --lift: 0px;
+    --shadowWidth: 5px;
     box-shadow:
-        inset 5px 0 0 var(--accent),
+        inset var(--shadowWidth) 0 0 var(--accent),
         var(--lift) var(--lift) 0 colors.$ink;
     @include transition((transform, box-shadow), $duration-fast);
 
@@ -44,6 +45,14 @@
         gap: 0.15rem;
         text-align: center;
         line-height: $leading-snug;
+    }
+
+    // map name, then round / seen / season stacked (one line on narrow screens)
+    &__info,
+    &__details {
+        display: grid;
+        justify-items: center;
+        gap: 0.15rem;
     }
 
     &__map-img {
@@ -79,28 +88,76 @@
         font-size: $text-xs;
     }
 
-    // narrow screens: map on top, players below
+    // narrow screens: the map as a banner on top, its info on one line, players below
     @include breakpoint-down(medium) {
         grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+        row-gap: $space-3xs;
 
         &__center {
             grid-column: 1 / -1;
             grid-row: 1;
-            grid-template-columns: auto auto;
-            justify-content: center;
-            column-gap: $space-xs;
+            justify-items: stretch;
+            gap: $space-2xs;
             text-align: left;
-            justify-items: start;
         }
 
+        --maxWidth: 98%;
         &__map-img {
-            grid-row: span 4;
-            width: 7rem;
-            margin-bottom: 0;
+            aspect-ratio: 3 / 1;
+            max-width: var(--maxWidth);
+            max-height: 10rem;
+            margin-block: 0;
+            margin-inline-start: calc((100% - var(--maxWidth)) / 2 + var(--shadowWidth) / 2);
+        }
+
+        &__info {
+            grid-template-columns: minmax(0, 1fr) auto;
+            justify-items: start;
+            align-items: center;
+            column-gap: $space-xs;
+            row-gap: 0.1rem;
+            padding-inline: $space-xs;
+        }
+
+        &__map-name {
+            font-size: $text-lg;
+        }
+
+        &__details {
+            grid-column: 1;
+            display: flex;
+            flex-wrap: wrap;
+            column-gap: 0;
+        }
+
+        // "Round 10, 4:32 · Seen 7 minutes ago · Season 47"
+        &__details > &__meta + &__meta::before {
+            content: '·';
+            margin-inline: 0.4em;
+        }
+
+        &__outcome {
+            grid-column: 2;
+            grid-row: 1 / span 2;
+            margin-top: 0;
         }
     }
 
     @include breakpoint-down(small) {
         grid-template-columns: minmax(0, 1fr);
+
+        &__map-img {
+            aspect-ratio: 2 / 1;
+            max-height: none;
+        }
+
+        // the chip next to the map name, the info line gets the full width
+        &__outcome {
+            grid-row: 1;
+        }
+
+        &__details {
+            grid-column: 1 / -1;
+        }
     }
 }
