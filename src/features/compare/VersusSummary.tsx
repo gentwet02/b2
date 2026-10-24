@@ -48,7 +48,7 @@ export default function VersusSummary(props: VersusSummaryProps) {
             {...(opponent && { titleClassName: 'versus-title' })}
             note={
                 opponent?.rank != null
-                    ? `${data.season === 'all' ? 'Best rank' : 'Rank'} #${opponent.rank}`
+                    ? `${data.season === 'all' ? 'Best rank' : 'Rank'} #${formatNumber(opponent.rank)}`
                     : undefined
             }
         >
@@ -58,7 +58,7 @@ export default function VersusSummary(props: VersusSummaryProps) {
                         ? `Ranks ${formatNumber(bounds.from)}–${formatNumber(bounds.to)} of the ${formatNumber(bounds.size)} players in ${seasonTitle(data.seasonName)}'s leaderboard.`
                         : 'Each season counts its own players in this range: the games of a season against that season’s ranks.'}
                     {missing > 0 &&
-                        ` ${missing} ${plural(missing, 'season is', 'seasons are')} skipped, their leaderboard isn't loaded yet.`}
+                        ` ${formatNumber(missing)} ${plural(missing, 'season is', 'seasons are')} skipped, their leaderboard isn't loaded yet.`}
                 </Note>
             )}
 
@@ -71,7 +71,7 @@ export default function VersusSummary(props: VersusSummaryProps) {
                             {formatRecord(total.record)}
                         </strong>{' '}
                         in {formatNumber(games)} {plural(games, 'game')}
-                        {data.mode === 'top' && `, met ${met} of ${data.opponents.length} players`}
+                        {data.mode === 'top' && `, met ${formatNumber(met)} of ${formatNumber(data.opponents.length)} players`}
                         {total.lastMet && `, last ${timeAgo(total.lastMet)}`}
                     </>
                 )}

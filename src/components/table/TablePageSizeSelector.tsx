@@ -10,20 +10,17 @@ export default function TablePageSizeSelector(props: TablePageSizeSelectorProps)
     const { pageSize, onPageSizeChange, pageSizeOptions } = props;
 
     return (
-        <div className='table__page-size'>
-            <div className='table__page-size-label'>
-                <span aria-hidden='true'>Shows</span>
-                <Dropdown
-                    id='size-select'
-                    className='table__page-size-select'
-                    aria-label='Entries per page'
-                    variant='compact'
-                    options={pageSizeOptions}
-                    value={pageSize}
-                    onSelect={onPageSizeChange}
-                />
-                <span aria-hidden='true'>entries</span>
-            </div>
-        </div>
+        <label className='table__page-size'>
+            <span className='table__page-size-label'>Entries</span>
+            <Dropdown
+                id='size-select'
+                className='table__page-size-select'
+                aria-label='Entries per page'
+                variant='compact'
+                options={pageSizeOptions}
+                value={pageSize}
+                onSelect={onPageSizeChange}
+            />
+        </label>
     );
 }

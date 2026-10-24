@@ -21,7 +21,7 @@ export const STATS_MIN_PICK = [0, 0.5, 1, 2, 5, 10, 25] as const;
 export const STATS_MIN_PICK_DEFAULT = 0;
 export const STATS_MIN_PICK_OPTIONS = STATS_MIN_PICK.map((n) => ({
     value: n,
-    label: n === 0 ? 'Any' : `${n}%`,
+    label: `${n}%`,
 }));
 
 export const STATS_MAX_TOWERS = 3;

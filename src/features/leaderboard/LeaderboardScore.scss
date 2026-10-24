@@ -3,9 +3,6 @@
 @use '@/styles/utils' as *;
 
 .leaderboard-score {
-    // fixed widths for every column but the player's, so a new sort (other
-    // rows, other score lengths, the sort icon moving) never shifts them:
-    // the player column takes whatever is left
     th[data-category='rank'] {
         width: 4rem;
     }
@@ -81,51 +78,177 @@
         font-size: $text-lg;
     }
 
-    @include breakpoint-down(small) {
+    // between phones and desktop: each column grows linearly from its tightest
+    // fit (481px) to its desktop width (1024px), the player takes the rest
+    @include breakpoint-between(small, big) {
         .table {
-            td,
-            th {
-                padding: 0.35rem 0.25rem;
+            th,
+            td {
+                padding-inline: 0.5rem;
             }
 
-            td:not(:last-child),
-            th:not(:last-child):not(.table__head-title) {
-                padding-inline-end: 0;
+            th:first-child,
+            td:first-child {
+                padding-inline-start: $space-s;
             }
 
-            td:not(:first-child),
-            th:not(:first-child):not(.table__head-title) {
-                padding-inline-start: 0;
+            th:last-child,
+            td:last-child {
+                padding-inline-end: $space-s;
             }
 
-            // narrower, but still fixed: each fits its header and sort icon
+            .table__table__header-cell-content {
+                gap: 0.25rem;
+            }
+
+            .table__table__header-cell-icon {
+                width: 0.75rem;
+                height: 0.75rem;
+            }
+
             th[data-category='rank'] {
-                width: 3.75rem;
+                width: clamp(4.3125rem, 3.2606rem + 3.499vw, 5.5rem);
             }
 
             th[data-category='score'] {
-                width: 4.25rem;
+                width: clamp(4.1875rem, 1.6963rem + 8.287vw, 7rem);
             }
 
             th[data-category='games'] {
-                width: 4.5rem;
+                width: clamp(4.625rem, 2.9644rem + 5.525vw, 6.5rem);
             }
 
             th[data-category='win-rate'] {
-                width: 5.25rem;
+                width: clamp(5.75rem, 2.8713rem + 9.576vw, 9rem);
+            }
+
+            td:nth-child(2) {
+                max-width: 0;
+            }
+        }
+
+        .lb-player__name,
+        .lb-player__alias {
+            overflow: hidden;
+            white-space: nowrap;
+            text-overflow: ellipsis;
+        }
+    }
+
+    // the narrow end: no avatar or rate bar, smaller headers
+    @include breakpoint-between(small, phablet) {
+        .table {
+            th {
+                font-size: $text-sm;
+            }
+
+            .table__table__header-cell-icon {
+                width: 0.65rem;
+                height: 0.65rem;
+            }
+        }
+
+        .lb-player {
+            gap: 0;
+        }
+
+        .lb-player__avatar {
+            display: none;
+        }
+
+        .table__table__header-cell-content {
+            flex-direction: row-reverse;
+            justify-content: flex-start;
+        }
+
+        .rate-bar {
+            grid-template-columns: 1fr;
+            gap: 0;
+
+            &__bar {
+                display: none;
+            }
+        }
+
+        .lb-rank {
+            @include size(1.9rem);
+            font-size: 0.9375rem;
+        }
+    }
+
+    @include breakpoint-down(small) {
+        $inset: $space-xs;
+
+        .table {
+            td,
+            th {
+                padding: 0.35rem 0;
+            }
+
+            td:first-child,
+            th:first-child {
+                padding-inline-start: $inset;
+            }
+
+            td:last-child,
+            th:last-child {
+                padding-inline-end: $inset;
+            }
+
+            th {
+                font-size: $text-sm;
+            }
+
+            .table__table__header-cell-content {
+                gap: 0.15rem;
+            }
+
+            .table__table__header-cell-icon {
+                width: 0.65rem;
+                height: 0.65rem;
+
+                &--off {
+                    display: none;
+                }
+            }
+
+            th[data-category='rank'] {
+                width: calc(2.85rem + #{$inset});
+            }
+
+            th[data-category='score'] {
+                width: 3.5rem;
+                padding-inline-start: 0.35rem;
+            }
+
+            th[data-category='games'] {
+                width: 3.95rem;
+                padding-inline-start: 0.35rem;
+            }
+
+            th[data-category='win-rate'] {
+                width: calc(4.65rem + #{$inset});
+                padding-inline-start: 0.35rem;
+
+                .table__table__header-cell-content {
+                    flex-direction: row-reverse;
+                    justify-content: flex-start;
+                }
+            }
+
+            th[data-category='player'],
+            td:nth-child(2) {
+                padding-inline-start: $space-2xs;
             }
 
             &__cell {
-                [class^='lb-'] {
+                font-size: $text-md;
+
+                [class^='lb-']:not(.lb-rank) {
                     max-width: 100%;
                     overflow: hidden;
                     text-wrap: nowrap;
-                    font-size: $text-md;
                     text-overflow: ellipsis;
-                }
-
-                :not(.lb-score) {
-                    font-size: $text-md;
                 }
 
                 .lb-player {
@@ -151,18 +274,60 @@
 
         .lb-rank {
             @include size(1.8rem);
+            width: auto;
+            min-width: 1.8rem;
+            font-size: $text-md;
+        }
+
+        .lb-score {
+            font-size: $text-base;
         }
     }
 
     @include breakpoint-down(tiny) {
-        .table__cell {
-            [class^='lb-'] {
-                font-size: $text-md;
+        .table {
+            th {
+                font-size: $text-xs;
             }
 
-            :not(.lb-score) {
+            &__cell {
                 font-size: $text-sm;
             }
+
+            th[data-category='rank'] {
+                width: calc(2.7rem + #{$space-xs});
+            }
+
+            th[data-category='score'] {
+                width: 3.3rem;
+                padding-inline-start: 0.3rem;
+            }
+
+            th[data-category='games'] {
+                width: 3.7rem;
+                padding-inline-start: 0.3rem;
+            }
+
+            th[data-category='win-rate'] {
+                width: calc(4.3rem + #{$space-xs});
+                padding-inline-start: 0.3rem;
+            }
+        }
+
+        .lb-rank {
+            @include size(1.6rem);
+            width: auto;
+            min-width: 1.6rem;
+            padding-inline: 0.2rem;
+            font-size: $text-sm;
+        }
+
+        .lb-score {
+            font-size: $text-md;
+        }
+
+        .lb-player__alias {
+            font-size: $text-xs;
         }
     }
 }

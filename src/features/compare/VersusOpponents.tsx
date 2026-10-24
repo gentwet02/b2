@@ -5,7 +5,7 @@ import Panel from '@/components/panel/Panel';
 import RecordTable from '@/components/record-table/RecordTable';
 import { COMPARE_OPPONENTS_PAGE_SIZE } from '@/config/compare';
 import type { CompareSearch, Versus, VersusOpponent } from '@/types/compare';
-import { timeAgo } from '@/utils/format';
+import { formatNumber, timeAgo } from '@/utils/format';
 import { nameWithAlias, playerLabel } from '@/utils/player';
 import { gamesOf } from '@/utils/record';
 import { inScope } from '@/utils/season';
@@ -35,7 +35,7 @@ export default function VersusOpponents(props: VersusOpponentsProps) {
                         className='text-link'
                         onClick={() => setShowAll(!showAll)}
                     >
-                        {showAll ? 'Hide' : 'Show'} the {neverMet} never met
+                        {showAll ? 'Hide' : 'Show'} the {formatNumber(neverMet)} never met
                     </button>
                 )
             }
@@ -65,7 +65,7 @@ export default function VersusOpponents(props: VersusOpponentsProps) {
                     {
                         title: all ? 'Best rank' : 'Rank',
                         numeric: true,
-                        render: (o) => (o.rank === null ? '–' : `#${o.rank}`),
+                        render: (o) => (o.rank === null ? '–' : `#${formatNumber(o.rank)}`),
                         sort: (a, b) => (a.rank ?? Infinity) - (b.rank ?? Infinity),
                     },
                     ...(all
@@ -73,7 +73,7 @@ export default function VersusOpponents(props: VersusOpponentsProps) {
                               {
                                   title: 'Seasons in range',
                                   numeric: true,
-                                  render: (o: VersusOpponent) => o.seasons,
+                                  render: (o: VersusOpponent) => formatNumber(o.seasons),
                                   sort: (a: VersusOpponent, b: VersusOpponent) =>
                                       b.seasons - a.seasons,
                               },

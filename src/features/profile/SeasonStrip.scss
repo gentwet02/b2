@@ -9,7 +9,7 @@
     background: colors.$paper;
     overflow: hidden;
 
-    @include breakpoint-down(800px) {
+    @include breakpoint-down(tablet) {
         grid-template-columns: repeat(2, minmax(0, 1fr));
     }
 
@@ -35,7 +35,7 @@
             padding: $space-xs $gutter;
         }
 
-        @include breakpoint-down(800px) {
+        @include breakpoint-down(tablet) {
             &:nth-child(2) {
                 border-right: none;
             }

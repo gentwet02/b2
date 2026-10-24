@@ -54,7 +54,7 @@ export default function SeasonRecord(props: SeasonRecordProps) {
                     <span>
                         {formatHero(topHero.hero)}{' '}
                         <span className='stats-panel__sub'>
-                            {topHero.wins}/{topHero.played} won
+                            {formatNumber(topHero.wins)}/{formatNumber(topHero.played)} won
                         </span>
                     </span>
                 </>

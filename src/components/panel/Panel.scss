@@ -10,7 +10,7 @@
     @include components.panel;
 
     @include breakpoint-down(small) {
-        padding: $space-s $gutter $space-s-m;
+        padding: $space-s $space-xs $space-s-m;
     }
 
     &__head {

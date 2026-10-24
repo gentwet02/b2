@@ -3,7 +3,9 @@
 
 $max: 1440px;
 $big: 1024px;
+$tablet: 800px;
 $medium: 768px;
+$phablet: 640px;
 $small: 480px;
 $tiny: 380px;
 $min: 320px;
@@ -11,7 +13,9 @@ $min: 320px;
 $breakpoints: (
     'max': $max,
     'big': $big,
+    'tablet': $tablet,
     'medium': $medium,
+    'phablet': $phablet,
     'small': $small,
     'tiny': $tiny,
     'min': $min,

@@ -2,15 +2,16 @@
 @use '@/styles/utils' as *;
 
 .table__page-size {
+    display: flex;
+    align-items: center;
+    gap: $space-2xs;
+
     &-label {
-        display: flex;
-        align-items: center;
-        gap: $space-2xs;
-        font-size: $text-md;
+        @extend %eyebrow;
         color: colors.$ink-soft;
     }
 
     &-select {
-        width: 4.75rem;
+        width: 5.5rem;
     }
 }

@@ -1,14 +1,14 @@
 import { COMPARE_RANGE_DEFAULT } from '@/config/compare';
 import { previousRange, rangeLabel } from '@/config/ranges';
 import type { Versus } from '@/types/compare';
-import { lowerFirst } from '@/utils/format';
+import { formatNumber, lowerFirst } from '@/utils/format';
 import { seasonTitle } from '@/utils/season';
 
 /** Who a range versus is against: "Against the top 10 of Season 48", "Against ranks 11–25…". */
 export function rangeTitle(data: Versus, bounds: Versus['seasons'][number]['bounds']) {
     const range = data.range ?? COMPARE_RANGE_DEFAULT;
     const where = data.season === 'all' ? 'each season' : seasonTitle(data.seasonName);
-    if (data.band && bounds) return `Against ranks ${bounds.from}–${bounds.to} of ${where}`;
+    if (data.band && bounds) return `Against ranks ${formatNumber(bounds.from)}–${formatNumber(bounds.to)} of ${where}`;
     const label = lowerFirst(rangeLabel(range));
     if (data.band) {
         const left = data.exclude ?? previousRange(range)?.value ?? '';

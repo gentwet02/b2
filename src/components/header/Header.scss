@@ -75,7 +75,7 @@
     }
 
     @include breakpoint-down(tiny) {
-        padding-block: $space-s;
+        padding-block: $space-2xs;
 
         &__inner {
             flex-direction: column;
@@ -89,6 +89,10 @@
             > img {
                 width: 2rem;
             }
+        }
+
+        &__link {
+            padding-block: $space-4xs;
         }
     }
 }

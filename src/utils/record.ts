@@ -1,3 +1,4 @@
+import { formatNumber } from '@/utils/format';
 import type { RecordColumn, RecordRow, RecordSortKey, RecordSortState, Wld } from '@/types/record';
 
 /** Win rate in %, draws left out; null without a win or a loss. */
@@ -13,9 +14,13 @@ export const formatRate = (rate: number | null, digits = 0) =>
     rate === null ? '–' : `${rate.toFixed(digits)}%`;
 
 /** "5–3" (wins–losses), or "5–1–3" (wins–draws–losses) when there are draws */
-export const formatRecord = ([w, l, d]: Wld) => (d ? `${w}–${d}–${l}` : `${w}–${l}`);
+export function formatRecord([w, l, d]: Wld) {
+    const [fw, fl, fd] = [w, l, d].map(formatNumber);
+    return d ? `${fw}–${fd}–${fl}` : `${fw}–${fl}`;
+}
 
-export const recordTitle = ([w, l, d]: Wld) => `${w} won, ${d} drawn, ${l} lost`;
+export const recordTitle = ([w, l, d]: Wld) =>
+    `${formatNumber(w)} won, ${formatNumber(d)} drawn, ${formatNumber(l)} lost`;
 
 /** `part` in % of `whole`, null when there is no whole. */
 export const share = (part: number, whole: number) => (whole > 0 ? (part / whole) * 100 : null);

@@ -17,6 +17,7 @@
     &__subtitle {
         color: colors.$ink-soft;
         margin-top: $space-3xs;
+        font-size: $text-base;
     }
 
     &__actions {
@@ -26,15 +27,35 @@
         gap: $space-xs;
     }
 
+    @include breakpoint-down(medium) {
+        &__subtitle {
+            font-size: $text-ml;
+        }
+    }
+
     @include breakpoint-down(small) {
         &__head {
             margin-inline: $gutter;
+        }
+
+        &__subtitle {
+            font-size: $text-md;
         }
 
         &__actions > .button {
             min-height: 2.25rem;
             padding: $space-2xs $space-s;
             font-size: $text-md;
+        }
+    }
+
+    @include breakpoint-down(tiny) {
+        &__title {
+            @include display($text-4xl);
+        }
+
+        &__subtitle {
+            font-size: $text-sm;
         }
     }
 }

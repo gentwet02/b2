@@ -1,7 +1,7 @@
 import { previousRange, rangeLabel } from '@/config/ranges';
 import { STATS_PLAYERS_DEFAULT } from '@/config/stats';
 import type { Stats } from '@/types/stats';
-import { formatLabel, lowerFirst } from '@/utils/format';
+import { formatLabel, formatNumber, lowerFirst } from '@/utils/format';
 import { formatHero } from '@/utils/hero';
 import { formatMap } from '@/utils/map';
 import { playerLabel } from '@/utils/player';
@@ -14,7 +14,7 @@ export function groupTitle(data: Stats) {
     const range = data.players ?? STATS_PLAYERS_DEFAULT;
     const label = lowerFirst(rangeLabel(range));
     const bounds = data.season === 'all' ? null : data.seasons[0]?.bounds;
-    if (data.band && bounds) return `Ranks ${bounds.from}–${bounds.to} of ${where}`;
+    if (data.band && bounds) return `Ranks ${formatNumber(bounds.from)}–${formatNumber(bounds.to)} of ${where}`;
     if (data.band) {
         const left = data.exclude ?? previousRange(range)?.value ?? '';
         return `The ${label} without the ${lowerFirst(rangeLabel(left))}, in ${where}`;

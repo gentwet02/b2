@@ -2,6 +2,7 @@ import { createRoute } from '@tanstack/react-router';
 import {
     LEADERBOARD_DEFAULT_SIZE,
     LEADERBOARD_MIN_GAMES,
+    LEADERBOARD_MIN_GAMES_DEFAULT,
     LEADERBOARD_PAGE_SIZES,
     LEADERBOARD_SORT_DEFAULT,
     LEADERBOARD_SORTS,
@@ -25,7 +26,7 @@ function validateSearch(search: Record<string, unknown>): LeaderboardSearch {
         q: q.trim() ? q : undefined,
         sort: parseOption(search.sort, LEADERBOARD_SORTS, LEADERBOARD_SORT_DEFAULT),
         reverse: parseFlag(search.reverse),
-        min: parseOption(Number(search.min), LEADERBOARD_MIN_GAMES, 0),
+        min: parseOption(Number(search.min), LEADERBOARD_MIN_GAMES, LEADERBOARD_MIN_GAMES_DEFAULT),
     };
 }
 

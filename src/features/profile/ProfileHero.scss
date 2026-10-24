@@ -157,10 +157,11 @@
 
         &__actions {
             width: 100%;
+        }
 
-            > * {
-                flex: 1 1 auto;
-            }
+        // the note takes the free space, the buttons keep their size at the end
+        &__note {
+            flex: 1 1 auto;
         }
     }
 

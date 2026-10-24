@@ -23,4 +23,52 @@
             }
         }
     }
+
+    // wraps as a unit (and only wraps inside when it's wider than the line)
+    &__subtitle-part {
+        display: inline-block;
+    }
+
+    // one row each: everything in them has to be able to shrink, or the
+    // page gets wider than the screen
+    @include breakpoint-down(tiny) {
+        .page__actions,
+        .table__controls-end {
+            flex-wrap: nowrap;
+            width: 100%;
+            min-width: 0;
+        }
+
+        .leaderboard__season {
+            flex: 1 1 auto;
+            min-width: 0;
+        }
+
+        .page__actions > .button {
+            flex: none;
+        }
+
+        .table__controls-end {
+            justify-content: space-between;
+            gap: $space-s;
+        }
+
+        .leaderboard-filters,
+        .table__page-size {
+            flex: 1 1 auto;
+            min-width: 0;
+        }
+
+        .leaderboard-filters__select,
+        .table__page-size-select {
+            flex: 1 1 auto;
+            width: auto;
+            min-width: 3.5rem;
+        }
+
+        .leaderboard-filters__label,
+        .table__page-size-label {
+            text-wrap: nowrap;
+        }
+    }
 }

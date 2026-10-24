@@ -18,7 +18,7 @@
         align-items: start;
         gap: $space-m;
 
-        @include breakpoint-down(800px) {
+        @include breakpoint-down(tablet) {
             grid-template-columns: 1fr;
         }
     }

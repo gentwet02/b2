@@ -81,8 +81,8 @@ export default function HeadToHead(props: HeadToHeadProps) {
                         <strong title={recordTitle(data.total.record)}>
                             {formatRecord(data.total.record)}
                         </strong>{' '}
-                        against these players, {formatNumber(totalGames)} games, met {met} of{' '}
-                        {data.opponents.length}
+                        against these players, {formatNumber(totalGames)} games, met {formatNumber(met)} of{' '}
+                        {formatNumber(data.opponents.length)}
                     </>
                 )}
             </H2hSummary>

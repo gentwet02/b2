@@ -2,12 +2,12 @@ import type { LeaderboardSort } from '@/types/leaderboard';
 
 export const LEADERBOARD_DEFAULT_SIZE = 25;
 export const LEADERBOARD_PAGE_SIZES = [10, 25, 50, 100];
-/** Refresh button: at most one reload per this many ms. */
 export const LEADERBOARD_REFRESH_THROTTLE_MS = 2000;
-export const LEADERBOARD_MIN_GAMES = [0, 5, 10, 25, 50, 100];
+export const LEADERBOARD_MIN_GAMES = [1, 5, 10, 25, 50, 100];
+export const LEADERBOARD_MIN_GAMES_DEFAULT = 1;
 export const LEADERBOARD_MIN_GAMES_OPTIONS = LEADERBOARD_MIN_GAMES.map((value) => ({
     value,
-    label: value === 0 ? 'Any' : `${value}+`,
+    label: String(value),
 }));
 
 /** score: the rank order, sorted from the Score header */
@@ -27,5 +27,5 @@ export const LEADERBOARD_HEADER_SORTS: Record<
     'win-rate': { sort: 'winrate', first: 'desc' },
 };
 
-/** The podium's steps, left to right: the winner in the middle. */
+/** The podium's steps, left to right. */
 export const PODIUM_ORDER = [2, 1, 3];

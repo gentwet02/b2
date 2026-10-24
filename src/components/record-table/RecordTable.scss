@@ -100,7 +100,7 @@
         }
         tbody tr {
             > :nth-child(2),
-            :nth-child(3) {
+            > :nth-child(3) {
                 text-align: center !important;
             }
         }
@@ -112,7 +112,7 @@
 }
 
 // tight spots: the percentage alone
-@include breakpoint-down(600px) {
+@include breakpoint-down(phablet) {
     .record-table {
         .rate-bar {
             display: block;
@@ -121,6 +121,23 @@
 
         .rate-bar__bar {
             display: none;
+        }
+    }
+}
+
+@include breakpoint-down($small) {
+    .record-table {
+        th,
+        td {
+            padding: 0.45rem 0.4rem;
+        }
+
+        thead tr > :first-child {
+            width: 100%;
+        }
+
+        thead tr > :not(:first-child) {
+            width: auto;
         }
     }
 }

@@ -5,6 +5,7 @@ import PageHeader from '@/components/page/PageHeader';
 import SeasonSelect from '@/components/season-select/SeasonSelect';
 import {
     LEADERBOARD_DEFAULT_SIZE,
+    LEADERBOARD_MIN_GAMES_DEFAULT,
     LEADERBOARD_REFRESH_THROTTLE_MS,
     LEADERBOARD_SORT_DEFAULT,
 } from '@/config/leaderboard';
@@ -44,7 +45,7 @@ export default function Leaderboard() {
     const view = {
         sort: search.sort ?? LEADERBOARD_SORT_DEFAULT,
         reverse: !!search.reverse,
-        minGames: search.min ?? 0,
+        minGames: search.min ?? LEADERBOARD_MIN_GAMES_DEFAULT,
     } satisfies Required<LeaderboardView>;
 
     const onViewChange = (patch: LeaderboardView) => {
@@ -54,7 +55,7 @@ export default function Leaderboard() {
                 ...prev,
                 sort: next.sort !== LEADERBOARD_SORT_DEFAULT ? next.sort : undefined,
                 reverse: next.reverse ? true : undefined,
-                min: next.minGames > 0 ? next.minGames : undefined,
+                min: next.minGames !== LEADERBOARD_MIN_GAMES_DEFAULT ? next.minGames : undefined,
                 page: undefined,
             }),
             replace: true,
@@ -88,9 +89,24 @@ export default function Leaderboard() {
                     </>
                 }
                 subtitle={
-                    count !== undefined
-                        ? `${formatNumber(count)} players in the Hall of Masters${updated ? `, updated ${updated}` : ''}`
-                        : 'Hall of Masters leaderboard'
+                    count !== undefined ? (
+                        <>
+                            <span className='leaderboard__subtitle-part'>
+                                {formatNumber(count)} players in the Hall of Masters
+                                {updated && ','}
+                            </span>
+                            {updated && (
+                                <>
+                                    {' '}
+                                    <span className='leaderboard__subtitle-part'>
+                                        updated {updated}
+                                    </span>
+                                </>
+                            )}
+                        </>
+                    ) : (
+                        'Hall of Masters leaderboard'
+                    )
                 }
                 actions={
                     <>

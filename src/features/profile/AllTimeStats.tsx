@@ -44,7 +44,7 @@ export default function AllTimeStats(props: AllTimeStatsProps) {
         });
     }
     if (ranks?.current) {
-        details.push({ label: 'Rank this season', value: <>#{ranks.current.rank}</> });
+        details.push({ label: 'Rank this season', value: <>#{formatNumber(ranks.current.rank)}</> });
     }
     if (ranks && ranks.seasons.length > 0) {
         details.push({ label: 'Seasons in the Hall of Masters', value: ranks.seasons.length });

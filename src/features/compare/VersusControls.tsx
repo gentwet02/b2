@@ -10,7 +10,7 @@ import useOpponentsMet from '@/hooks/queries/useOpponentsMet';
 import useSeasons from '@/hooks/queries/useSeasons';
 import type { CompareSearch } from '@/types/compare';
 import type { SeasonScope } from '@/types/season';
-import { plural } from '@/utils/format';
+import { formatNumber, plural } from '@/utils/format';
 import { nameWithAlias } from '@/utils/player';
 import { formatRecord, gamesOf } from '@/utils/record';
 import { urlSeason } from '@/utils/season';
@@ -39,7 +39,7 @@ export default function VersusControls(props: VersusControlsProps) {
             const games = gamesOf(o.record);
             return {
                 value: o.userId,
-                label: `${nameWithAlias(o)} · ${games} ${plural(games, 'game')} · ${formatRecord(o.record)}`,
+                label: `${nameWithAlias(o)} · ${formatNumber(games)} ${plural(games, 'game')} · ${formatRecord(o.record)}`,
             };
         });
         if (vs && !list.some((o) => o.value === vs)) {

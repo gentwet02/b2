@@ -6,6 +6,7 @@ import StatusMessage from '@/components/status/StatusMessage';
 import Table from '@/components/table/Table';
 import {
     LEADERBOARD_DEFAULT_SIZE,
+    LEADERBOARD_MIN_GAMES_DEFAULT,
     LEADERBOARD_HEADER_SORTS,
     LEADERBOARD_PAGE_SIZES,
 } from '@/config/leaderboard';
@@ -52,7 +53,7 @@ export default function LeaderboardScore(props: LeaderboardScoreProps) {
     const avatars = usePlayerAvatars(stats?.avatars);
 
     const sort = view?.sort ?? 'rank';
-    const minGames = view?.minGames ?? 0;
+    const minGames = view?.minGames ?? LEADERBOARD_MIN_GAMES_DEFAULT;
     // the header shows the current sort; a second click on it reverses the order
     const headerKey = Object.keys(LEADERBOARD_HEADER_SORTS).find(
         (key) => LEADERBOARD_HEADER_SORTS[key]!.sort === sort,
@@ -103,7 +104,7 @@ export default function LeaderboardScore(props: LeaderboardScoreProps) {
                     <span
                         className={`lb-rank${player.rank <= 3 ? ` lb-rank--${player.rank}` : ''}`}
                     >
-                        {player.rank}
+                        {formatNumber(player.rank)}
                     </span>
                 ),
                 player: (

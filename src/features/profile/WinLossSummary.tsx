@@ -28,7 +28,7 @@ export default function WinLossSummary(props: WinLossSummaryProps) {
             <div
                 className='stats-panel__bar'
                 role='img'
-                aria-label={`${wins} wins, ${draws} draws, ${losses} losses`}
+                aria-label={`${formatNumber(wins)} wins, ${formatNumber(draws)} draws, ${formatNumber(losses)} losses`}
             >
                 <span className='stats-panel__bar-win' style={{ width: `${winShare}%` }} />
                 <span className='stats-panel__bar-draw' style={{ width: `${drawShare}%` }} />

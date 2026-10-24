@@ -1,4 +1,5 @@
 import { NK_PROFILE_PREFIX } from '@/config/api';
+import { formatNumber } from '@/utils/format';
 
 /** NK's profile URL → the player's id. */
 export function extractUserId(profileUrl: string): string {
@@ -32,4 +33,4 @@ export function nameWithAlias(p: Named): string {
 }
 
 /** "#3 Bob (Alias)", for leaderboard player pickers. */
-export const rankedLabel = (p: Named & { rank: number }) => `#${p.rank} ${nameWithAlias(p)}`;
+export const rankedLabel = (p: Named & { rank: number }) => `#${formatNumber(p.rank)} ${nameWithAlias(p)}`;

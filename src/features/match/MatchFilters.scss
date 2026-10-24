@@ -58,7 +58,7 @@
         padding-top: $space-s;
         border-top: 1px solid colors.$line;
 
-        @include breakpoint-down(720px) {
+        @include breakpoint-down(medium) {
             grid-template-columns: 1fr;
         }
     }

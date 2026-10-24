@@ -1,3 +1,5 @@
+import { formatNumber } from '@/utils/format';
+
 interface TablePaginationProps {
     currentPage: number;
     totalPages: number;
@@ -15,11 +17,11 @@ export default function TablePagination(props: TablePaginationProps) {
                 Showing{' '}
                 {totalPages > 1 && (
                     <>
-                        {(currentPage - 1) * itemsPerPage + 1} to{' '}
-                        {Math.min(currentPage * itemsPerPage, totalItems)} of
+                        {formatNumber((currentPage - 1) * itemsPerPage + 1)} to{' '}
+                        {formatNumber(Math.min(currentPage * itemsPerPage, totalItems))} of
                     </>
                 )}{' '}
-                {totalItems} results
+                {formatNumber(totalItems)} results
             </div>
             <div className='table__pagination-controls'>
                 <button

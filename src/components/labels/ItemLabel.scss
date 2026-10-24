@@ -41,4 +41,22 @@
         font-weight: 500;
         color: colors.$ink-soft;
     }
+
+    @include breakpoint-down($small) {
+        gap: $space-3xs;
+
+        &__map {
+            width: 2.5rem;
+            height: 1.45rem;
+        }
+
+        &__hero {
+            width: 1.6rem;
+            height: 1.6rem;
+        }
+
+        &__text {
+            min-width: 0;
+        }
+    }
 }
