@@ -25,11 +25,13 @@ export default function RecordTableRow<T extends { record: Wld }>(props: RecordT
             {columns.map((col) => (
                 <RecordTableCell key={col.title} column={col} row={row} />
             ))}
-            <td className='record-table__num'>{games ? formatNumber(games) : '–'}</td>
-            <td className='record-table__num' title={recordTitle(row.record)}>
+            <td className='record-table__num record-table__games'>
+                {games ? formatNumber(games) : '–'}
+            </td>
+            <td className='record-table__num record-table__record' title={recordTitle(row.record)}>
                 {games ? formatRecord(row.record) : '–'}
             </td>
-            <td>
+            <td className='record-table__rate'>
                 <RateBar rate={rateOf(row.record)} title={recordTitle(row.record)} />
             </td>
             {after.map((col, i) => (

@@ -121,54 +121,57 @@ export default function MatchFilters(props: MatchFiltersProps) {
                     <PlayerSearch
                         value={playerText}
                         onChange={onPlayerText}
-                        label='Player name, alias or id'
-                        placeholder='Player name, alias or id'
+                        label='Player'
+                        placeholder='Name, alias or id'
+                        visibleLabel
                     />
                 )}
-                <div className='match-filters__field'>
-                    <label htmlFor='match-filters-sort' className='match-filters__label'>
-                        Sort
-                    </label>
-                    <Dropdown
-                        id='match-filters-sort'
-                        options={MATCH_SORT_OPTIONS}
-                        value={query.sort ?? MATCH_SORT_DEFAULT}
-                        onSelect={(sort) =>
-                            onChange({ sort: sort === MATCH_SORT_DEFAULT ? undefined : sort })
-                        }
-                    />
-                </div>
-                {seasons.length > 1 && (
+                <div className='match-filters__selects'>
                     <div className='match-filters__field'>
-                        <label htmlFor='match-filters-season' className='match-filters__label'>
-                            Season
+                        <label htmlFor='match-filters-sort' className='match-filters__label'>
+                            Sort
                         </label>
-                        <SeasonSelect
-                            id='match-filters-season'
-                            allowAll
-                            seasons={seasons}
-                            liveSeason={liveSeason}
-                            value={seasonId}
-                            placeholder='Season'
-                            onChange={(season) =>
-                                // another season has other heroes, towers and maps
-                                onChange({
-                                    season: urlSeason(season, liveSeason),
-                                    heroes: undefined,
-                                    towers: undefined,
-                                    heroes2: undefined,
-                                    towers2: undefined,
-                                    map: undefined,
-                                    exHeroes: undefined,
-                                    exTowers: undefined,
-                                    exHeroes2: undefined,
-                                    exTowers2: undefined,
-                                    exMaps: undefined,
-                                })
+                        <Dropdown
+                            id='match-filters-sort'
+                            options={MATCH_SORT_OPTIONS}
+                            value={query.sort ?? MATCH_SORT_DEFAULT}
+                            onSelect={(sort) =>
+                                onChange({ sort: sort === MATCH_SORT_DEFAULT ? undefined : sort })
                             }
                         />
                     </div>
-                )}
+                    {seasons.length > 1 && (
+                        <div className='match-filters__field'>
+                            <label htmlFor='match-filters-season' className='match-filters__label'>
+                                Season
+                            </label>
+                            <SeasonSelect
+                                id='match-filters-season'
+                                allowAll
+                                seasons={seasons}
+                                liveSeason={liveSeason}
+                                value={seasonId}
+                                placeholder='Season'
+                                onChange={(season) =>
+                                    // another season has other heroes, towers and maps
+                                    onChange({
+                                        season: urlSeason(season, liveSeason),
+                                        heroes: undefined,
+                                        towers: undefined,
+                                        heroes2: undefined,
+                                        towers2: undefined,
+                                        map: undefined,
+                                        exHeroes: undefined,
+                                        exTowers: undefined,
+                                        exHeroes2: undefined,
+                                        exTowers2: undefined,
+                                        exMaps: undefined,
+                                    })
+                                }
+                            />
+                        </div>
+                    )}
+                </div>
             </div>
 
             {split ? (
@@ -246,7 +249,7 @@ export default function MatchFilters(props: MatchFiltersProps) {
                 </>
             )}
 
-            <div className='match-filters__row'>
+            <div className='match-filters__row match-filters__row--map'>
                 <div className='match-filters__field match-filters__field--map'>
                     <span className='match-filters__label'>Map</span>
                     <MapChip
@@ -262,22 +265,24 @@ export default function MatchFilters(props: MatchFiltersProps) {
                         onClear={() => onChange({ map: undefined, exMaps: undefined })}
                     />
                 </div>
-                <label className='match-filters__toggle'>
-                    <input
-                        type='checkbox'
-                        checked={split}
-                        onChange={(e) => (e.target.checked ? splitSides() : mergeSides())}
-                    />
-                    <span>Filter sides separately</span>
-                </label>
-                <label className='match-filters__toggle'>
-                    <input
-                        type='checkbox'
-                        checked={!!query.allNames}
-                        onChange={(e) => onChange({ allNames: e.target.checked || undefined })}
-                    />
-                    <span>Include old names</span>
-                </label>
+                <div className='match-filters__toggles'>
+                    <label className='match-filters__toggle'>
+                        <input
+                            type='checkbox'
+                            checked={split}
+                            onChange={(e) => (e.target.checked ? splitSides() : mergeSides())}
+                        />
+                        <span>Filter sides separately</span>
+                    </label>
+                    <label className='match-filters__toggle'>
+                        <input
+                            type='checkbox'
+                            checked={!!query.allNames}
+                            onChange={(e) => onChange({ allNames: e.target.checked || undefined })}
+                        />
+                        <span>Include old names</span>
+                    </label>
+                </div>
             </div>
         </section>
     );

@@ -50,14 +50,19 @@ export default function VersusOpponents(props: VersusOpponentsProps) {
                     render: (o) => (
                         <span className='opponent-cell'>
                             <UserAvatar id={o.userId} name={playerLabel(o)} size={28} />
-                            <Link
-                                to='/user/$userId'
-                                params={{ userId: o.userId }}
-                                className='opponent-cell__name'
-                                title={playerLabel(o)}
-                            >
-                                {nameWithAlias(o)}
-                            </Link>
+                            <span className='opponent-cell__text'>
+                                <Link
+                                    to='/user/$userId'
+                                    params={{ userId: o.userId }}
+                                    className='opponent-cell__name'
+                                    title={playerLabel(o)}
+                                >
+                                    {nameWithAlias(o)}
+                                </Link>
+                                <span className='opponent-cell__last'>
+                                    {timeAgo(o.lastMet) ?? '–'}
+                                </span>
+                            </span>
                         </span>
                     ),
                 }}
@@ -83,6 +88,7 @@ export default function VersusOpponents(props: VersusOpponentsProps) {
                 after={[
                     {
                         title: 'Last met',
+                        className: 'opponent-last-met',
                         render: (o) => (
                             <span className='record-table__soft'>{timeAgo(o.lastMet) ?? '–'}</span>
                         ),
@@ -94,8 +100,9 @@ export default function VersusOpponents(props: VersusOpponentsProps) {
                                 from='/user/$userId/compare'
                                 search={{ season: search.season, vs: o.userId }}
                                 className='drill-link'
+                                aria-label={`Head to head against ${playerLabel(o)}`}
                             >
-                                Head to head →
+                                <span className='drill-link__text'>Head to head </span>→
                             </Link>
                         ),
                     },

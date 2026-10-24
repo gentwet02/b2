@@ -29,11 +29,18 @@
 
     &__text {
         display: grid;
-        min-width: 8rem;
+        // 8rem from 800px up, less below
+        min-width: clamp(4.5rem, 16vw, 8rem);
         max-width: 14rem;
         font-weight: 600;
         line-height: 1.25;
         white-space: normal;
+
+        // below desktop the tables are one per row: the text can use the
+        // whole column (tower lists then fit on one line)
+        @include breakpoint-down(big) {
+            max-width: none;
+        }
     }
 
     &__sub {
@@ -57,6 +64,14 @@
 
         &__text {
             min-width: 0;
+        }
+    }
+
+    // the narrowest phones: the name alone
+    @include breakpoint-down(tiny) {
+        &__map,
+        &__hero {
+            display: none;
         }
     }
 }

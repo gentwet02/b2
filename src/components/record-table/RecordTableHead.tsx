@@ -22,6 +22,7 @@ export default function RecordTableHead<T>(props: RecordTableHeadProps<T>) {
             title={col.title}
             sortKey={col.sort ? `col:${index}` : null}
             numeric={col.numeric}
+            className={col.className}
             sort={sort}
             onSort={onSort}
         />
@@ -41,6 +42,7 @@ export default function RecordTableHead<T>(props: RecordTableHeadProps<T>) {
                     title='Games'
                     sortKey='games'
                     numeric
+                    className='record-table__games'
                     sort={sort}
                     onSort={onSort}
                 />
@@ -48,12 +50,14 @@ export default function RecordTableHead<T>(props: RecordTableHeadProps<T>) {
                     title={anyDraw ? 'W–D–L' : 'W–L'}
                     sortKey={null}
                     numeric
+                    className='record-table__record'
                     sort={sort}
                     onSort={onSort}
                 />
                 <RecordTableHeaderCell
                     title='Win rate'
                     sortKey='rate'
+                    className='record-table__rate'
                     sort={sort}
                     onSort={onSort}
                 />

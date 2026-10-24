@@ -3,17 +3,23 @@
 
 .match-filters {
     &__search {
-        position: relative;
+        display: grid;
+        gap: $space-3xs;
         flex: 2 1 16rem;
 
         input {
             width: 100%;
-            padding: 0.6rem 1rem 0.6rem 2.5rem;
+            padding: 0.5rem 1rem 0.5rem 2.5rem;
+            line-height: 1.6;
             font-weight: 500;
             border: 2px solid colors.$ink;
             border-radius: $radius-control;
             @include field-focus;
         }
+    }
+
+    &__search-box {
+        position: relative;
     }
 
     &__search-icon {

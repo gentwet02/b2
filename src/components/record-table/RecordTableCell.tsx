@@ -9,7 +9,9 @@ interface RecordTableCellProps<T> {
 export default function RecordTableCell<T>(props: RecordTableCellProps<T>) {
     const { column, row } = props;
 
-    return (
-        <td className={column.numeric ? 'record-table__num' : undefined}>{column.render(row)}</td>
-    );
+    const className = [column.numeric && 'record-table__num', column.className]
+        .filter(Boolean)
+        .join(' ');
+
+    return <td className={className || undefined}>{column.render(row)}</td>;
 }

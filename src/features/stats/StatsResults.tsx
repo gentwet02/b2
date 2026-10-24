@@ -51,7 +51,7 @@ export default function StatsResults(props: StatsResultsProps) {
     const focusButton = (next: Partial<StatsSearch> | null) =>
         next ? (
             <button type='button' className='drill-link' onClick={() => onFocus(next)}>
-                Focus →
+                <span className='drill-link__text'>Focus </span>→
             </button>
         ) : null;
 
@@ -59,6 +59,7 @@ export default function StatsResults(props: StatsResultsProps) {
         <>
             <RecordTable<StatsRow>
                 key={spec.id}
+                className='stats-table'
                 rows={keep(spec.rows, pickOf)}
                 rowKey={(r) => r.key}
                 label={{ title: spec.title, render: spec.render, sort: byText(spec.name) }}
@@ -223,6 +224,7 @@ export default function StatsResults(props: StatsResultsProps) {
     return (
         <RecordTable<StatsMapRow>
             key={split ? 'map-variants' : 'maps'}
+            className='stats-table'
             rows={keep(mapRows, mapPick)}
             rowKey={(r) => r.key}
             label={{

@@ -29,6 +29,7 @@ export default function VersusMaps(props: VersusMapsProps) {
     return (
         <Panel title='Maps' actions={merged.hasReversed && <SplitMapsToggle />}>
             <RecordTable
+                className='record-table--split'
                 rows={rows}
                 rowKey={(m) => m.key}
                 label={{

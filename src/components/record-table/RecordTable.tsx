@@ -23,11 +23,13 @@ interface RecordTableProps<T extends { record: Wld }> {
     initialSort?: 'games' | 'rate' | 'none';
     /** rows shown at first, then this many more per click */
     pageSize?: number | undefined;
+    /** on the table, for a page's own layout rules */
+    className?: string | undefined;
 }
 
 /** Rows with a record: games, W–D–L, win rate; sortable both ways, sticky head and first column. */
 export default function RecordTable<T extends { record: Wld }>(props: RecordTableProps<T>) {
-    const { rows, rowKey, label, columns = [], after = [], empty, pageSize } = props;
+    const { rows, rowKey, label, columns = [], after = [], empty, pageSize, className } = props;
 
     const [sort, setSort] = useState<RecordSortState>({
         key: props.initialSort ?? 'games',
@@ -49,7 +51,9 @@ export default function RecordTable<T extends { record: Wld }>(props: RecordTabl
 
     return (
         <div className='record-table-scroll'>
-            <table className={`record-table record-table--${label.title.toLowerCase()}`}>
+            <table
+                className={`record-table record-table--${label.title.toLowerCase()}${className ? ` ${className}` : ''}`}
+            >
                 <RecordTableHead
                     label={{ title: label.title, sortable: !!label.sort }}
                     columns={columns}

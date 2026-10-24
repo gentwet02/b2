@@ -7,12 +7,13 @@ interface RecordTableHeaderCellProps {
     sortKey: RecordSortKey | null;
     sort: RecordSortState;
     numeric?: boolean | undefined;
+    className?: string | undefined;
     onSort: (key: RecordSortKey) => void;
 }
 
 /** A column header; sortable ones are buttons with an arrow showing the order. */
 export default function RecordTableHeaderCell(props: RecordTableHeaderCellProps) {
-    const { title, sortKey, sort, numeric, onSort } = props;
+    const { title, sortKey, sort, numeric, className, onSort } = props;
 
     const on = sortKey !== null && sort.key === sortKey;
     // what the arrow shows: the label column starts A–Z (up), the others highest first (down)
@@ -21,7 +22,9 @@ export default function RecordTableHeaderCell(props: RecordTableHeaderCellProps)
     return (
         <th
             scope='col'
-            className={numeric ? 'record-table__num' : undefined}
+            className={
+                [numeric && 'record-table__num', className].filter(Boolean).join(' ') || undefined
+            }
             aria-sort={on ? (ascending ? 'ascending' : 'descending') : undefined}
         >
             {sortKey ? (

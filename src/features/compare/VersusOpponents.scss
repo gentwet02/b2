@@ -6,8 +6,15 @@
     align-items: center;
     gap: $space-2xs;
 
+    &__text {
+        display: grid;
+        min-width: 0;
+    }
+
     &__name {
-        max-width: 11rem;
+        display: block;
+        max-width: clamp(5rem, 17vw, 11rem);
+        white-space: nowrap;
         overflow: hidden;
         text-overflow: ellipsis;
         @include transition(color, $duration-fast);
@@ -15,5 +22,54 @@
         @include when-hover {
             color: colors.$bloon;
         }
+    }
+
+    &__last {
+        display: none;
+        font-size: $text-xs;
+        font-weight: 500;
+        color: colors.$ink-soft;
+    }
+
+    @include breakpoint-down(phablet) {
+        .user-avatar {
+            display: none;
+        }
+
+        &__name {
+            max-width: none;
+        }
+
+        &__last {
+            display: block;
+        }
+    }
+}
+
+@include breakpoint-down(phablet) {
+    .record-table .opponent-last-met {
+        display: none;
+    }
+
+    .record-table--player {
+        thead tr > :first-child {
+            width: 100%;
+        }
+
+        tbody th {
+            max-width: 0;
+            min-width: 6rem;
+        }
+
+        thead tr > :last-child,
+        tbody tr > :last-child {
+            padding-inline-end: $space-xs;
+        }
+    }
+}
+
+@include breakpoint-down(big) {
+    .record-table .drill-link__text {
+        display: none;
     }
 }

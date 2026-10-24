@@ -31,10 +31,6 @@
             border-left: 2px solid colors.$ink;
         }
 
-        @include when-touch {
-            padding-block: 0.5rem;
-        }
-
         &[aria-pressed='true'] {
             background: colors.$banana;
         }

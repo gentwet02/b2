@@ -19,6 +19,19 @@
         align-items: last baseline;
     }
 
+    &__row > .match-filters__search {
+        max-width: 23.5rem;
+        flex-grow: 999;
+    }
+
+    &__selects {
+        display: flex;
+        flex: 1 1 auto;
+        flex-wrap: wrap;
+        align-items: flex-end;
+        gap: $space-xs;
+    }
+
     &__field {
         display: grid;
         gap: $space-3xs;
@@ -28,6 +41,12 @@
         &--map {
             flex: 1 1 14rem;
             max-width: 44rem;
+        }
+
+        // sort and season: never narrower than their dropdown, they wrap
+        // to the next line instead
+        &:has(> .dropdown) {
+            min-width: auto;
         }
     }
 
@@ -75,9 +94,26 @@
         @include components.toggle;
     }
 
-    @include breakpoint-up(medium) {
-        &__toggle + &__toggle {
-            margin-left: $space-m;
+    &__toggles {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: $space-xs $space-m;
+    }
+
+    // the toggles never squeeze the map adders onto two lines: the field
+    // can't get narrower than its adders' line, so the toggles wrap instead
+    &__row--map {
+        row-gap: $space-s;
+
+        @include breakpoint-up(small) {
+            .match-filters__field--map {
+                min-width: auto;
+            }
+
+            .filter-chips__selectors {
+                flex-wrap: nowrap;
+            }
         }
     }
 

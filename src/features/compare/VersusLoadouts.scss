@@ -11,14 +11,24 @@
     }
 }
 
-// tight spots: the percentage alone
-.versus-pair .record-table {
-    .rate-bar {
-        display: block;
-        min-width: 0;
-    }
+@include breakpoint-up(big) {
+    .versus-pair .record-table {
+        .rate-bar {
+            display: block;
+            min-width: 0;
+            text-align: end;
+        }
 
-    .rate-bar__bar {
-        display: none;
+        .rate-bar__bar {
+            display: none;
+        }
+
+        .record-table__rate {
+            text-align: end;
+        }
+
+        .record-table__rate > .record-table__sort {
+            flex-direction: row-reverse;
+        }
     }
 }

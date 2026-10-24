@@ -78,27 +78,26 @@
         font-weight: 500;
     }
 
-    &--map {
+    &--split {
         thead tr {
             > :nth-child(1) {
                 width: 40%;
             }
 
-            > :nth-child(2) {
-                width: 10%;
-                text-align: center !important;
-            }
-
+            > :nth-child(2),
             > :nth-child(3) {
                 width: 10%;
-                text-align: center !important;
             }
 
             > :nth-child(4) {
                 width: 40%;
             }
         }
-        tbody tr {
+    }
+
+    &--split,
+    &--loadout {
+        tr {
             > :nth-child(2),
             > :nth-child(3) {
                 text-align: center !important;
@@ -111,17 +110,60 @@
     }
 }
 
-// tight spots: the percentage alone
-@include breakpoint-down(phablet) {
+@include breakpoint-down(big) {
     .record-table {
+        th,
+        td {
+            padding-inline: clamp(0.35rem, 1.1vw, 0.65rem);
+        }
+
+        .rate-bar {
+            min-width: clamp(4.5rem, 11vw, 7rem);
+        }
+    }
+
+    .record-table__sort {
+        gap: 0.2rem;
+    }
+
+    .record-table__sort-icon {
+        width: 0.6rem;
+        height: 0.6rem;
+    }
+}
+
+@include breakpoint-down(phablet) {
+    .record-table:where(:not(.record-table--split)) {
+        tr > :last-child {
+            padding-inline-end: 0;
+            text-align: end;
+        }
+
         .rate-bar {
             display: block;
             min-width: 0;
+            text-align: end;
         }
 
         .rate-bar__bar {
             display: none;
         }
+
+        tr > .record-table__rate:last-child {
+            padding-inline-end: 0.75rem;
+        }
+
+        .record-table__rate {
+            text-align: end;
+        }
+
+        .record-table__rate > .record-table__sort {
+            flex-direction: row-reverse;
+        }
+    }
+
+    .record-table thead th {
+        letter-spacing: 0;
     }
 }
 
@@ -132,12 +174,36 @@
             padding: 0.45rem 0.4rem;
         }
 
+        thead th {
+            font-size: $text-2xs;
+        }
+
         thead tr > :first-child {
             width: 100%;
         }
 
         thead tr > :not(:first-child) {
             width: auto;
+        }
+
+        &--split {
+            .rate-bar {
+                display: block;
+                min-width: 0;
+                text-align: end;
+            }
+
+            .rate-bar__bar {
+                display: none;
+            }
+
+            .record-table__rate {
+                text-align: end;
+            }
+
+            .record-table__rate > .record-table__sort {
+                flex-direction: row-reverse;
+            }
         }
     }
 }

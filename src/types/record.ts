@@ -16,6 +16,7 @@ export interface RecordColumn<T> {
     /** the column's first order (the header becomes a sort button; a second click reverses it) */
     sort?: (a: T, b: T) => number;
     numeric?: boolean;
+    className?: string;
 }
 
 /** RecordTable's sort: a built-in column, the label, or an extra column by index. */

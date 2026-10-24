@@ -22,3 +22,42 @@
 .stats-tower {
     font-weight: 600;
 }
+
+@include breakpoint-down(phablet) {
+    .stats-table {
+        .record-table__record {
+            display: none;
+        }
+
+        .drill-link__text {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            overflow: hidden;
+            clip-path: inset(50%);
+            white-space: nowrap;
+        }
+
+        .stats-tower {
+            white-space: normal;
+        }
+
+        thead tr > :nth-last-child(2),
+        tbody tr > :nth-last-child(2) {
+            padding-inline-end: 0;
+        }
+
+        thead tr > :last-child,
+        tbody tr > :last-child {
+            padding-inline: 0.25rem $space-xs;
+        }
+    }
+}
+
+// phones: games go too (the pick rate says how often), so the four columns
+// and the arrow fit down to 320px
+@include breakpoint-down(small) {
+    .stats-table .record-table__games {
+        display: none;
+    }
+}
