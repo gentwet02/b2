@@ -54,10 +54,42 @@
     }
 }
 
-// phones: games go too (the pick rate says how often), so the four columns
-// and the arrow fit down to 320px
 @include breakpoint-down(small) {
-    .stats-table .record-table__games {
-        display: none;
+    .stats-table {
+        th:not(:first-child, :last-child),
+        td:not(:first-child, :last-child) {
+            padding-inline: 0.1rem;
+        }
+
+        .record-table__rate {
+            padding-inline-end: 0.2rem !important;
+        }
+    }
+}
+
+@include breakpoint-down(tiny) {
+    .stats-table {
+        font-size: $text-sm;
+    }
+}
+
+@include breakpoint-down(340px) {
+    .stats-table {
+        font-size: $text-2xs;
+
+        th:is(:first-child),
+        td:is(:first-child) {
+            padding-inline: 0.25rem 0.125rem !important;
+        }
+
+        th:is(:last-child),
+        td:is(:last-child) {
+            padding-inline: 0.125rem 0.25rem !important;
+        }
+
+        th,
+        td {
+            padding-inline: 0.0625rem !important;
+        }
     }
 }

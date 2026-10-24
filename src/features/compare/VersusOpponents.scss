@@ -73,3 +73,27 @@
         display: none;
     }
 }
+
+@include breakpoint-down(tiny) {
+    .record-table {
+        &--player :is(td:not(:first-child, :last-child), th:not(:first-child, :last-child)) {
+            padding-inline: 0.2rem;
+        }
+
+        &--player :is(td:first-child, th:first-child) {
+            padding-inline-end: 0.2rem;
+        }
+
+        &--player :is(td:last-child, th:last-child) {
+            padding-inline: 0.2rem 0.4rem !important;
+        }
+
+        &--player :is(th:nth-child(2), td:nth-child(2)) {
+            display: none;
+        }
+
+        &--player &__games {
+            text-align: center !important;
+        }
+    }
+}

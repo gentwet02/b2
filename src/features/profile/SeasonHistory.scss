@@ -71,4 +71,10 @@
         display: flex;
         justify-content: center;
     }
+
+    @include breakpoint-down(tiny) {
+        &__rate {
+            min-width: 6rem;
+        }
+    }
 }

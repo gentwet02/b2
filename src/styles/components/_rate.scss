@@ -25,4 +25,8 @@
             @include grow-bar(150ms);
         }
     }
+
+    @include breakpoint-down(tiny) {
+        gap: $space-2xs;
+    }
 }
