@@ -42,8 +42,10 @@ export default function SeasonNote(props: SeasonNoteProps) {
     if (typeof current === 'number' && isIncompleteSeason(current)) {
         return (
             <p className={classes}>
-                <span className='season-note__mark'>*</span>
-                {seasonLabel(current)} is missing some matches.
+                <span className='season-note__line'>
+                    <span className='season-note__mark'>*</span>
+                    {seasonLabel(current)} is missing some matches.
+                </span>
             </p>
         );
     }
