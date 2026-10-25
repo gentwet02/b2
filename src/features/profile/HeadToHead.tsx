@@ -2,6 +2,7 @@ import { Link } from '@tanstack/react-router';
 import { useMemo, useState } from 'react';
 import Panel from '@/components/panel/Panel';
 import PanelEmpty from '@/components/panel/PanelEmpty';
+import SeasonNote from '@/components/season-note/SeasonNote';
 import SegmentedControl from '@/components/segmented-control/SegmentedControl';
 import ErrorState from '@/components/status/ErrorState';
 import { H2H_SCOPES } from '@/config/profile';
@@ -116,6 +117,8 @@ export default function HeadToHead(props: HeadToHeadProps) {
                     );
                 })}
             </ol>
+
+            {allSeasons && <SeasonNote season='all' />}
 
             <div className='h2h-card__foot'>
                 {hasCustom ? (

@@ -1,0 +1,21 @@
+@use '@/styles/utils/colors';
+@use '@/styles/utils' as *;
+
+.season-note {
+    display: grid;
+    gap: 0.125rem;
+    margin: 0;
+    color: colors.$ink-soft;
+    font-size: $text-sm;
+    font-weight: 500;
+    line-height: 1.4;
+
+    // one line when it fits, otherwise wrapped without a lone last word
+    &__line {
+        text-wrap: pretty;
+    }
+
+    &__mark {
+        font-weight: 700;
+    }
+}

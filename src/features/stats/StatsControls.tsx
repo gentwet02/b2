@@ -7,6 +7,7 @@ import HeroChips from '@/components/filter-chips/HeroChips';
 import MapChip from '@/components/filter-chips/MapChip';
 import TowerChips from '@/components/filter-chips/TowerChips';
 import Panel from '@/components/panel/Panel';
+import SeasonNote from '@/components/season-note/SeasonNote';
 import SeasonSelect from '@/components/season-select/SeasonSelect';
 import SegmentedControl from '@/components/segmented-control/SegmentedControl';
 import { MAX_EXCLUDED } from '@/config/filters';
@@ -135,6 +136,8 @@ export default function StatsControls(props: StatsControlsProps) {
                 )}
 
             </Controls>
+
+            <SeasonNote season={search.season} />
 
             <Controls className='stats-controls__focus'>
                 <ControlGroup label='Map'>

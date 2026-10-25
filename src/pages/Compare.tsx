@@ -4,6 +4,7 @@ import Page from '@/components/page/Page';
 import PageHeader from '@/components/page/PageHeader';
 import Panel from '@/components/panel/Panel';
 import Results from '@/components/results/Results';
+import SeasonNote from '@/components/season-note/SeasonNote';
 import ErrorState from '@/components/status/ErrorState';
 import Loading from '@/components/status/Loading';
 import Prompt from '@/components/text/Prompt';
@@ -98,6 +99,7 @@ export default function Compare() {
                     onChange={update}
                     onPlayerMode={choosePlayerMode}
                 />
+                <SeasonNote season={search.season} />
             </Panel>
 
             {playerMode && !search.vs ? (

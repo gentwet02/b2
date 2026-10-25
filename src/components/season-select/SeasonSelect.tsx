@@ -29,7 +29,7 @@ export default function SeasonSelect(props: SeasonSelectProps) {
 
     const options = [
         ...(props.allowAll ? [ALL_SEASONS_OPTION] : []),
-        ...seasonOptions(seasons).map((o) => ({ ...o, value: String(o.value) })),
+        ...seasonOptions(seasons, !!props.allowAll).map((o) => ({ ...o, value: String(o.value) })),
     ];
     const current = value ?? liveSeason;
 

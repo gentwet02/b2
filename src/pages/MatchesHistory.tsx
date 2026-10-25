@@ -2,6 +2,7 @@ import { getRouteApi, type NavigateOptions } from '@tanstack/react-router';
 import MatchList from '@/components/match/MatchList';
 import Page from '@/components/page/Page';
 import PageHeader from '@/components/page/PageHeader';
+import SeasonNote from '@/components/season-note/SeasonNote';
 import ErrorState from '@/components/status/ErrorState';
 import Loading from '@/components/status/Loading';
 import StatusMessage from '@/components/status/StatusMessage';
@@ -91,6 +92,8 @@ export default function MatchesHistory() {
                 player2Text={text2}
                 onPlayer2Text={setText2}
             />
+
+            <SeasonNote season={seasonId} firstSeasonId={page?.firstSeasonId} />
 
             <div className='matches__summary'>
                 <span aria-live='polite'>

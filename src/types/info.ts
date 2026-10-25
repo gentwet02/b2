@@ -8,4 +8,5 @@ export interface InfoResponse extends BaseApiResponse {
     totalScores: number;
     seasons?: SeasonSummary[];
     lastFetch?: string | null;
+    firstRecordedSeason?: number | null;
 }
