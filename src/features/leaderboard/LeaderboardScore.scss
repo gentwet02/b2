@@ -107,7 +107,7 @@
             }
 
             th[data-category='rank'] {
-                width: clamp(4.3125rem, 3.2606rem + 3.499vw, 5.5rem);
+                width: clamp(3.3rem, 2.9013rem + 1.326vw, 3.75rem);
             }
 
             th[data-category='score'] {
@@ -213,7 +213,7 @@
             }
 
             th[data-category='rank'] {
-                width: calc(2.85rem + #{$inset});
+                width: calc(2.1rem + #{$inset});
             }
 
             th[data-category='score'] {
@@ -295,7 +295,7 @@
             }
 
             th[data-category='rank'] {
-                width: calc(2.7rem + #{$space-xs});
+                width: calc(2rem + #{$space-xs});
             }
 
             th[data-category='score'] {

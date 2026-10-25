@@ -10,16 +10,15 @@ export const LEADERBOARD_MIN_GAMES_OPTIONS = LEADERBOARD_MIN_GAMES.map((value) =
     label: String(value),
 }));
 
-/** score: the rank order, sorted from the Score header */
-export const LEADERBOARD_SORTS = ['rank', 'score', 'games', 'winrate', 'wins', 'name'] as const;
-export const LEADERBOARD_SORT_DEFAULT = 'rank';
+/** score: the rank order (the ranking is by score, so Rank isn't a sort of its own) */
+export const LEADERBOARD_SORTS = ['score', 'games', 'winrate', 'wins', 'name'] as const;
+export const LEADERBOARD_SORT_DEFAULT = 'score';
 
 /** Table column → leaderboard sort, and the sort's first direction. */
 export const LEADERBOARD_HEADER_SORTS: Record<
     string,
     { sort: LeaderboardSort; first: 'asc' | 'desc' }
 > = {
-    rank: { sort: 'rank', first: 'asc' },
     player: { sort: 'name', first: 'asc' },
     // the score order is the rank order: highest first
     score: { sort: 'score', first: 'desc' },

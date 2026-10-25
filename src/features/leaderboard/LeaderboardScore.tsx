@@ -9,6 +9,7 @@ import {
     LEADERBOARD_MIN_GAMES_DEFAULT,
     LEADERBOARD_HEADER_SORTS,
     LEADERBOARD_PAGE_SIZES,
+    LEADERBOARD_SORT_DEFAULT,
 } from '@/config/leaderboard';
 import useLeaderboardStats from '@/hooks/queries/useLeaderboardStats';
 import useRankedPlayers from '@/hooks/queries/useRankedPlayers';
@@ -52,7 +53,7 @@ export default function LeaderboardScore(props: LeaderboardScoreProps) {
     const { data: stats, isPending: statsPending } = useLeaderboardStats(season);
     const avatars = usePlayerAvatars(stats?.avatars);
 
-    const sort = view?.sort ?? 'rank';
+    const sort = view?.sort ?? LEADERBOARD_SORT_DEFAULT;
     const minGames = view?.minGames ?? LEADERBOARD_MIN_GAMES_DEFAULT;
     // the header shows the current sort; a second click on it reverses the order
     const headerKey = Object.keys(LEADERBOARD_HEADER_SORTS).find(

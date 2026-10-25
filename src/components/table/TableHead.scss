@@ -29,6 +29,7 @@
 
     &__header-cell-icon {
         flex-shrink: 0;
+        max-width: none;
 
         &--off {
             visibility: hidden;
