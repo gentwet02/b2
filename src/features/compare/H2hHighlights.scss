@@ -1,11 +1,6 @@
 @use '@/styles/components';
 @use '@/styles/utils' as *;
 
-.h2h-highlights-wrap {
-    display: grid;
-    gap: $space-2xs;
-}
-
 // best and worst of each kind side by side: 2 per row when there's room for
 // 16rem tiles, else 1 (never 3, the 34%); on wide screens the 3 bests over the
 // 3 worsts, by filling columns of 2

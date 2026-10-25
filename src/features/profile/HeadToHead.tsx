@@ -7,9 +7,11 @@ import SegmentedControl from '@/components/segmented-control/SegmentedControl';
 import ErrorState from '@/components/status/ErrorState';
 import { H2H_SCOPES } from '@/config/profile';
 import H2hSummary from '@/features/compare/H2hSummary';
+import SplitVariants from '@/components/split-variants/SplitVariants';
 import OpponentSelect from '@/features/compare/OpponentSelect';
 import useHeadToHead from '@/hooks/queries/useHeadToHead';
 import useOpponentSlots from '@/hooks/useOpponentSlots';
+import { useSplitParams } from '@/hooks/useSplitVariants';
 import { formatNumber } from '@/utils/format';
 import { playerLabel } from '@/utils/player';
 import { formatRecord, gamesOf, recordTitle } from '@/utils/record';
@@ -26,6 +28,7 @@ export default function HeadToHead(props: HeadToHeadProps) {
 
     const [allSeasons, setAllSeasons] = useState(false);
     const [openId, setOpenId] = useState<string | null>(null);
+    const split = useSplitParams();
     const season = allSeasons ? 'all' : undefined;
 
     const { slots, ids, players, ready, setSlot, reset, hasCustom } = useOpponentSlots(
@@ -88,6 +91,8 @@ export default function HeadToHead(props: HeadToHeadProps) {
                 )}
             </H2hSummary>
 
+            {totalGames > 0 && <SplitVariants className='h2h-card__split' />}
+
             <ol className='h2h-list'>
                 {slots.map((slot) => {
                     const opponent = byId.get(slot.id);
@@ -133,7 +138,7 @@ export default function HeadToHead(props: HeadToHeadProps) {
                 <Link
                     to='/user/$userId/compare'
                     params={{ userId }}
-                    search={{ season }}
+                    search={{ season, ...split }}
                     className='button button--quiet'
                 >
                     Full head to head

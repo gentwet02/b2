@@ -6,6 +6,7 @@ import type { MapVariant } from '@/types/map';
 import type { SideFilterOptions } from '@/types/match';
 import type { RecordRow, Wld } from '@/types/record';
 import type { GroupMode, SeasonScope } from '@/types/season';
+import type { SplitSearch } from '@/types/variants';
 
 export type StatsView = 'heroes' | 'towers' | 'loadouts' | 'maps';
 
@@ -97,7 +98,7 @@ export interface StatsParams {
 }
 
 /** /stats URL search */
-export interface StatsSearch {
+export interface StatsSearch extends SplitSearch {
     season?: SeasonScope | undefined;
     /** one player's id */
     player?: string | undefined;
@@ -120,8 +121,6 @@ export interface StatsSearch {
     min?: number | undefined;
     /** minimum pick rate, in % */
     pick?: number | undefined;
-    /** false: variants together in the heroes, strats and maps tables (split by default) */
-    variants?: false | undefined;
     /** strats table: the 3 towers only */
     towersOnly?: true | undefined;
 }

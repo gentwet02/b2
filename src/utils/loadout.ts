@@ -1,3 +1,4 @@
+import type { Labels } from '@/types/compare';
 import { formatLabel } from '@/utils/format';
 import { formatHero } from '@/utils/hero';
 
@@ -22,3 +23,13 @@ export function loadoutName(key: string) {
 /** "Alchemist,Druid,NinjaMonkey" → "Alchemist · Druid · Ninja Monkey" (with that separator). */
 export const formatTowerList = (key: string, separator: string) =>
     key.split(',').map(formatLabel).join(separator);
+
+/** Labels with the hero variants' portraits too, for loadout keys like "Quincy_Cyber|…". */
+export function withVariantLabels(labels: Labels): Labels {
+    if (!labels.variants) return labels;
+    const variants = Object.entries(labels.variants).map(([hero, v]) => [
+        hero,
+        { hero, portrait: v.portrait },
+    ]);
+    return { ...labels, heroes: { ...labels.heroes, ...Object.fromEntries(variants) } };
+}

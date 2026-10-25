@@ -4,6 +4,7 @@ import PlayerAvatar from '@/components/avatar/PlayerAvatar';
 import { ChevronDownIcon } from '@/components/icons';
 import H2hHighlights from '@/features/compare/H2hHighlights';
 import usePlayerAvatar from '@/hooks/queries/usePlayerAvatar';
+import { useSplitParams } from '@/hooks/useSplitVariants';
 import type { H2hOpponent, HeadToHead } from '@/types/compare';
 import { formatNumber, plural, timeAgo } from '@/utils/format';
 import { formatRate, formatRecord, gamesOf, rateOf, recordTitle } from '@/utils/record';
@@ -24,6 +25,7 @@ export default function H2hOpponentRow(props: H2hOpponentRowProps) {
     const { id, name, opponent, data, open, onToggle, select } = props;
 
     const detailsId = useId();
+    const split = useSplitParams();
     const avatar = usePlayerAvatar(id);
     const games = gamesOf(opponent?.record);
     const rate = rateOf(opponent?.record);
@@ -71,7 +73,11 @@ export default function H2hOpponentRow(props: H2hOpponentRowProps) {
                     <Link
                         to='/user/$userId/compare'
                         params={{ userId: data.userId }}
-                        search={{ season: data.season === 'all' ? 'all' : undefined, vs: id }}
+                        search={{
+                            season: data.season === 'all' ? 'all' : undefined,
+                            vs: id,
+                            ...split,
+                        }}
                         className='text-link h2h-row__more'
                     >
                         Every game against {name} →

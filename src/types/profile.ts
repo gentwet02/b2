@@ -1,5 +1,6 @@
 import type { ReactNode } from 'react';
 import type { BaseApiResponse } from '@/types/api';
+import type { SplitSearch } from '@/types/variants';
 
 /** NK's ranked or casual totals (lifetime). */
 export interface ProfileStats {
@@ -99,7 +100,7 @@ export interface UserProfileData extends BaseApiResponse {
     fetchedAt?: string;
 }
 
-export interface UserSearch {
+export interface UserSearch extends SplitSearch {
     matches?: number | undefined;
     seasons?: number | undefined;
 }

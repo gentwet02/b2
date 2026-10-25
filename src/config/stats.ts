@@ -26,9 +26,6 @@ export const STATS_MIN_PICK_OPTIONS = STATS_MIN_PICK.map((n) => ({
 
 export const STATS_MAX_TOWERS = 3;
 
-/** heroes, strats and maps tables: one row per variant (skin, classic / reversed) */
-export const STATS_SPLIT_VARIANTS_DEFAULT = true;
-
 /** Rows per "show more" of the big tables. */
 export const STATS_PAGE_SIZE = 50;
 export const STATS_TOWERS_PAGE_SIZE = 60;

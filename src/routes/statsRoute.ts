@@ -67,7 +67,8 @@ function validateSearch(search: Record<string, unknown>): StatsSearch {
         ),
         min: parseOption(Number(search.min), STATS_MIN_GAMES, STATS_MIN_DEFAULT),
         pick: parseOption(Number(search.pick), STATS_MIN_PICK, STATS_MIN_PICK_DEFAULT),
-        variants: parseOff(search.variants),
+        splitMaps: parseOff(search.splitMaps) ?? parseOff(search.variants),
+        splitHeroes: parseOff(search.splitHeroes) ?? parseOff(search.variants),
         towersOnly: parseFlag(search.towersOnly),
     };
 }

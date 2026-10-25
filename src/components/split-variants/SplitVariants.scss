@@ -1,0 +1,10 @@
+@use '@/styles/utils' as *;
+
+.split-variants {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 0 $space-m;
+    font-size: $text-sm;
+}

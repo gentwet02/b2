@@ -10,6 +10,7 @@ import Loading from '@/components/status/Loading';
 import Prompt from '@/components/text/Prompt';
 import { COMPARE_RANGE_DEFAULT } from '@/config/compare';
 import { validExclude } from '@/config/ranges';
+import SplitVariants from '@/components/split-variants/SplitVariants';
 import VersusControls from '@/features/compare/VersusControls';
 import VersusLoadouts from '@/features/compare/VersusLoadouts';
 import VersusMaps from '@/features/compare/VersusMaps';
@@ -50,6 +51,8 @@ export default function Compare() {
                 return {
                     season: merged.season,
                     vs: merged.vs,
+                    splitMaps: merged.splitMaps,
+                    splitHeroes: merged.splitHeroes,
                     range: customRange ? merged.range : undefined,
                     // dropped when the range no longer contains it
                     exclude: merged.vs
@@ -81,7 +84,12 @@ export default function Compare() {
                 title={`${name}, head to head`}
                 subtitle={`Only the games ${name} played against these players.`}
                 actions={
-                    <Link to='/user/$userId' params={{ userId }} className='button button--quiet'>
+                    <Link
+                        to='/user/$userId'
+                        params={{ userId }}
+                        search={{ splitMaps: search.splitMaps, splitHeroes: search.splitHeroes }}
+                        className='button button--quiet'
+                    >
                         Back to profile
                     </Link>
                 }
@@ -99,6 +107,7 @@ export default function Compare() {
                     onChange={update}
                     onPlayerMode={choosePlayerMode}
                 />
+                <SplitVariants className='compare__split' />
                 <SeasonNote season={search.season} />
             </Panel>
 

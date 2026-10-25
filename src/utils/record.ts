@@ -47,20 +47,6 @@ export const pickList = (records: Record<string, Wld>): RecordRow[] =>
         .map(([key, record]) => ({ key, record }))
         .sort((a, b) => gamesOf(b.record) - gamesOf(a.record));
 
-/** Best and worst win rate among the entries played at least `min` times (as the server does). */
-export function pickExtremes(records: Record<string, Wld>, min: number) {
-    const ok = pickList(records).filter(
-        (p) => gamesOf(p.record) >= min && rateOf(p.record) !== null,
-    );
-    if (ok.length === 0) return { best: null, worst: null };
-    const byRate = (dir: 1 | -1) => (p: RecordRow, q: RecordRow) =>
-        dir * (rateOf(q.record)! - rateOf(p.record)!) || gamesOf(q.record) - gamesOf(p.record);
-    const best = [...ok].sort(byRate(1))[0]!;
-    const worst = [...ok].sort(byRate(-1))[0]!;
-    // one entry, or all at the same rate: no worst
-    return { best, worst: rateOf(worst.record)! < rateOf(best.record)! ? worst : null };
-}
-
 type Comparator<T> = (a: T, b: T) => number;
 
 /** The order a RecordTable sort key stands for; undefined: keep the rows as given. */

@@ -4,6 +4,7 @@ import MapLabel from '@/components/labels/MapLabel';
 import RecordTable from '@/components/record-table/RecordTable';
 import Note from '@/components/text/Note';
 import { STATS_MAX_TOWERS, STATS_PAGE_SIZE, STATS_TOWERS_PAGE_SIZE } from '@/config/stats';
+import { useSplitHeroes, useSplitMaps } from '@/hooks/useSplitVariants';
 import type {
     Stats,
     StatsMapRow,
@@ -14,7 +15,7 @@ import type {
 } from '@/types/stats';
 import { formatLabel, formatNumber, plural } from '@/utils/format';
 import { formatHero, formatHeroPick } from '@/utils/hero';
-import { formatTowerList, loadoutName, parseLoadout } from '@/utils/loadout';
+import { formatTowerList, loadoutName, parseLoadout, withVariantLabels } from '@/utils/loadout';
 import { formatMap } from '@/utils/map';
 import { formatShare, gamesOf, share } from '@/utils/record';
 import { joinList } from '@/utils/search';
@@ -26,8 +27,6 @@ interface StatsResultsProps {
     min: number;
     /** minimum pick rate, in % */
     minPick: number;
-    /** heroes, strats, maps: one row per variant (skin, classic / reversed) */
-    split: boolean;
     /** strats: the 3 towers only, hero ignored */
     towersOnly: boolean;
     onFocus: (next: Partial<StatsSearch>) => void;
@@ -35,7 +34,9 @@ interface StatsResultsProps {
 
 /** The table of the chosen view: heroes, towers, strats or maps. */
 export default function StatsResults(props: StatsResultsProps) {
-    const { data, view, min, minPick, split, towersOnly, onFocus } = props;
+    const { data, view, min, minPick, towersOnly, onFocus } = props;
+    const [splitMaps] = useSplitMaps();
+    const [splitHeroes] = useSplitHeroes();
     const { filters, labels } = data;
 
     const groupGames = gamesOf(data.group);
@@ -85,7 +86,7 @@ export default function StatsResults(props: StatsResultsProps) {
     );
 
     if (view === 'heroes') {
-        return split
+        return splitHeroes
             ? table({
                   id: 'hero-variants',
                   rows: data.heroVariants,
@@ -157,20 +158,9 @@ export default function StatsResults(props: StatsResultsProps) {
                 cut: { total: data.trioCount, noun: 'tower picks' },
             });
         }
-        if (split) {
+        if (splitHeroes) {
             // the variants' portraits, keyed like the strat rows ("Quincy_Cyber")
-            const variantLabels = {
-                ...labels,
-                heroes: {
-                    ...labels.heroes,
-                    ...Object.fromEntries(
-                        Object.entries(labels.variants).map(([hero, v]) => [
-                            hero,
-                            { hero, portrait: v.portrait },
-                        ]),
-                    ),
-                },
-            };
+            const variantLabels = withVariantLabels(labels);
             return table({
                 id: 'loadout-variants',
                 rows: data.loadoutVariants,
@@ -203,7 +193,7 @@ export default function StatsResults(props: StatsResultsProps) {
 
     // maps: with a focus, the pick rate on each map; without one, how often each map is played
     const focused = !!filters.hero || filters.towers.length > 0;
-    const mapRows = split ? data.mapVariants : data.maps;
+    const mapRows = splitMaps ? data.mapVariants : data.maps;
     const allMaps = mapRows.reduce((sum, m) => sum + m.total, 0);
     const mapPick = (r: StatsMapRow) =>
         (focused ? share(gamesOf(r.record), r.total) : share(r.total, allMaps)) ?? 0;
@@ -219,11 +209,11 @@ export default function StatsResults(props: StatsResultsProps) {
     );
     // split rows: "oasis" is the classic version when a reversed one exists
     const pickKey = (key: string) =>
-        split && !key.includes(':') && reversible.has(key) ? `${key}:classic` : key;
+        splitMaps && !key.includes(':') && reversible.has(key) ? `${key}:classic` : key;
 
     return (
         <RecordTable<StatsMapRow>
-            key={split ? 'map-variants' : 'maps'}
+            key={splitMaps ? 'map-variants' : 'maps'}
             className='stats-table'
             rows={keep(mapRows, mapPick)}
             rowKey={(r) => r.key}

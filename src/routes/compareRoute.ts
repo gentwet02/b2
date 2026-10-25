@@ -3,7 +3,7 @@ import { COMPARE_RANGE_DEFAULT } from '@/config/compare';
 import { LEADERBOARD_RANGES, parseExclude } from '@/config/ranges';
 import Compare from '@/pages/Compare';
 import type { CompareSearch } from '@/types/compare';
-import { parseOption, parseSeason, parseUserId } from '@/utils/search';
+import { parseOff, parseOption, parseSeason, parseUserId } from '@/utils/search';
 import { rootRoute } from './rootRoute';
 
 function validateSearch(search: Record<string, unknown>): CompareSearch {
@@ -23,6 +23,8 @@ function validateSearch(search: Record<string, unknown>): CompareSearch {
         exclude: vs
             ? undefined
             : parseExclude(range ?? COMPARE_RANGE_DEFAULT, search.exclude, search.band),
+        splitMaps: parseOff(search.splitMaps),
+        splitHeroes: parseOff(search.splitHeroes),
     };
 }
 

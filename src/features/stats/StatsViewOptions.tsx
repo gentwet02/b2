@@ -1,4 +1,5 @@
 import ControlCheckbox from '@/components/controls/ControlCheckbox';
+import SplitVariants from '@/components/split-variants/SplitVariants';
 import ControlLabel from '@/components/controls/ControlLabel';
 import Dropdown from '@/components/dropdown/Dropdown';
 import SegmentedControl from '@/components/segmented-control/SegmentedControl';
@@ -7,16 +8,15 @@ import type { StatsSearch, StatsView } from '@/types/stats';
 
 interface StatsViewOptionsProps {
     view: StatsView;
-    split: boolean;
     towersOnly: boolean;
     min: number;
     minPick: number;
     onChange: (next: Partial<StatsSearch>) => void;
 }
 
-/** Above the table: which table, variants apart or not, and the minimums for a row. */
+/** Above the table: which table, variants apart or not (the shared checkboxes), and the minimums for a row. */
 export default function StatsViewOptions(props: StatsViewOptionsProps) {
-    const { view, split, towersOnly, min, minPick, onChange } = props;
+    const { view, towersOnly, min, minPick, onChange } = props;
 
     return (
         <>
@@ -26,14 +26,10 @@ export default function StatsViewOptions(props: StatsViewOptionsProps) {
                 value={view}
                 onChange={(next) => onChange({ view: next })}
             />
-            {(view === 'heroes' || view === 'maps' || (view === 'loadouts' && !towersOnly)) && (
-                <ControlCheckbox
-                    checked={split}
-                    onChange={(checked) => onChange({ variants: checked ? undefined : false })}
-                >
-                    Split variants
-                </ControlCheckbox>
-            )}
+            <SplitVariants
+                maps={view === 'maps'}
+                heroes={view === 'heroes' || (view === 'loadouts' && !towersOnly)}
+            />
             {view === 'loadouts' && (
                 <ControlCheckbox
                     checked={!towersOnly}

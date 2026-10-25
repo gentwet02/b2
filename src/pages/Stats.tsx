@@ -13,7 +13,6 @@ import {
     STATS_MIN_DEFAULT,
     STATS_MIN_PICK_DEFAULT,
     STATS_PLAYERS_DEFAULT,
-    STATS_SPLIT_VARIANTS_DEFAULT,
     STATS_VIEW_DEFAULT,
 } from '@/config/stats';
 import StatsControls from '@/features/stats/StatsControls';
@@ -38,7 +37,6 @@ export default function Stats() {
     const view = search.view ?? STATS_VIEW_DEFAULT;
     const min = search.min ?? STATS_MIN_DEFAULT;
     const minPick = search.pick ?? STATS_MIN_PICK_DEFAULT;
-    const split = search.variants ?? STATS_SPLIT_VARIANTS_DEFAULT;
     const towersOnly = !!search.towersOnly;
 
     const { data, isLoading, error, refetch, isPlaceholderData } = useStats(
@@ -86,7 +84,8 @@ export default function Stats() {
                         merged.pick && merged.pick !== STATS_MIN_PICK_DEFAULT
                             ? merged.pick
                             : undefined,
-                    variants: merged.variants === false ? false : undefined,
+                    splitMaps: merged.splitMaps,
+                    splitHeroes: merged.splitHeroes,
                     towersOnly: merged.towersOnly || undefined,
                 };
             },
@@ -127,7 +126,6 @@ export default function Stats() {
                             actions={
                                 <StatsViewOptions
                                     view={view}
-                                    split={split}
                                     towersOnly={towersOnly}
                                     min={min}
                                     minPick={minPick}
@@ -140,7 +138,6 @@ export default function Stats() {
                                 view={view}
                                 min={min}
                                 minPick={minPick}
-                                split={split}
                                 towersOnly={towersOnly}
                                 onFocus={update}
                             />

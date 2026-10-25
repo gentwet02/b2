@@ -2,6 +2,7 @@ import type { BaseApiResponse } from '@/types/api';
 import type { Match } from '@/types/match';
 import type { RecordRow, Wld } from '@/types/record';
 import type { GroupMode, SeasonScope } from '@/types/season';
+import type { SplitSearch } from '@/types/variants';
 
 /** A map key or a loadout key ("Quincy|Alchemist,Druid,Ninja") with the record on it. */
 export type H2hPick = RecordRow;
@@ -18,11 +19,15 @@ interface H2hPicks {
 export interface H2hSummary {
     record: Wld;
     lastMet: string | null;
-    /** map key → record */
+    /** base map key ("oasis") → record, both versions together */
     maps: Record<string, Wld>;
+    /** "oasis" / "oasis:reversed" → record */
+    mapVariants?: Record<string, Wld>;
     top: H2hPicks;
     best: H2hPicks;
     worst: H2hPicks;
+    /** best and worst with variants apart ("oasis:reversed", "Quincy_Cyber|…") */
+    variants?: { best: H2hPicks; worst: H2hPicks };
 }
 
 export interface H2hOpponent extends H2hSummary {
@@ -37,6 +42,8 @@ export interface H2hOpponent extends H2hSummary {
 export interface Labels {
     maps: Record<string, { map: string; image: string | null }>;
     heroes: Record<string, { hero: string; portrait: string | null }>;
+    /** raw hero ("Quincy_Cyber") → base and portrait, for loadouts with variants apart */
+    variants?: Record<string, { base: string; portrait: string | null }>;
 }
 
 /** GET /users/:id/compare */
@@ -101,10 +108,14 @@ export interface Versus extends BaseApiResponse {
     labels: Labels;
     total: H2hSummary & {
         mapList: H2hPick[];
+        mapVariantList?: H2hPick[];
         /** the profile player's loadouts, most played first */
         mine: H2hPick[];
         /** the opponents' loadouts */
         theirs: H2hPick[];
+        /** the same with hero variants apart */
+        mineVariants?: H2hPick[];
+        theirsVariants?: H2hPick[];
     };
     /** never-met players have a 0–0 record */
     opponents: VersusOpponent[];
@@ -126,7 +137,7 @@ export interface OpponentsMet extends BaseApiResponse {
     opponents: MetOpponent[];
 }
 
-export interface CompareSearch {
+export interface CompareSearch extends SplitSearch {
     season?: SeasonScope | undefined;
     /** one opponent */
     vs?: string | undefined;

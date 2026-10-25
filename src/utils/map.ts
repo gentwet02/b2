@@ -1,6 +1,4 @@
 import { MAP_RENAMES } from '@/config/maps';
-import type { Labels } from '@/types/compare';
-import type { Wld } from '@/types/record';
 
 const REVERSED_MAP = /_reversed$/;
 
@@ -36,28 +34,3 @@ export const mapBaseKey = (map: string) => mapKey(map.replace(REVERSED_MAP, ''))
 /** The map filter that picks exactly this map: "oasis:reversed" or "oasis:classic". */
 export const mapFilterOf = (map: string) =>
     `${mapBaseKey(map)}:${isReversedMap(map) ? 'reversed' : 'classic'}`;
-
-/**
- * Classic and reversed versions of each map together ("oasisreversed" counted in "oasis").
- * `hasReversed`: whether there was a reversed map to merge at all.
- */
-export function mergeMapVersions(maps: Record<string, Wld>, labels: Labels) {
-    const merged: Record<string, Wld> = {};
-    const mapLabels: Labels['maps'] = { ...labels.maps };
-    let hasReversed = false;
-    for (const [key, record] of Object.entries(maps)) {
-        const raw = labels.maps[key]?.map ?? key;
-        let base = key;
-        if (isReversedMap(raw)) {
-            hasReversed = true;
-            base = mapBaseKey(raw);
-            mapLabels[base] ??= {
-                map: raw.replace(REVERSED_MAP, ''),
-                image: labels.maps[key]?.image ?? null,
-            };
-        }
-        const total = merged[base] ?? [0, 0, 0];
-        merged[base] = [total[0] + record[0], total[1] + record[1], total[2] + record[2]];
-    }
-    return { maps: merged, labels: { ...labels, maps: mapLabels }, hasReversed };
-}

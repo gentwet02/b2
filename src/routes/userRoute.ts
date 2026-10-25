@@ -9,7 +9,7 @@ import { profileQueryOptions } from '@/hooks/queries/useProfile';
 import { seasonStatsQueryOptions } from '@/hooks/queries/useSeasonStats';
 import User from '@/pages/User';
 import type { UserSearch } from '@/types/profile';
-import { parseOption } from '@/utils/search';
+import { parseOff, parseOption } from '@/utils/search';
 import { rootRoute } from './rootRoute';
 
 function validateSearch(search: Record<string, unknown>): UserSearch {
@@ -20,6 +20,8 @@ function validateSearch(search: Record<string, unknown>): UserSearch {
             PROFILE_SEASON_AMOUNTS,
             PROFILE_SEASON_DEFAULT,
         ),
+        splitMaps: parseOff(search.splitMaps),
+        splitHeroes: parseOff(search.splitHeroes),
     };
 }
 
