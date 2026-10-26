@@ -10,6 +10,7 @@
     }
 
     @include breakpoint-down(small) {
-        flex: 1 1 10rem;
+        flex: 1 1 100%;
+        max-width: none;
     }
 }

@@ -21,23 +21,6 @@
         align-items: center;
         gap: $space-xs;
         padding: $space-2xs 0;
-
-        @include breakpoint-down(tablet) {
-            grid-template-columns: 2.25rem minmax(0, 4fr) 3.5rem minmax(2.5rem, 1fr) 3rem 2rem;
-
-            .h2h-row__meta {
-                display: none;
-            }
-        }
-
-        @include breakpoint-down(phablet) {
-            grid-template-columns: minmax(0, 1fr) 3.2rem 2.8rem 2rem;
-
-            .h2h-row__avatar,
-            .h2h-row__track {
-                display: none;
-            }
-        }
     }
 
     &__avatar {
@@ -96,14 +79,6 @@
         grid-column: span 4;
         font-size: $text-md;
         color: colors.$ink-soft;
-
-        @include breakpoint-down(tablet) {
-            grid-column: span 3;
-        }
-
-        @include breakpoint-down(phablet) {
-            grid-column: span 2;
-        }
     }
 
     &__toggle {
@@ -130,5 +105,49 @@
     &__more {
         justify-self: end;
         font-size: $text-md;
+    }
+}
+
+@include breakpoint-down(tablet) {
+    .h2h-row {
+        &__main {
+            grid-template-columns: 2.25rem minmax(0, 4fr) 3.5rem minmax(2.5rem, 1fr) 3rem 2rem;
+
+            .h2h-row__meta {
+                display: none;
+            }
+        }
+
+        &__none {
+            grid-column: span 3;
+        }
+    }
+}
+
+@include breakpoint-down(phablet) {
+    .h2h-row {
+        &__main {
+            grid-template-columns: 2.25rem minmax(0, 1fr) 3.2rem 2.8rem 2rem;
+
+            .h2h-row__track {
+                display: none;
+            }
+        }
+
+        &__none {
+            grid-column: span 2;
+        }
+    }
+}
+
+@include breakpoint-down(small) {
+    .h2h-row {
+        &__main {
+            grid-template-columns: minmax(0, 1fr) 3.2rem 2.8rem 2rem;
+
+            .h2h-row__avatar {
+                display: none;
+            }
+        }
     }
 }

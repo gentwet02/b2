@@ -6,6 +6,22 @@
     align-items: flex-end;
     gap: $space-s $space-l;
 
+    @include breakpoint-down(big) {
+        column-gap: $space-m;
+    }
+
+    @include breakpoint-down(phablet) {
+        column-gap: $space-s;
+    }
+
+    &__aside {
+        margin-left: auto;
+
+        @include breakpoint-down(phablet) {
+            margin-left: 0;
+        }
+    }
+
     &__season {
         min-width: 11rem;
     }
@@ -19,8 +35,6 @@
     }
 
     @include breakpoint-down(small) {
-        margin-inline: $gutter;
-
         &__season,
         &__range {
             min-width: 0;

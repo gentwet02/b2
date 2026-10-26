@@ -7,4 +7,8 @@
     justify-content: flex-end;
     gap: 0 $space-m;
     font-size: $text-sm;
+
+    @include breakpoint-down(phablet) {
+        justify-content: flex-start;
+    }
 }

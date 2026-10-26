@@ -5,6 +5,7 @@ import RangeControl from '@/components/controls/RangeControl';
 import Dropdown from '@/components/dropdown/Dropdown';
 import SeasonSelect from '@/components/season-select/SeasonSelect';
 import SegmentedControl from '@/components/segmented-control/SegmentedControl';
+import SplitVariants from '@/components/split-variants/SplitVariants';
 import { COMPARE_MODES } from '@/config/compare';
 import useOpponentsMet from '@/hooks/queries/useOpponentsMet';
 import useSeasons from '@/hooks/queries/useSeasons';
@@ -50,7 +51,7 @@ export default function VersusControls(props: VersusControlsProps) {
     }, [met.data, vs, vsPlayer]);
 
     return (
-        <Controls>
+        <Controls aside={<SplitVariants />}>
             <ControlGroup label='Compare against' labelId='versus-mode'>
                 <SegmentedControl
                     aria-labelledby='versus-mode'

@@ -4,10 +4,10 @@ import Panel from '@/components/panel/Panel';
 import PanelEmpty from '@/components/panel/PanelEmpty';
 import SeasonNote from '@/components/season-note/SeasonNote';
 import SegmentedControl from '@/components/segmented-control/SegmentedControl';
+import SplitVariants from '@/components/split-variants/SplitVariants';
 import ErrorState from '@/components/status/ErrorState';
 import { H2H_SCOPES } from '@/config/profile';
 import H2hSummary from '@/features/compare/H2hSummary';
-import SplitVariants from '@/components/split-variants/SplitVariants';
 import OpponentSelect from '@/features/compare/OpponentSelect';
 import useHeadToHead from '@/hooks/queries/useHeadToHead';
 import useOpponentSlots from '@/hooks/useOpponentSlots';
@@ -77,21 +77,22 @@ export default function HeadToHead(props: HeadToHeadProps) {
             title='Head to head'
             actions={scope}
         >
-            <H2hSummary record={data.total.record}>
-                {totalGames === 0 ? (
-                    <>No game against these players {inScope(data)}.</>
-                ) : (
-                    <>
-                        <strong title={recordTitle(data.total.record)}>
-                            {formatRecord(data.total.record)}
-                        </strong>{' '}
-                        against these players, {formatNumber(totalGames)} games, met {formatNumber(met)} of{' '}
-                        {formatNumber(data.opponents.length)}
-                    </>
-                )}
-            </H2hSummary>
-
-            {totalGames > 0 && <SplitVariants className='h2h-card__split' />}
+            <div className='h2h-card__top'>
+                <H2hSummary record={data.total.record}>
+                    {totalGames === 0 ? (
+                        <>No game against these players {inScope(data)}.</>
+                    ) : (
+                        <>
+                            <strong title={recordTitle(data.total.record)}>
+                                {formatRecord(data.total.record)}
+                            </strong>{' '}
+                            against these players, {formatNumber(totalGames)} games, met {formatNumber(met)} of{' '}
+                            {formatNumber(data.opponents.length)}
+                        </>
+                    )}
+                </H2hSummary>
+                {totalGames > 0 && <SplitVariants className='h2h-card__split' />}
+            </div>
 
             <ol className='h2h-list'>
                 {slots.map((slot) => {
