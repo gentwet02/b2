@@ -1,0 +1,83 @@
+@use '@/styles/utils/colors';
+@use '@/styles/utils' as *;
+
+// the banner runs edge to edge as the card's header
+.clan-card {
+    padding: 0;
+    gap: 0;
+    overflow: hidden;
+
+    &__banner {
+        display: block;
+        width: 100%;
+        // NK's clan banners are 1800 × 168 strips: shown taller, cropped on the sides
+        height: var(--fluid-88-112);
+        object-fit: cover;
+        background: colors.$ink;
+        border-bottom: 2px solid colors.$ink;
+        @include enter($anim-fade-in, $duration-slower);
+    }
+
+    &__body {
+        display: grid;
+        gap: $space-2xs;
+        padding: $space-s-m $space-m $space-m;
+
+        @include breakpoint-down(small) {
+            padding: $space-s $space-xs $space-s-m;
+        }
+    }
+
+    &__eyebrow {
+        font-size: $text-xs;
+        font-weight: 600;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: colors.$ink-soft;
+    }
+
+    &__name {
+        @include display($text-3xl);
+        overflow-wrap: anywhere;
+    }
+
+    &__tagline {
+        max-width: 60ch;
+        color: colors.$ink-soft;
+        overflow-wrap: anywhere;
+    }
+
+    &__facts {
+        display: flex;
+        flex-wrap: wrap;
+        gap: $space-xs $space-l;
+        margin-top: $space-xs;
+    }
+
+    &__fact {
+        display: grid;
+        gap: 0.15rem;
+
+        dt {
+            font-size: $text-sm;
+            color: colors.$ink-soft;
+        }
+
+        dd {
+            margin: 0;
+            font-weight: 700;
+        }
+
+        a {
+            color: inherit;
+            text-decoration: underline;
+            text-decoration-thickness: 2px;
+            text-underline-offset: 0.2em;
+            text-decoration-color: colors.$banana;
+
+            @include when-hover {
+                text-decoration-color: colors.$ink;
+            }
+        }
+    }
+}

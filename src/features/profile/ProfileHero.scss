@@ -82,17 +82,9 @@
     &__equipped-item {
         display: grid;
         place-items: center;
-        min-width: 2.5rem;
-        height: 2.5rem;
-        padding: 0 0.4rem;
-        font-size: $text-xs;
-        font-weight: 600;
-        background: colors.$paper-dim;
-        border-radius: 0.5rem;
 
-        img {
-            height: 2.25rem;
-            width: auto;
+        .medal {
+            --medal-width: 3rem;
         }
     }
 
@@ -105,6 +97,7 @@
 
     &__name {
         @include display($text-5xl);
+        min-width: 0;
         overflow-wrap: anywhere;
     }
 
@@ -114,30 +107,20 @@
         font-weight: 500;
     }
 
-    &__badges {
+    &__heading {
         display: flex;
-        flex-wrap: wrap;
         align-items: center;
         gap: $space-2xs;
-        margin-top: 0.2rem;
-
-        &:empty {
-            display: none;
-        }
+        min-width: 0;
     }
 
-    &__badge {
-        @include components.chip(colors.$paper-dim);
-        @include enter($anim-pop-in, $duration-base);
-        @include stagger(6, 50ms, 250ms);
-
-        &--vip {
-            background: colors.$banana;
-        }
-
-        &--club {
-            background: colors.$sky;
-        }
+    // as tall as the name's capitals
+    &__club {
+        flex: none;
+        font-size: $text-5xl;
+        @include size(0.85em);
+        object-fit: contain;
+        @include enter($anim-pop-in, $duration-base, 200ms);
     }
 
     &__actions {

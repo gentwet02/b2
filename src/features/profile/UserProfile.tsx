@@ -6,10 +6,11 @@ import usePlayerName from '@/hooks/queries/usePlayerName';
 import useProfile from '@/hooks/queries/useProfile';
 import useCachedPlayerName from '@/hooks/useCachedPlayerName';
 import { timeAgo } from '@/utils/format';
-import Accolades from './Accolades';
 import AllTimeStats from './AllTimeStats';
 import BloonStats from './BloonStats';
 import HeadToHead from './HeadToHead';
+import ClanCard from './ClanCard';
+import Medals from './Medals';
 import ProfileHero from './ProfileHero';
 import ProfileHeroPlaceholder from './ProfileHeroPlaceholder';
 import RecentMatches from './RecentMatches';
@@ -88,12 +89,25 @@ export default function UserProfile(props: UserProfileProps) {
                 <>
                     <div className='profile__columns'>
                         <TowerUsage towers={profile._towers ?? []} />
-                        <BloonStats bloons={profile._bloonStats ?? []} />
+                        <TowerUsage towers={profile._towers ?? []} heroes />
                     </div>
-                    <Panel title='Trophies and arenas'>
-                        <SeasonStrip profile={profile} />
-                    </Panel>
-                    <Accolades accolades={profile.accolades ?? []} />
+                    <div className='profile__columns'>
+                        <BloonStats bloons={profile._bloonStats ?? []} />
+                        <BloonStats bloons={profile._bloonStats ?? []} moabs />
+                    </div>
+                    {data?.clan ? (
+                        <div className='profile__columns profile__columns--even'>
+                            <ClanCard clan={data.clan} />
+                            <Panel title='Trophies and arenas'>
+                                <SeasonStrip profile={profile} compact />
+                            </Panel>
+                        </div>
+                    ) : (
+                        <Panel title='Trophies and arenas'>
+                            <SeasonStrip profile={profile} />
+                        </Panel>
+                    )}
+                    <Medals medals={profile.badges_all} />
                 </>
             )}
         </div>

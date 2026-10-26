@@ -1,4 +1,6 @@
 import type { ReactNode } from 'react';
+import clubMember from '@/assets/images/club_member.png';
+import Medal from '@/components/medal/Medal';
 import type { UserProfile } from '@/types/profile';
 import { readBadges } from '@/utils/badges';
 import { formatLabel } from '@/utils/format';
@@ -38,35 +40,26 @@ export default function ProfileHero(props: ProfileHeroProps) {
                     )}
                 </div>
                 <div className='profile-hero__info'>
-                    <h1 id='profile-name' className='profile-hero__name'>
-                        {profile.displayName}
-                    </h1>
+                    <div className='profile-hero__heading'>
+                        <h1 id='profile-name' className='profile-hero__name'>
+                            {profile.displayName}
+                        </h1>
+                        {profile.is_club_member && (
+                            <img
+                                className='profile-hero__club'
+                                src={clubMember}
+                                alt='Club member'
+                                title='Club member'
+                            />
+                        )}
+                    </div>
                     {knownAs && <p className='profile-hero__alias'>Known as {knownAs}</p>}
                     {title && <p className='profile-hero__title'>{formatLabel(title)}</p>}
-                    <ul className='profile-hero__badges' aria-label='Badges'>
-                        {profile.is_vip && (
-                            <li className='profile-hero__badge profile-hero__badge--vip'>VIP</li>
-                        )}
-                        {profile.is_club_member && (
-                            <li className='profile-hero__badge profile-hero__badge--club'>
-                                Club member
-                            </li>
-                        )}
-                        {profile.inGuild && <li className='profile-hero__badge'>In a guild</li>}
-                    </ul>
                     {badges.length > 0 && (
-                        <ul className='profile-hero__equipped' aria-label='Equipped badges'>
+                        <ul className='profile-hero__equipped' aria-label='Equipped medals'>
                             {badges.map((badge) => (
-                                <li
-                                    key={badge.key}
-                                    className='profile-hero__equipped-item'
-                                    title={badge.name}
-                                >
-                                    {badge.url ? (
-                                        <img src={badge.url} alt={badge.name} />
-                                    ) : (
-                                        badge.name
-                                    )}
+                                <li key={badge.key} className='profile-hero__equipped-item'>
+                                    <Medal badge={badge} size='sm' />
                                 </li>
                             ))}
                         </ul>

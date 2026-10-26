@@ -90,12 +90,28 @@ export interface ProfileSeason {
     lastSeen: string;
 }
 
+/** A player's clan (NK calls them guilds), as our server last read it. */
+export interface Clan {
+    id: string;
+    name: string;
+    bannerURL: string | null;
+    tagline: string | null;
+    members: number;
+    /** OPEN | FILTERED | CLOSED */
+    status: string;
+    ownerId: string | null;
+    /** the owner's name, when they are a player our server knows */
+    ownerName: string | null;
+}
+
 /** GET /users/:id — the stored profile, in Ninja Kiwi's shape, plus our season records. */
 export interface UserProfileData extends BaseApiResponse {
     body: UserProfile;
     success: boolean;
     /** season records, newest first */
     seasons?: ProfileSeason[];
+    /** the player's clan; null when they have none or we haven't read it yet */
+    clan?: Clan | null;
     /** when our server last read this profile from Ninja Kiwi */
     fetchedAt?: string;
 }
@@ -167,6 +183,9 @@ export interface StatDetail {
  */
 export interface Badge {
     key: string;
+    /** "Hall of Masters, top 50%" */
     name: string;
     url?: string | undefined;
+    /** season number the medal was earned in, as the game shows it (our season id + 1); null when unknown */
+    season: number | null;
 }

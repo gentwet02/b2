@@ -6,9 +6,15 @@
     display: grid;
     gap: $space-m;
 
-    // both stats cards always share one height
-    &__stats {
+    // both cards always share one height
+    &__stats,
+    &__columns--even {
         align-items: stretch !important;
+    }
+
+    // a stretched card keeps its content at the top
+    &__columns--even > .panel {
+        align-content: start;
     }
 
     &__stats,

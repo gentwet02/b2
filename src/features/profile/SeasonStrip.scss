@@ -13,6 +13,19 @@
         grid-template-columns: repeat(2, minmax(0, 1fr));
     }
 
+    // two by two: borders like the tablet layout
+    &--compact {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    &--compact &__tile:nth-child(2) {
+        border-right: none;
+    }
+
+    &--compact &__tile:nth-child(-n + 2) {
+        border-bottom: 1px solid colors.$line;
+    }
+
     @include breakpoint-down(small) {
         border-radius: revert;
         border-inline: none;
@@ -54,6 +67,21 @@
     &__value {
         @include display($text-3xl);
         overflow-wrap: anywhere;
+    }
+
+    // arena names are long ("Hall of Masters"): a smaller size next to the logo
+    &__arena {
+        display: flex;
+        align-items: center;
+        gap: $space-2xs;
+        font-size: $text-xl;
+        line-height: 1.1;
+    }
+
+    &__arena-logo {
+        flex: none;
+        width: 2.5rem;
+        height: auto;
     }
 }
 

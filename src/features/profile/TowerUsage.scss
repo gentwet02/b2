@@ -2,13 +2,29 @@
 @use '@/styles/utils' as *;
 
 .tower-usage {
+    // ten rows in view, the rest scrolls
+    --row: 2.5rem;
     display: grid;
     gap: $space-xs;
+    max-height: calc(10 * var(--row) + 9 * #{$space-xs});
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    padding-right: $space-2xs;
+    scrollbar-width: thin;
+    scrollbar-color: colors.$line transparent;
 
+    // picture | name, count / bar
     &__item {
         display: grid;
-        grid-template-columns: 1fr auto;
+        grid-template-columns: auto 1fr auto;
+        align-items: center;
         gap: $space-3xs $space-xs;
+    }
+
+    &__picture {
+        grid-row: span 2;
+        @include size(2.5rem);
+        object-fit: contain;
     }
 
     &__name {
@@ -21,7 +37,7 @@
     }
 
     &__track {
-        grid-column: 1 / -1;
+        grid-column: 2 / -1;
         height: 0.55rem;
         background: colors.$paper-dim;
         border-radius: 999px;
