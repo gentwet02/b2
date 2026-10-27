@@ -10,12 +10,21 @@ export const statsQueryOptions = (params: StatsParams) =>
         queryKey: queryKeys.stats(
             params.season ?? 'live',
             params.player ? `p:${params.player}` : `${params.players}${params.exclude ? `-${params.exclude}` : ''}`,
+            params.player2
+                ? `vs:p:${params.player2}`
+                : params.players2
+                  ? `vs:${params.players2}${params.exclude2 ? `-${params.exclude2}` : ''}`
+                  : 'vs:anyone',
             params.map ?? '',
             params.hero ?? '',
             [...(params.towers ?? [])].sort().join(','),
             params.exHeroes ?? '',
             params.exTowers ?? '',
             params.exMaps ?? '',
+            params.overlap === false ? 'apart' : 'both',
+            params.sides
+                ? `sides:${params.hero2 ?? ''}|${[...(params.towers2 ?? [])].sort().join(',')}|${params.exHeroes2 ?? ''}|${params.exTowers2 ?? ''}`
+                : '',
         ),
         queryFn: () => fetchData(statsService.getStats(params), 'Could not load the stats'),
         staleTime: AGGREGATE_QUERY.stale,

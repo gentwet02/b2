@@ -1,14 +1,18 @@
 import type { ReactNode } from 'react';
 import type { BaseApiResponse } from '@/types/api';
-import type { Labels, RankBounds } from '@/types/compare';
+import type { CompareSideInfo, Labels, RankBounds } from '@/types/compare';
 import type { HeroPick } from '@/types/hero';
 import type { MapVariant } from '@/types/map';
-import type { SideFilterOptions } from '@/types/match';
+import type { MatchSort, SideFilterOptions } from '@/types/match';
 import type { RecordRow, Wld } from '@/types/record';
-import type { GroupMode, SeasonScope } from '@/types/season';
+import type { GroupMode, SeasonQuery, SeasonScope } from '@/types/season';
 import type { SplitSearch } from '@/types/variants';
 
-export type StatsView = 'heroes' | 'towers' | 'loadouts' | 'maps';
+/** The picks tables, then the players tabs: side 1's players, side 2's, the latest games. */
+export type StatsView = 'heroes' | 'towers' | 'loadouts' | 'maps' | 'players' | 'opponents' | 'games';
+
+/** What a side is: a range of each leaderboard, or one player. */
+export type SideMode = 'top' | 'player';
 
 /** A hero base, a tower, a loadout key ("Quincy|Alchemist,Druid,Ninja") or a map key. */
 export type StatsRow = RecordRow;
@@ -34,6 +38,10 @@ export interface Stats extends BaseApiResponse {
     exclude?: string | null | undefined;
     band: boolean;
     player: { userId: string; name: string | null; alias: string | null } | null;
+    /** a player in both ranges counts on both sides */
+    overlap?: boolean;
+    /** only the games against them; null: anyone (older servers: missing) */
+    against?: CompareSideInfo | null;
     filters: {
         map: { base: string; variant?: MapVariant } | null;
         hero: HeroPick | null;
@@ -49,6 +57,9 @@ export interface Stats extends BaseApiResponse {
         bounds: RankBounds | null;
         /** players counted that season */
         players: number | null;
+        /** the opponents' ranks and count that season (against a range) */
+        boundsAgainst?: RankBounds | null;
+        opponents?: number | null;
     }[];
     missingSeasons: number[];
     /** the group's games (on the map), one per player side */
@@ -72,6 +83,15 @@ export interface Stats extends BaseApiResponse {
     maps: StatsMapRow[];
     /** classic and reversed apart: "oasis", "oasis:reversed" */
     mapVariants: StatsMapRow[];
+    /** the opponents' heroes and towers (sides filtered separately) */
+    options2?: SideFilterOptions | null;
+    /** the opponent's loadout filter, as the server read it */
+    filters2?: {
+        hero: HeroPick | null;
+        towers: string[];
+        exHeroes?: HeroPick[];
+        exTowers?: string[];
+    } | null;
     /** heroes (with variants) and towers in the match filters' shape */
     options: SideFilterOptions & {
         /** base maps, with their classic / reversed games */
@@ -84,10 +104,16 @@ export interface Stats extends BaseApiResponse {
 }
 
 export interface StatsParams {
-    season?: SeasonScope | undefined;
+    season?: SeasonQuery | undefined;
+    /** false: a player in both ranges counts only for the players counted */
+    overlap?: boolean | undefined;
     player?: string | undefined;
     players?: string | undefined;
     exclude?: string | undefined;
+    /** who they played: one player, or a range (neither: anyone) */
+    player2?: string | undefined;
+    players2?: string | undefined;
+    exclude2?: string | undefined;
     map?: string | undefined;
     hero?: string | undefined;
     towers?: string[] | undefined;
@@ -95,17 +121,33 @@ export interface StatsParams {
     exHeroes?: string | undefined;
     exTowers?: string | undefined;
     exMaps?: string | undefined;
+    /** the opponent's loadout (sides filtered separately) */
+    hero2?: string | undefined;
+    towers2?: string[] | undefined;
+    exHeroes2?: string | undefined;
+    exTowers2?: string | undefined;
+    /** sides filtered separately: also the opponents' options */
+    sides?: boolean | undefined;
 }
 
 /** /stats URL search */
 export interface StatsSearch extends SplitSearch {
     season?: SeasonScope | undefined;
+    /** with `season`, a range of seasons: the last one (either order) */
+    seasonTo?: number | undefined;
+    /** false: a player in both ranges counts only for the players counted */
+    overlap?: false | undefined;
     /** one player's id */
     player?: string | undefined;
     /** a leaderboard range (default top 25) */
     players?: string | undefined;
     /** a smaller range left out at the top */
     exclude?: string | undefined;
+    /** only their games against one player… */
+    player2?: string | undefined;
+    /** …or against a range of each leaderboard (default: every HoM player) */
+    players2?: string | undefined;
+    exclude2?: string | undefined;
     /** "oasis" (both versions), "oasis:classic" or "oasis:reversed" */
     map?: string | undefined;
     /** "Quincy" (any variant) or "Quincy:Quincy_Cyber" */
@@ -116,6 +158,12 @@ export interface StatsSearch extends SplitSearch {
     exHeroes?: string | undefined;
     exTowers?: string | undefined;
     exMaps?: string | undefined;
+    /** filter each side's loadout: the opponents' hero and towers below */
+    sides?: true | undefined;
+    hero2?: string | undefined;
+    towers2?: string | undefined;
+    exHeroes2?: string | undefined;
+    exTowers2?: string | undefined;
     view?: StatsView | undefined;
     /** minimum games for a row */
     min?: number | undefined;
@@ -123,6 +171,8 @@ export interface StatsSearch extends SplitSearch {
     pick?: number | undefined;
     /** strats table: the 3 towers only */
     towersOnly?: true | undefined;
+    /** games tab: the order of the games (default newest) */
+    sort?: MatchSort | undefined;
 }
 
 /** One of the stats tables: its rows and how they read, sort and focus. */

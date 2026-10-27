@@ -1,15 +1,28 @@
 @use '@/styles/utils/colors';
 @use '@/styles/utils' as *;
 
-// the panel's grid and gap space the two rows
+// the panel's grid and gap space the rows
 .stats-controls {
-    // map, hero and towers stacked, like the match filters
+    // the two sides, under a line like the match filters'
+    &__sides {
+        padding-top: $space-s;
+        border-top: 1px solid colors.$line;
+    }
+
+    // under one line like the sides: hero and towers stacked (one filter for the
+    // players counted), then the map with the toggles, like the match filters
     &__focus {
+        display: grid;
+        gap: $space-s;
+        padding-top: $space-s;
+        border-top: 1px solid colors.$line;
+    }
+
+    // (two classes: wins over .controls whatever order the CSS loads in)
+    & &__loadout {
         flex-direction: column;
         flex-wrap: nowrap;
         align-items: stretch;
-        padding-top: $space-s;
-        border-top: 2px solid color-mix(in srgb, colors.$ink 20%, transparent);
 
         .controls__group {
             flex: none;
@@ -17,7 +30,43 @@
         }
     }
 
-    &__clear {
-        align-self: flex-start;
+    &__map-row {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: flex-end;
+        justify-content: space-between;
+        gap: $space-s $space-l;
+
+        > .controls__group {
+            flex: 1 1 14rem;
+            max-width: 44rem;
+        }
+
+        // two blocks, like the match filters: the map field never gets narrower than its
+        // pick and exclude adders side by side, so the checkboxes wrap under it instead
+        @include breakpoint-up(small) {
+            > .controls__group {
+                min-width: auto;
+            }
+
+            .filter-chips__selectors {
+                flex-wrap: nowrap;
+            }
+        }
+    }
+
+    // on the right, on the map's line or the one under it (left on phones)
+    &__toggles {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: flex-end;
+        margin-left: auto;
+        align-items: center;
+        gap: $space-xs $space-m;
+
+        @include breakpoint-down(small) {
+            justify-content: flex-start;
+            margin-left: 0;
+        }
     }
 }

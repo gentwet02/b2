@@ -2,7 +2,6 @@ import type { BaseApiResponse } from '@/types/api';
 import type { Match } from '@/types/match';
 import type { RecordRow, Wld } from '@/types/record';
 import type { GroupMode, SeasonScope } from '@/types/season';
-import type { SplitSearch } from '@/types/variants';
 
 /** A map key or a loadout key ("Quincy|Alchemist,Druid,Ninja") with the record on it. */
 export type H2hPick = RecordRow;
@@ -60,13 +59,14 @@ export interface HeadToHead extends BaseApiResponse {
     opponents: H2hOpponent[];
 }
 
-export interface VersusOpponent {
+/** A player of one side of a comparison, with the record between the sides (side 1's view). */
+export interface CompareMember {
     userId: string;
     name: string | null;
     alias: string | null;
     /** best rank among the seasons counted */
     rank: number | null;
-    /** seasons the player was in the group */
+    /** seasons the player was on that side */
     seasons: number;
     record: Wld;
     lastMet: string | null;
@@ -79,49 +79,62 @@ export interface RankBounds {
     size: number;
 }
 
-export interface VersusSeasonRow {
+export interface CompareSeasonRow {
     seasonId: number;
     name: string;
-    /** range mode: ranks counted that season */
+    /** ranks counted that season on each side (range sides) */
+    boundsA: RankBounds | null;
     bounds: RankBounds | null;
-    /** opponents counted that season */
+    /** players counted that season on each side */
+    groupA: number;
     group: number;
     record: Wld;
     lastMet: string | null;
 }
 
-/** GET /users/:id/versus */
-export interface Versus extends BaseApiResponse {
-    userId: string;
+/** Who a side is: one player, a range of each season's leaderboard, or anyone (side 2). */
+export interface CompareSideInfo {
+    mode: GroupMode | 'anyone';
+    userId: string | null;
     name: string | null;
     alias: string | null;
-    season: SeasonScope;
-    seasonName: string;
-    mode: GroupMode;
-    vs: string | null;
     range: string | null;
     /** the smaller range left out at the top */
-    exclude?: string | null | undefined;
-    band: boolean;
+    exclude: string | null;
+}
+
+/** Which side: the first one (the records are its own) or the second. */
+export type CompareSideKey = 'a' | 'b';
+
+/** GET /compare */
+export interface Comparison extends BaseApiResponse {
+    season: SeasonScope;
+    seasonName: string;
+    /** a player in both ranges counts on both sides */
+    overlap?: boolean;
+    a: CompareSideInfo;
+    b: CompareSideInfo;
     missingSeasons: number[];
     minGames: { opponent: number; total: number };
     labels: Labels;
     total: H2hSummary & {
         mapList: H2hPick[];
         mapVariantList?: H2hPick[];
-        /** the profile player's loadouts, most played first */
+        /** side 1's loadouts, most played first */
         mine: H2hPick[];
-        /** the opponents' loadouts */
+        /** side 2's loadouts */
         theirs: H2hPick[];
         /** the same with hero variants apart */
         mineVariants?: H2hPick[];
         theirsVariants?: H2hPick[];
     };
-    /** never-met players have a 0–0 record */
-    opponents: VersusOpponent[];
+    /** side 1's players; never-met players have a 0–0 record */
+    players: CompareMember[];
+    /** side 2's players (none against anyone) */
+    opponents: CompareMember[];
     /** newest first */
-    seasons: VersusSeasonRow[];
-    /** player mode: latest games between the two, newest first */
+    seasons: CompareSeasonRow[];
+    /** a player on either side: the latest games between the sides, newest first */
     matches: Match[] | null;
 }
 
@@ -137,14 +150,12 @@ export interface OpponentsMet extends BaseApiResponse {
     opponents: MetOpponent[];
 }
 
-export interface CompareSearch extends SplitSearch {
-    season?: SeasonScope | undefined;
-    /** one opponent */
-    vs?: string | undefined;
-    /** or a range of each season's leaderboard */
-    range?: string | undefined;
-    /** a smaller range left out at the top */
-    exclude?: string | undefined;
+/** GET /compare/games: one page of the games between the two sides. */
+export interface CompareGamesPage extends BaseApiResponse {
+    total: number;
+    offset: number;
+    limit: number;
+    items: Match[];
 }
 
 /** What a head to head tile shows. */

@@ -71,11 +71,12 @@ export default function H2hOpponentRow(props: H2hOpponentRowProps) {
             {open && opponent && games > 0 && (
                 <div id={detailsId} className='h2h-row__details'>
                     <Link
-                        to='/user/$userId/compare'
-                        params={{ userId: data.userId }}
+                        to='/stats'
                         search={{
                             season: data.season === 'all' ? 'all' : undefined,
-                            vs: id,
+                            player: data.userId,
+                            player2: id,
+                            view: 'games',
                             ...split,
                         }}
                         className='text-link h2h-row__more'

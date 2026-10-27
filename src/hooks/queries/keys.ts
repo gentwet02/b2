@@ -1,5 +1,5 @@
 import type { MatchesQuery } from '@/types/match';
-import type { SeasonScope } from '@/types/season';
+import type { SeasonQuery } from '@/types/season';
 
 type Part = string | number | object | undefined;
 
@@ -9,11 +9,11 @@ const key = (...parts: Part[]) => {
     return parts;
 };
 
-type Season = SeasonScope | 'live';
+type Season = SeasonQuery | 'live';
 
 /**
  * Every react-query key in one place. Player keys start with the user id, so
- * `queryKeys.versus(id)` matches every season and opponent of that player's versus.
+ * `queryKeys.headToHead(id)` matches every season and opponent set of that player's card.
  */
 export const queryKeys = {
     info: () => key('info'),
@@ -25,6 +25,8 @@ export const queryKeys = {
         key('matchesHistory', query, pageSize),
     matchFilters: (filters: Omit<MatchesQuery, 'sort'>) => key('matchFilters', filters),
     stats: (...parts: Part[]) => key('stats', ...parts),
+    /** season, then each side ("p:<id>" or "t50-t10") */
+    compare: (...parts: Part[]) => key('compare', ...parts),
 
     profile: (userId?: string) => key('userProfile', userId),
     seasonStats: (userId: string, season?: Season) => key('seasonStats', userId, season),
@@ -33,7 +35,6 @@ export const queryKeys = {
     userMatches: (userId: string) => key('userMatches', userId),
     headToHead: (userId: string, season?: Season, opponents?: string) =>
         key('headToHead', userId, season, opponents),
-    versus: (userId: string, season?: Season, who?: string) => key('versus', userId, season, who),
     opponentsMet: (userId: string, season?: Season) => key('opponentsMet', userId, season),
 };
 
@@ -43,6 +44,7 @@ export const playerQueryPrefixes = (userId: string) => [
     queryKeys.seasonStats(userId),
     queryKeys.matchesHistory({ playerId: userId }),
     queryKeys.headToHead(userId),
-    queryKeys.versus(userId),
+    // comparisons aren't keyed by player: any of them may hold this one
+    queryKeys.compare(),
     queryKeys.opponentsMet(userId),
 ];

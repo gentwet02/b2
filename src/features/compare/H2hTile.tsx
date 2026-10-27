@@ -1,6 +1,7 @@
 import type { ReactNode } from 'react';
 import type { H2hPick, H2hTileKind, Labels } from '@/types/compare';
 import { heroImage, mapImage } from '@/utils/assetOverrides';
+import { formatNumber, plural } from '@/utils/format';
 import { formatLoadout } from '@/utils/loadout';
 import { formatMap } from '@/utils/map';
 import { formatRate, formatRecord, gamesOf, rateOf, recordTitle } from '@/utils/record';
@@ -11,11 +12,13 @@ interface H2hTileProps {
     pick: H2hPick | null;
     labels: Labels;
     empty: string;
+    /** show this many games instead of the record (most / least played) */
+    games?: number | undefined;
 }
 
 /** One best / worst map or loadout, with its record. */
 export default function H2hTile(props: H2hTileProps) {
-    const { label, kind, pick, labels, empty } = props;
+    const { label, kind, pick, labels, empty, games } = props;
 
     if (!pick) {
         return (
@@ -50,10 +53,16 @@ export default function H2hTile(props: H2hTileProps) {
             {image && <img className='h2h-tile__img' src={image} alt='' loading='lazy' />}
             <span className='h2h-tile__label'>{label}</span>
             <span className='h2h-tile__title'>{title}</span>
-            <span className='h2h-tile__line' title={recordTitle(pick.record)}>
-                <strong>{formatRecord(pick.record)}</strong> · {formatRate(rateOf(pick.record))}
-                {gamesOf(pick.record) === 1 ? ' · 1 game' : ''}
-            </span>
+            {games !== undefined ? (
+                <span className='h2h-tile__line'>
+                    <strong>{formatNumber(games)}</strong> {plural(games, 'game')}
+                </span>
+            ) : (
+                <span className='h2h-tile__line' title={recordTitle(pick.record)}>
+                    <strong>{formatRecord(pick.record)}</strong> · {formatRate(rateOf(pick.record))}
+                    {gamesOf(pick.record) === 1 ? ' · 1 game' : ''}
+                </span>
+            )}
         </div>
     );
 }

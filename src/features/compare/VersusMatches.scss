@@ -1,0 +1,7 @@
+@use '@/styles/utils' as *;
+
+.versus-matches__more {
+    display: flex;
+    justify-content: center;
+    margin-top: $space-s;
+}

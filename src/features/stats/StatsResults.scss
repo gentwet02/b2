@@ -17,6 +17,10 @@
     &__select {
         width: 5.5rem;
     }
+
+    &__sort {
+        width: 9.5rem;
+    }
 }
 
 .stats-tower {
@@ -90,6 +94,31 @@
         th,
         td {
             padding-inline: 0.0625rem !important;
+        }
+    }
+}
+
+// the tabs: a row of their own at the top left, what goes with the table below them;
+// up to seven, they scroll sideways when the panel is narrower
+// (the head is a grid item of the panel: without min-width 0 it widens the column)
+.stats-results__head {
+    min-width: 0;
+}
+
+.stats-results__tabs {
+    display: flex;
+    flex: 1 0 100%;
+    min-width: 0;
+
+    .segmented-control {
+        flex: 0 1 auto;
+        min-width: 0;
+        max-width: 100%;
+        overflow-x: auto;
+        scrollbar-width: none;
+
+        &::-webkit-scrollbar {
+            display: none;
         }
     }
 }

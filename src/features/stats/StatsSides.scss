@@ -1,0 +1,125 @@
+@use '@/styles/utils/colors';
+@use '@/styles/utils' as *;
+
+.stats-sides {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+    align-items: stretch;
+    gap: $space-xs;
+
+    @include breakpoint-down(big) {
+        grid-template-columns: minmax(0, 1fr);
+    }
+
+    &__side {
+        display: grid;
+        align-content: start;
+        justify-items: start;
+        gap: $space-xs;
+        min-width: 0;
+        padding: $space-xs;
+        border: 2px dashed colors.$line;
+        border-radius: $radius-control;
+        @include transition((border-color, background-color), $duration-base);
+
+        &:focus-within {
+            border-color: colors.$sky-deep;
+            background-color: colors.with-opacity('sky', 0.15);
+        }
+
+        // about half a stacked box: the pickers don't stretch across the whole page
+        > .controls {
+            width: 100%;
+            max-width: 30rem;
+            column-gap: $space-s;
+        }
+
+        // range and leave out share the box's width, side by side when they fit
+        .controls__group {
+            flex: 1 1 9rem;
+            min-width: 11rem;
+        }
+
+        .controls__group--grow {
+            max-width: none;
+        }
+
+        .controls__range {
+            width: 100%;
+            min-width: 0;
+        }
+    }
+
+    // hero and towers of the side, under its players
+    &__filters {
+        display: grid;
+        gap: $space-xs;
+        width: 100%;
+        padding-top: $space-xs;
+        border-top: 1px dashed colors.$line;
+
+        .controls__group {
+            max-width: none;
+        }
+    }
+
+    &__title {
+        font-family: $font-display;
+        font-size: $text-base;
+    }
+
+    &__vs {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: $space-3xs;
+        font-family: $font-display;
+        font-size: $text-xl;
+        color: colors.$ink-soft;
+
+        @include breakpoint-down(big) {
+            flex-direction: row;
+            gap: $space-xs;
+        }
+    }
+
+    &__swap {
+        display: grid;
+        place-items: center;
+        width: 2.25rem;
+        height: 2.25rem;
+        padding: 0;
+        color: colors.$ink;
+        border: $border-width solid colors.$ink;
+        border-radius: 50%;
+        background: colors.$paper;
+        @include transition((background-color, transform), $duration-fast);
+
+        &:not(:disabled) {
+            @include when-hover {
+                background: colors.$banana;
+            }
+        }
+
+        &:active:not(:disabled) {
+            transform: translateY(1px);
+        }
+
+        &:disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+        }
+
+        > svg {
+            display: block;
+        }
+
+        // sides stacked: the arrows point up and down
+        @include breakpoint-down(big) {
+            > svg {
+                transform: rotate(90deg);
+            }
+        }
+    }
+}

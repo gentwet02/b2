@@ -3,10 +3,10 @@ import { AGGREGATE_QUERY } from '@/config/queries';
 import { queryKeys } from '@/hooks/queries/keys';
 import { fetchData } from '@/services/api/client';
 import { compareService } from '@/services/api/compare';
-import type { SeasonScope } from '@/types/season';
+import type { SeasonQuery } from '@/types/season';
 
 /** Everyone the player met in a season (or all), most games first. */
-export default function useOpponentsMet(userId: string, season?: SeasonScope) {
+export default function useOpponentsMet(userId: string, season?: SeasonQuery) {
     return useQuery({
         queryKey: queryKeys.opponentsMet(userId, season ?? 'live'),
         queryFn: async () =>

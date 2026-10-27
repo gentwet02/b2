@@ -1,49 +1,68 @@
 import { Link } from '@tanstack/react-router';
-import { useState } from 'react';
+import { useState, type ReactNode } from 'react';
 import UserAvatar from '@/components/avatar/UserAvatar';
 import Panel from '@/components/panel/Panel';
 import RecordTable from '@/components/record-table/RecordTable';
 import { COMPARE_OPPONENTS_PAGE_SIZE } from '@/config/compare';
-import type { CompareSearch, Versus, VersusOpponent } from '@/types/compare';
+import type { Comparison, CompareMember, CompareSideKey } from '@/types/compare';
 import { formatNumber, timeAgo } from '@/utils/format';
 import { nameWithAlias, playerLabel } from '@/utils/player';
 import { gamesOf } from '@/utils/record';
 import { inScope } from '@/utils/season';
 import { byText } from '@/utils/sort';
 
-interface VersusOpponentsProps {
-    data: Versus;
-    search: CompareSearch;
+interface CompareMembersProps {
+    data: Comparison;
+    /** whose players: side 1's (their own record) or side 2's (side 1's record against them) */
+    side: CompareSideKey;
+    /** shown without a title when there are tabs (the tab names the table) */
+    title: string;
+    note?: string | undefined;
+    /** the stats tabs, in the head */
+    tabs?: ReactNode;
+    /** players with fewer games left out (the never met ones are shown on demand) */
+    min?: number | undefined;
+    /** the player alone takes the place of their side */
+    onDrill: (side: CompareSideKey, userId: string) => void;
 }
 
-/** Range mode: the record against each player of the range. */
-export default function VersusOpponents(props: VersusOpponentsProps) {
-    const { data, search } = props;
+/** A range side: the record of (or against) each of its players, each one a drill-down. */
+export default function CompareMembers(props: CompareMembersProps) {
+    const { data, side, title, note, tabs, min = 1, onDrill } = props;
 
     const [showAll, setShowAll] = useState(false);
     const all = data.season === 'all';
-    const neverMet = data.opponents.filter((o) => gamesOf(o.record) === 0).length;
-    const rows = showAll ? data.opponents : data.opponents.filter((o) => gamesOf(o.record) > 0);
+    const members = side === 'a' ? data.players : data.opponents;
+    const neverMet = members.filter((o) => gamesOf(o.record) === 0).length;
+    const rows = members.filter((o) => {
+        const games = gamesOf(o.record);
+        return games >= Math.max(min, 1) || (showAll && games === 0);
+    });
 
     return (
         <Panel
-            title='Opponents'
+            {...(tabs ? { headClassName: 'stats-results__head' } : { title, note })}
             actions={
-                neverMet > 0 && (
-                    <button
-                        type='button'
-                        className='text-link'
-                        onClick={() => setShowAll(!showAll)}
-                    >
-                        {showAll ? 'Hide' : 'Show'} the {formatNumber(neverMet)} never met
-                    </button>
-                )
+                <>
+                    {tabs}
+                    {/* with tabs: the note under them, not before */}
+                    {tabs && note && <span className='panel__note'>{note}</span>}
+                    {neverMet > 0 && (
+                        <button
+                            type='button'
+                            className='text-link'
+                            onClick={() => setShowAll(!showAll)}
+                        >
+                            {showAll ? 'Hide' : 'Show'} the {formatNumber(neverMet)} never met
+                        </button>
+                    )}
+                </>
             }
         >
-            <RecordTable<VersusOpponent>
+            <RecordTable<CompareMember>
                 rows={rows}
                 rowKey={(o) => o.userId}
-                empty={`No game against these players ${inScope(data)}.`}
+                empty={`No game between these players ${inScope(data)}.`}
                 label={{
                     title: 'Player',
                     sort: byText((o) => playerLabel(o)),
@@ -78,8 +97,8 @@ export default function VersusOpponents(props: VersusOpponentsProps) {
                               {
                                   title: 'Seasons in range',
                                   numeric: true,
-                                  render: (o: VersusOpponent) => formatNumber(o.seasons),
-                                  sort: (a: VersusOpponent, b: VersusOpponent) =>
+                                  render: (o: CompareMember) => formatNumber(o.seasons),
+                                  sort: (a: CompareMember, b: CompareMember) =>
                                       b.seasons - a.seasons,
                               },
                           ]
@@ -96,14 +115,14 @@ export default function VersusOpponents(props: VersusOpponentsProps) {
                     {
                         title: '',
                         render: (o) => (
-                            <Link
-                                from='/user/$userId/compare'
-                                search={{ season: search.season, vs: o.userId }}
+                            <button
+                                type='button'
                                 className='drill-link'
-                                aria-label={`Head to head against ${playerLabel(o)}`}
+                                onClick={() => onDrill(side, o.userId)}
+                                aria-label={`Only ${playerLabel(o)}`}
                             >
-                                <span className='drill-link__text'>Head to head </span>→
-                            </Link>
+                                <span className='drill-link__text'>Focus </span>→
+                            </button>
                         ),
                     },
                 ]}

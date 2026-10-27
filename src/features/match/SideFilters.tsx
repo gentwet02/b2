@@ -65,10 +65,7 @@ export default function SideFilters(props: SideFiltersProps) {
                 />
             </div>
             <div className='match-filters__side-group'>
-                <span className='match-filters__label'>
-                    Towers
-                    <span className='match-filters__cap'>up to {SIDE_MAX_TOWERS}</span>
-                </span>
+                <span className='match-filters__label'>Towers</span>
                 <TowerChips
                     towers={towers}
                     max={SIDE_MAX_TOWERS}

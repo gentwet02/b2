@@ -1,13 +1,16 @@
 import Panel from '@/components/panel/Panel';
 import RecordTable from '@/components/record-table/RecordTable';
-import type { Versus } from '@/types/compare';
+import type { Comparison, CompareSeasonRow, RankBounds } from '@/types/compare';
 import { formatNumber, timeAgo } from '@/utils/format';
 import { gamesOf } from '@/utils/record';
 import { incompleteMark, seasonTitle } from '@/utils/season';
 
 interface VersusSeasonsProps {
-    data: Versus;
+    data: Comparison;
 }
+
+const ranks = (bounds: RankBounds | null) =>
+    bounds ? `${formatNumber(bounds.from)}–${formatNumber(bounds.to)}` : '–';
 
 /** All seasons: the record season by season (when there are two or more). */
 export default function VersusSeasons(props: VersusSeasonsProps) {
@@ -15,6 +18,28 @@ export default function VersusSeasons(props: VersusSeasonsProps) {
 
     const rows = data.seasons.filter((s) => gamesOf(s.record) > 0);
     if (data.season !== 'all' || rows.length < 2) return null;
+
+    const bothGroups = data.a.mode === 'top' && data.b.mode === 'top';
+    const columns = [
+        ...(data.a.mode === 'top'
+            ? [
+                  {
+                      title: bothGroups ? 'Left ranks' : 'Ranks',
+                      numeric: true,
+                      render: (s: CompareSeasonRow) => ranks(s.boundsA),
+                  },
+              ]
+            : []),
+        ...(data.b.mode === 'top'
+            ? [
+                  {
+                      title: bothGroups ? 'Right ranks' : 'Ranks',
+                      numeric: true,
+                      render: (s: CompareSeasonRow) => ranks(s.bounds),
+                  },
+              ]
+            : []),
+    ];
 
     return (
         <Panel title='By season'>
@@ -27,20 +52,7 @@ export default function VersusSeasons(props: VersusSeasonsProps) {
                     sort: (a, b) => a.seasonId - b.seasonId,
                 }}
                 initialSort='none'
-                columns={
-                    data.mode === 'top'
-                        ? [
-                              {
-                                  title: 'Ranks',
-                                  numeric: true,
-                                  render: (s) =>
-                                      s.bounds
-                                          ? `${formatNumber(s.bounds.from)}–${formatNumber(s.bounds.to)}`
-                                          : '–',
-                              },
-                          ]
-                        : []
-                }
+                columns={columns}
                 after={[
                     {
                         title: 'Last met',

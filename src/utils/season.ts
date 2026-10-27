@@ -35,7 +35,9 @@ export const seasonTitle = (name: string) => name.replace(/\s*\bevent\b/gi, '').
 
 /** "in Season 47" / "in any season", for sentences about the games counted. */
 export const inScope = (d: { season: SeasonScope; seasonName: string }) =>
-    d.season === 'all' ? 'in any season' : `in ${seasonTitle(d.seasonName)}`;
+    d.season === 'all' && d.seasonName === 'All seasons'
+        ? 'in any season'
+        : `in ${seasonTitle(d.seasonName)}`;
 
 /** The season to put in the URL: none for the live one (the default). */
 export const urlSeason = <S extends SeasonScope>(season: S, liveSeason: number | undefined) =>

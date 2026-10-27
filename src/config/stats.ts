@@ -10,6 +10,9 @@ export const STATS_VIEWS: { value: StatsView; label: string }[] = [
     { value: 'loadouts', label: 'Strats' },
     { value: 'maps', label: 'Maps' },
 ];
+
+/** Tabs about the players: each side's table, and the latest games (a side is one player). */
+export const STATS_PLAYER_VIEWS = ['players', 'opponents', 'games'] as const;
 export const STATS_VIEW_DEFAULT: StatsView = 'heroes';
 
 export const STATS_MIN_GAMES = [1, 5, 10, 25, 50, 100, 250] as const;
@@ -30,8 +33,11 @@ export const STATS_MAX_TOWERS = 3;
 export const STATS_PAGE_SIZE = 50;
 export const STATS_TOWERS_PAGE_SIZE = 60;
 
-/** Who the stats count. */
+/** Who each side is: a range of each leaderboard, or one player. */
 export const STATS_MODES = [
-    { value: 'group', label: 'Group' },
+    { value: 'top', label: 'Top players' },
     { value: 'player', label: 'One player' },
 ] as const;
+
+/** Against, by default: every HoM player (a player in both ranges counts for the first side). */
+export const STATS_AGAINST_DEFAULT: LeaderboardRange = 'all';

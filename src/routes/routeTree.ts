@@ -1,4 +1,4 @@
-import { compareRoute } from './compareRoute';
+import { userCompareRoute } from './compareRoute';
 import { homeRoute } from './homeRoute';
 import { leaderboardIndexRoute } from './leaderboardIndexRoute';
 import { leaderboardRoute } from './leaderboardRoute';
@@ -13,6 +13,6 @@ export const routeTree = rootRoute.addChildren([
     leaderboardRoute,
     matchesRoute,
     userRoute,
-    compareRoute,
+    userCompareRoute,
     statsRoute,
 ]);

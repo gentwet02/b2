@@ -137,9 +137,8 @@ export default function HeadToHead(props: HeadToHeadProps) {
                     </span>
                 )}
                 <Link
-                    to='/user/$userId/compare'
-                    params={{ userId }}
-                    search={{ season, ...split }}
+                    to='/stats'
+                    search={{ season, player: userId, players2: 't10', view: 'opponents', ...split }}
                     className='button button--quiet'
                 >
                     Full head to head
