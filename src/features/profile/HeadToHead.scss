@@ -26,8 +26,8 @@
         align-items: center;
         justify-content: space-between;
         gap: $space-xs $space-s;
-        padding-top: $space-s;
-        border-top: 1px solid colors.$line;
+        padding-block-start: $space-s;
+        border-block-start: 1px solid colors.$line;
     }
 }
 

@@ -1,5 +1,5 @@
 import { createRoute } from '@tanstack/react-router';
-import LeaderboardIndex from '@/pages/LeaderboardIndex';
+import LeaderboardIndex from '@/pages/leaderboard/LeaderboardIndex';
 import { rootRoute } from './rootRoute';
 
 /** /leaderboard: redirects to the live season's. */

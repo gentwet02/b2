@@ -33,10 +33,10 @@ export default function SeasonSelect(props: SeasonSelectProps) {
     ];
     const current = value ?? liveSeason;
 
-    const select = (next: string) => {
+    function select(next: string) {
         if (props.allowAll) props.onChange(next === 'all' ? 'all' : Number(next));
         else props.onChange(Number(next));
-    };
+    }
 
     return (
         <Dropdown

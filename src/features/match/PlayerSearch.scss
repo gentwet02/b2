@@ -8,8 +8,9 @@
         flex: 2 1 16rem;
 
         input {
-            width: 100%;
-            padding: 0.5rem 1rem 0.5rem 2.5rem;
+            inline-size: 100%;
+            padding-block: 0.5rem;
+            padding-inline: 2.5rem 1rem;
             line-height: 1.6;
             font-weight: 500;
             border: 2px solid colors.$ink;
@@ -24,8 +25,8 @@
 
     &__search-icon {
         position: absolute;
-        left: 0.85rem;
-        top: 50%;
+        inset-inline-start: 0.85rem;
+        inset-block-start: 50%;
         translate: 0 -50%;
         color: colors.$ink-soft;
         pointer-events: none;

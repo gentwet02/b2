@@ -1,5 +1,5 @@
-import { formatNumber } from '@/utils/format';
 import type { RecordColumn, RecordRow, RecordSortKey, RecordSortState, Wld } from '@/types/record';
+import { formatNumber } from '@/utils/format';
 
 /** Win rate in %, draws left out; null without a win or a loss. */
 export function winRate(wins: number, losses: number): number | null {
@@ -26,12 +26,13 @@ export const recordTitle = ([w, l, d]: Wld) =>
 export const share = (part: number, whole: number) => (whole > 0 ? (part / whole) * 100 : null);
 
 /** "12%", "0.5%": one decimal under 10% */
-export const formatShare = (value: number | null) =>
-    value === null
+export function formatShare(value: number | null) {
+    return value === null
         ? '–'
         : value >= 10 || value === 0
           ? `${value.toFixed(0)}%`
           : `${value.toFixed(1)}%`;
+}
 
 /** Most games first. */
 export const compareGames = (a: { record: Wld }, b: { record: Wld }) =>
@@ -42,10 +43,11 @@ export const compareRate = (a: { record: Wld }, b: { record: Wld }) =>
     (rateOf(b.record) ?? -1) - (rateOf(a.record) ?? -1) || compareGames(a, b);
 
 /** Records as a list, most played first. */
-export const pickList = (records: Record<string, Wld>): RecordRow[] =>
-    Object.entries(records)
+export function pickList(records: Record<string, Wld>): RecordRow[] {
+    return Object.entries(records)
         .map(([key, record]) => ({ key, record }))
         .sort((a, b) => gamesOf(b.record) - gamesOf(a.record));
+}
 
 type Comparator<T> = (a: T, b: T) => number;
 
@@ -89,3 +91,11 @@ export function sortRecords<T extends { record: Wld }>(
         return dir * compare(a, b) || compareGames(a, b);
     });
 }
+
+/** Rows with at least `min` games and a pick rate (by `pick`, in %) of at least `minPick`. */
+export const keepRows = <T extends { record: Wld }>(
+    rows: T[],
+    pick: (row: T) => number,
+    min: number,
+    minPick: number,
+) => rows.filter((r) => gamesOf(r.record) >= min && pick(r) >= minPick);

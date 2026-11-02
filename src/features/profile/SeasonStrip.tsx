@@ -1,6 +1,7 @@
 import type { ReactNode } from 'react';
 import type { UserProfile } from '@/types/profile';
 import { arenaName } from '@/utils/badges';
+import { bem } from '@/utils/className';
 import { formatNumber } from '@/utils/format';
 import { arenaPicture } from '@/utils/unitImages';
 
@@ -42,7 +43,7 @@ export default function SeasonStrip(props: SeasonStripProps) {
     ];
 
     return (
-        <dl className={`season-strip${compact ? ' season-strip--compact' : ''}`}>
+        <dl className={bem('season-strip', compact && 'compact')}>
             {tiles.map((tile) => (
                 <div key={tile.label} className='season-strip__tile'>
                     <dt className='season-strip__label'>{tile.label}</dt>

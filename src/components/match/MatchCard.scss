@@ -57,11 +57,11 @@
     }
 
     &__map-img {
-        width: 100%;
+        inline-size: 100%;
         aspect-ratio: 16 / 9;
-        height: auto;
+        block-size: auto;
         object-fit: cover;
-        margin-bottom: $space-3xs;
+        margin-block-end: $space-3xs;
         border: 1.5px solid colors.$ink;
         border-radius: $radius-inner;
         background: colors.$paper-dim;
@@ -85,7 +85,7 @@
 
     &__outcome {
         @include components.chip(colors.$paper-dim);
-        margin-top: $space-3xs;
+        margin-block-start: $space-3xs;
         font-size: $text-xs;
     }
 
@@ -99,13 +99,13 @@
             grid-row: 1;
             justify-items: stretch;
             gap: $space-2xs;
-            text-align: left;
+            text-align: start;
         }
 
         &__map-img {
             aspect-ratio: 3 / 1;
-            max-width: var(--maxImgWidth);
-            max-height: 10rem;
+            max-inline-size: var(--maxImgWidth);
+            max-block-size: 10rem;
             margin-block: 0;
             margin-inline-start: calc((100% - var(--maxImgWidth)) / 2 + var(--shadowWidth) / 2);
         }
@@ -139,7 +139,7 @@
         &__outcome {
             grid-column: 2;
             grid-row: 1 / span 2;
-            margin-top: 0;
+            margin-block-start: 0;
         }
     }
 
@@ -148,7 +148,7 @@
 
         &__map-img {
             aspect-ratio: 2 / 1;
-            max-height: none;
+            max-block-size: none;
         }
 
         // the chip next to the map name, the info line gets the full width

@@ -1,43 +1,49 @@
 import { getFromApi, withQuery } from '@/services/api/client';
 import type { Stats, StatsParams } from '@/types/stats';
 
+/** A list in one order, or nothing: ["Druid", "Alchemist"] asks what ["Alchemist", "Druid"] does. */
+const sortedList = (list: string[] | undefined) => (list?.length ? [...list].sort() : undefined);
+
+/**
+ * The params as the server reads them: only what changes the answer (one player or a range,
+ * the opponent's loadout only with `sides`, no empty filter), lists sorted. Both the request
+ * and the react-query key are made from it, so two asks are cached together exactly when the
+ * server answers them the same, and a new filter needs no extra key code.
+ */
+export function normalizeStatsParams(p: StatsParams): StatsParams {
+    return {
+        season: p.season,
+        overlap: p.overlap === false ? false : undefined,
+        ...(p.player ? { player: p.player } : { players: p.players, exclude: p.exclude || undefined }),
+        ...(p.player2
+            ? { player2: p.player2 }
+            : { players2: p.players2, exclude2: (p.players2 && p.exclude2) || undefined }),
+        map: p.map || undefined,
+        hero: p.hero || undefined,
+        towers: sortedList(p.towers),
+        exHeroes: p.exHeroes || undefined,
+        exTowers: p.exTowers || undefined,
+        exMaps: p.exMaps || undefined,
+        ...(p.sides && {
+            sides: true,
+            hero2: p.hero2 || undefined,
+            towers2: sortedList(p.towers2),
+            exHeroes2: p.exHeroes2 || undefined,
+            exTowers2: p.exTowers2 || undefined,
+        }),
+    };
+}
+
 export const statsService = {
-    getStats: ({
-        season,
-        overlap,
-        player,
-        players,
-        exclude,
-        player2,
-        players2,
-        exclude2,
-        map,
-        hero,
-        towers,
-        hero2,
-        towers2,
-        exHeroes2,
-        exTowers2,
-        sides,
-        ...excluded
-    }: StatsParams) =>
-        getFromApi<Stats>(
+    getStats: (params: StatsParams) => {
+        const { overlap, towers, towers2, ...rest } = normalizeStatsParams(params);
+        return getFromApi<Stats>(
             withQuery('stats', {
-                season,
+                ...rest,
                 overlap: overlap === false ? 0 : undefined,
-                ...(player ? { player } : { players, exclude }),
-                ...(player2 ? { player2 } : { players2, exclude2: players2 ? exclude2 : undefined }),
-                map,
-                hero,
                 towers: towers?.join(','),
-                ...excluded,
-                ...(sides && {
-                    sides: true,
-                    hero2,
-                    towers2: towers2?.join(','),
-                    exHeroes2,
-                    exTowers2,
-                }),
+                towers2: towers2?.join(','),
             }),
-        ),
+        );
+    },
 };

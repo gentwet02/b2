@@ -17,7 +17,7 @@
 
     // "Clear", after the selects
     &__clear {
-        margin-left: $space-2xs;
+        margin-inline-start: $space-2xs;
         font-size: $text-sm;
         color: colors.$ink-soft;
     }
@@ -27,7 +27,8 @@
     display: inline-flex;
     align-items: center;
     gap: 0.35rem;
-    padding: 0.2rem 0.3rem 0.2rem 0.75rem;
+    padding-block: 0.2rem;
+    padding-inline: 0.75rem 0.3rem;
     font-size: $text-md;
     font-weight: 600;
     background: colors.$sky;
@@ -38,7 +39,7 @@
     // a hero or map: picture first, sky blue
     &--image {
         background: colors.$sky;
-        padding-left: 0.3rem;
+        padding-inline-start: 0.3rem;
     }
 
     // an exclusion: red tint (after --image, so it wins)
@@ -46,26 +47,26 @@
         background: colors.lighten('bloon', 78%);
         border-color: colors.darken('bloon', 25%);
 
-        .filter-chip__img {
+        [class^='filter-chip__img'] {
             filter: grayscale(0.6);
             opacity: 0.8;
         }
     }
 
-    &__img {
+    @at-root [class^='filter-chip__img'] {
         @include size(1.6rem);
         border-radius: 50%;
         border: 1.5px solid colors.$ink;
         background: colors.$paper;
+    }
 
-        &--map {
-            border-radius: 0.4rem;
-            object-fit: cover;
-        }
+    &__img--map {
+        border-radius: 0.4rem;
+        object-fit: cover;
     }
 
     &__variant {
-        width: 9.5rem;
+        inline-size: 9.5rem;
     }
 
     &__remove {

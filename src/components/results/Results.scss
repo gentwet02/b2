@@ -1,11 +1,11 @@
 @use '@/styles/utils' as *;
 
-.results {
+[class^='results'] {
     display: grid;
     gap: $space-l;
     @include transition(opacity, $duration-fast);
+}
 
-    &--updating {
-        opacity: 0.6;
-    }
+.results--updating {
+    opacity: 0.6;
 }

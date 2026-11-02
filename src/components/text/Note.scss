@@ -2,7 +2,7 @@
 @use '@/styles/utils' as *;
 
 .note {
-    max-width: none;
+    max-inline-size: none;
     font-size: $text-md;
     color: colors.$ink-soft;
 }

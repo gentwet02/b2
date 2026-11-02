@@ -7,7 +7,7 @@ interface PlayerAvatarProps {
     src?: string | undefined;
     /** used for the fallback letter */
     name: string;
-    /** base class, e.g. 'lb-player__avatar'; the fallback also gets `${className}--empty` */
+    /** base class, e.g. 'lb-player__avatar'; the fallback gets `${className}--empty` instead */
     className: string;
     size: number;
     lazy?: boolean;
@@ -38,7 +38,7 @@ export default function PlayerAvatar(props: PlayerAvatarProps) {
     }
 
     return (
-        <span className={`${className} ${className}--empty`} aria-hidden='true'>
+        <span className={`${className}--empty`} aria-hidden='true'>
             {name.charAt(0).toUpperCase()}
         </span>
     );

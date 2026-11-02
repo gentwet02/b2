@@ -2,6 +2,7 @@ import { useId } from 'react';
 import { DROPDOWN_ICON_SIZES, DROPDOWN_SEARCH_THRESHOLD } from '@/config/dropdown';
 import useDropdown from '@/hooks/useDropdown';
 import type { DropdownOption, DropdownValue, DropdownVariant } from '@/types/dropdown';
+import { bem, cx } from '@/utils/className';
 import DropdownInput from './DropdownInput';
 import DropdownList from './DropdownList';
 import DropdownSpacer from './DropdownSpacer';
@@ -48,14 +49,10 @@ export default function Dropdown<V extends DropdownValue>(props: DropdownProps<V
 
     const dropdown = useDropdown({ options, value, onSelect, disabled, searchable });
 
-    const rootClassName = [
-        'dropdown',
-        variant !== 'default' && `dropdown--${variant}`,
-        dropdown.isOpen && 'dropdown--open',
+    const rootClassName = cx(
+        bem('dropdown', variant !== 'default' && variant, dropdown.isOpen && 'open'),
         className,
-    ]
-        .filter(Boolean)
-        .join(' ');
+    );
 
     return (
         <div ref={dropdown.rootRef} className={rootClassName}>

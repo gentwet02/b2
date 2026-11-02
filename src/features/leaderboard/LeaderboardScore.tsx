@@ -16,6 +16,7 @@ import useRankedPlayers from '@/hooks/queries/useRankedPlayers';
 import usePlayerAvatars from '@/hooks/usePlayerAvatars';
 import type { LeaderboardLine, LeaderboardView } from '@/types/leaderboard';
 import type { Row, TableState, TableStateCause, TableStateInput } from '@/types/table';
+import { mods } from '@/utils/className';
 import { formatNumber } from '@/utils/format';
 import { compareLines } from '@/utils/leaderboard';
 import { recordTitle, winRate } from '@/utils/record';
@@ -103,7 +104,7 @@ export default function LeaderboardScore(props: LeaderboardScoreProps) {
             lines.map(({ player, wins, losses, draws, games, rate }): Row => ({
                 rank: (
                     <span
-                        className={`lb-rank${player.rank <= 3 ? ` lb-rank--${player.rank}` : ''}`}
+                        className={mods('lb-rank', player.rank <= 3 && String(player.rank))}
                     >
                         {formatNumber(player.rank)}
                     </span>
@@ -119,7 +120,7 @@ export default function LeaderboardScore(props: LeaderboardScoreProps) {
                 games: <span className='lb-num'>{stats ? formatNumber(games) : '…'}</span>,
                 winRate:
                     rate === null ? (
-                        <span className='lb-num lb-num--empty'>–</span>
+                        <span className='lb-num--empty'>–</span>
                     ) : (
                         <RateBar rate={rate} title={recordTitle([wins, losses, draws])} />
                     ),

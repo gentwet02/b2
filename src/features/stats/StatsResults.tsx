@@ -2,24 +2,24 @@ import HeroLabel from '@/components/labels/HeroLabel';
 import LoadoutLabel from '@/components/labels/LoadoutLabel';
 import MapLabel from '@/components/labels/MapLabel';
 import RecordTable from '@/components/record-table/RecordTable';
-import Note from '@/components/text/Note';
 import { STATS_MAX_TOWERS, STATS_PAGE_SIZE, STATS_TOWERS_PAGE_SIZE } from '@/config/stats';
 import { useSplitHeroes, useSplitMaps } from '@/hooks/useSplitVariants';
 import type {
     Stats,
     StatsMapRow,
-    StatsRow,
     StatsSearch,
     StatsTableSpec,
     StatsView,
 } from '@/types/stats';
-import { formatLabel, formatNumber, plural } from '@/utils/format';
+import { formatLabel, plural } from '@/utils/format';
 import { formatHero, formatHeroPick } from '@/utils/hero';
 import { formatTowerList, loadoutName, parseLoadout, withVariantLabels } from '@/utils/loadout';
 import { formatMap } from '@/utils/map';
-import { formatShare, gamesOf, share } from '@/utils/record';
+import { formatShare, gamesOf, keepRows, share } from '@/utils/record';
 import { joinList } from '@/utils/search';
 import { byText } from '@/utils/sort';
+import FocusButton from './FocusButton';
+import StatsTable from './StatsTable';
 
 interface StatsResultsProps {
     data: Stats;
@@ -40,50 +40,26 @@ export default function StatsResults(props: StatsResultsProps) {
     const { filters, labels } = data;
 
     const groupGames = gamesOf(data.group);
-    const pickOf = (r: StatsRow) => share(gamesOf(r.record), groupGames) ?? 0;
-    const keep = <T extends StatsRow>(rows: T[], pick: (r: T) => number) =>
-        rows.filter((r) => gamesOf(r.record) >= min && pick(r) >= minPick);
     const games = `${min}+ ${plural(min, 'game')}`;
     const empty =
         minPick > 0
             ? `Nothing with ${games} and a ${minPick}%+ pick rate here.`
             : `Nothing with ${games} here.`;
 
-    const focusButton = (next: Partial<StatsSearch> | null) =>
-        next ? (
-            <button type='button' className='drill-link' onClick={() => onFocus(next)}>
-                <span className='drill-link__text'>Focus </span>→
-            </button>
-        ) : null;
-
-    const table = (spec: StatsTableSpec) => (
-        <>
-            <RecordTable<StatsRow>
+    // keyed by table: another table starts on its own sort and page
+    function table(spec: StatsTableSpec) {
+        return (
+            <StatsTable
                 key={spec.id}
-                className='stats-table'
-                rows={keep(spec.rows, pickOf)}
-                rowKey={(r) => r.key}
-                label={{ title: spec.title, render: spec.render, sort: byText(spec.name) }}
-                columns={[
-                    {
-                        title: 'Pick rate',
-                        numeric: true,
-                        render: (r) => formatShare(pickOf(r)),
-                        sort: (a, b) => gamesOf(b.record) - gamesOf(a.record),
-                    },
-                ]}
-                after={[{ title: '', render: (r) => focusButton(spec.focus(r)) }]}
+                spec={spec}
+                groupGames={groupGames}
+                min={min}
+                minPick={minPick}
                 empty={empty}
-                pageSize={spec.pageSize}
+                onFocus={onFocus}
             />
-            {spec.cut && spec.cut.total > spec.rows.length && (
-                <Note>
-                    The {formatNumber(spec.rows.length)} most played of{' '}
-                    {formatNumber(spec.cut.total)} {spec.cut.noun}.
-                </Note>
-            )}
-        </>
-    );
+        );
+    }
 
     if (view === 'heroes') {
         return splitHeroes
@@ -215,7 +191,7 @@ export default function StatsResults(props: StatsResultsProps) {
         <RecordTable<StatsMapRow>
             key={splitMaps ? 'map-variants' : 'maps'}
             className='stats-table'
-            rows={keep(mapRows, mapPick)}
+            rows={keepRows(mapRows, mapPick, min, minPick)}
             rowKey={(r) => r.key}
             label={{
                 title: 'Map',
@@ -233,8 +209,12 @@ export default function StatsResults(props: StatsResultsProps) {
             after={[
                 {
                     title: '',
-                    render: (r) =>
-                        focusButton(pickKey(r.key) === picked ? null : { map: pickKey(r.key) }),
+                    render: (r) => (
+                        <FocusButton
+                            next={pickKey(r.key) === picked ? null : { map: pickKey(r.key) }}
+                            onFocus={onFocus}
+                        />
+                    ),
                 },
             ]}
             empty={empty}

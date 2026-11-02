@@ -1,16 +1,18 @@
 @use '@/styles/utils' as *;
 
-.controls__group {
+[class^='controls__group'] {
     display: grid;
     gap: $space-3xs;
+}
 
-    &--grow {
-        flex: 1 1 18rem;
-        max-width: 30rem;
-    }
+.controls__group--grow {
+    flex: 1 1 18rem;
+    max-inline-size: 30rem;
+}
 
-    @include breakpoint-down(small) {
+@include breakpoint-down(small) {
+    [class^='controls__group'] {
         flex: 1 1 100%;
-        max-width: none;
+        max-inline-size: none;
     }
 }

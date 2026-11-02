@@ -1,0 +1,9 @@
+@use '@/styles/utils' as *;
+
+.controls__range {
+    min-inline-size: 11rem;
+
+    @include breakpoint-down(small) {
+        min-inline-size: 0;
+    }
+}

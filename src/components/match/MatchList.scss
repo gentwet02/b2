@@ -5,6 +5,6 @@
     gap: $space-xs;
 
     > li {
-        max-width: 100%;
+        max-inline-size: 100%;
     }
 }

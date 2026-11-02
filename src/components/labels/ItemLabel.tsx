@@ -18,7 +18,7 @@ export default function ItemLabel(props: ItemLabelProps) {
             {image ? (
                 <img className={thumb} src={image} alt='' loading='lazy' />
             ) : (
-                <span className={`${thumb} ${thumb}--empty`} aria-hidden='true' />
+                <span className={`${thumb}--empty`} aria-hidden='true' />
             )}
             <span className='item-label__text'>
                 {children}

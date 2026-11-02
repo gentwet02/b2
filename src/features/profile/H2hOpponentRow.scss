@@ -3,13 +3,13 @@
 @use '@/styles/utils' as *;
 
 .h2h-row {
-    max-width: none; // the reset caps li at 75ch for prose
-    border-top: 1px solid colors.$line;
+    max-inline-size: none; // the reset caps li at 75ch for prose
+    border-block-start: 1px solid colors.$line;
     @include enter($anim-fade-up, $duration-slow);
     @include stagger(10, 35ms);
 
     &:first-child {
-        border-top: none;
+        border-block-start: none;
     }
 
     // avatar | select | record | bar | rate | games + last met | toggle
@@ -23,17 +23,16 @@
         padding: $space-2xs 0;
     }
 
-    &__avatar {
-        width: 2.25rem;
-        height: 2.25rem;
+    @at-root [class^='h2h-row__avatar'] {
+        @include size(2.25rem);
         border-radius: 50%;
         border: 1.5px solid colors.$ink;
         background: colors.$paper-dim;
         object-fit: cover;
+    }
 
-        &--empty {
-            @include components.avatar-fallback;
-        }
+    &__avatar--empty {
+        @include components.avatar-fallback;
     }
 
     &__meta {
@@ -41,7 +40,7 @@
         font-size: $text-sm;
         font-weight: 600;
         line-height: 1.25;
-        text-align: right;
+        text-align: end;
     }
 
     &__last {
@@ -51,19 +50,19 @@
 
     &__record {
         font-weight: 700;
-        text-align: right;
+        text-align: end;
         font-variant-numeric: tabular-nums;
     }
 
     &__track {
-        height: 0.45rem;
+        block-size: 0.45rem;
         background: color-mix(in srgb, colors.$bloon 25%, colors.$paper-dim);
         border-radius: 999px;
         overflow: hidden;
 
         span {
             display: block;
-            height: 100%;
+            block-size: 100%;
             background: colors.$leaf;
             border-radius: inherit;
             @include grow-bar(200ms);
@@ -72,7 +71,7 @@
 
     &__rate {
         font-weight: 700;
-        text-align: right;
+        text-align: end;
     }
 
     &__none {
@@ -98,7 +97,8 @@
     &__details {
         display: grid;
         gap: $space-2xs;
-        padding: $space-3xs 0 $space-s;
+        padding-block: $space-3xs $space-s;
+        padding-inline: 0;
         @include enter($anim-fade-down, $duration-base);
     }
 
@@ -145,7 +145,7 @@
         &__main {
             grid-template-columns: minmax(0, 1fr) 3.2rem 2.8rem 2rem;
 
-            .h2h-row__avatar {
+            [class^='h2h-row__avatar'] {
                 display: none;
             }
         }

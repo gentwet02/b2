@@ -1,5 +1,5 @@
-import { Link } from '@tanstack/react-router';
 import { useState, type ReactNode } from 'react';
+import { Link } from '@tanstack/react-router';
 import UserAvatar from '@/components/avatar/UserAvatar';
 import Panel from '@/components/panel/Panel';
 import RecordTable from '@/components/record-table/RecordTable';
@@ -60,6 +60,7 @@ export default function CompareMembers(props: CompareMembersProps) {
             }
         >
             <RecordTable<CompareMember>
+                className='compare-members__table'
                 rows={rows}
                 rowKey={(o) => o.userId}
                 empty={`No game between these players ${inScope(data)}.`}

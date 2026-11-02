@@ -5,8 +5,8 @@ import { fetchData } from '@/services/api/client';
 import { compareService } from '@/services/api/compare';
 import type { SeasonScope } from '@/types/season';
 
-export const headToHeadQueryOptions = (userId: string, opponents: string[], season?: SeasonScope) =>
-    queryOptions({
+export function headToHeadQueryOptions(userId: string, opponents: string[], season?: SeasonScope) {
+    return queryOptions({
         // slot order doesn't change the answer: one cache entry per set of opponents
         queryKey: queryKeys.headToHead(
             userId,
@@ -22,6 +22,7 @@ export const headToHeadQueryOptions = (userId: string, opponents: string[], seas
         staleTime: AGGREGATE_QUERY.stale,
         gcTime: AGGREGATE_QUERY.gc,
     });
+}
 
 /** The profile player's games against each opponent. */
 export default function useHeadToHead(

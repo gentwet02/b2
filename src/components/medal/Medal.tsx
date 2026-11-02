@@ -1,5 +1,6 @@
 import type { Badge } from '@/types/profile';
 import { medalLabel, medalNumeral } from '@/utils/badges';
+import { bem, cx } from '@/utils/className';
 
 interface MedalProps {
     badge: Badge;
@@ -19,7 +20,7 @@ export default function Medal(props: MedalProps) {
 
     return (
         <span
-            className={`medal medal--${size}${className ? ` ${className}` : ''}`}
+            className={cx(bem('medal', size), className)}
             title={label}
         >
             <span className='medal__art'>

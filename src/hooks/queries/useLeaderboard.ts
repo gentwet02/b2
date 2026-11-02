@@ -4,8 +4,8 @@ import { queryKeys } from '@/hooks/queries/keys';
 import { fetchData } from '@/services/api/client';
 import { leaderboardService } from '@/services/api/leaderboard';
 
-export const leaderboardQueryOptions = (seasonId: number, live = false) =>
-    queryOptions({
+export function leaderboardQueryOptions(seasonId: number, live = false) {
+    return queryOptions({
         queryKey: queryKeys.leaderboard(seasonId),
         queryFn: () =>
             fetchData(
@@ -16,6 +16,7 @@ export const leaderboardQueryOptions = (seasonId: number, live = false) =>
         staleTime: live ? LEADERBOARD_QUERY.liveStale : Infinity,
         refetchInterval: live ? LEADERBOARD_QUERY.livePoll : false,
     });
+}
 
 export default function useLeaderboard(seasonId: number | undefined, live = false) {
     return useQuery({

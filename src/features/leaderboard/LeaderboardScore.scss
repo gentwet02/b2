@@ -4,47 +4,44 @@
 
 .leaderboard-score {
     th[data-category='rank'] {
-        width: 4rem;
+        inline-size: 4rem;
     }
 
     th[data-category='score'] {
-        width: 7rem;
+        inline-size: 7rem;
     }
 
     th[data-category='games'] {
-        width: 6.5rem;
+        inline-size: 6.5rem;
     }
 
     th[data-category='win-rate'] {
-        width: 9rem;
+        inline-size: 9rem;
     }
 
-    th[data-category='score'],
-    th[data-category='games'],
-    td:nth-child(3),
-    td:nth-child(4) {
-        text-align: right;
+    th:is([data-category='score'], [data-category='games']),
+    td:is(:nth-child(3), :nth-child(4)) {
+        text-align: end;
     }
 
     td:not(:nth-child(2)) {
         white-space: nowrap;
     }
 
-    th[data-category='score'] .table__table__header-cell-content,
-    th[data-category='games'] .table__table__header-cell-content {
+    th:is([data-category='score'], [data-category='games']) .table__table__header-cell-content {
         flex-direction: row-reverse;
         justify-content: flex-start;
     }
 
-    .lb-num {
+    [class^='lb-num'] {
         font-weight: 600;
-
-        &--empty {
-            color: colors.$ink-soft;
-        }
     }
 
-    .lb-rank {
+    .lb-num--empty {
+        color: colors.$ink-soft;
+    }
+
+    [class^='lb-rank'] {
         @include size(2.1rem);
         padding-inline: 0.3rem;
         display: inline-grid;
@@ -52,25 +49,25 @@
         font-family: $font-display;
         font-size: $text-base;
         border-radius: 999px;
+    }
 
-        &--1,
-        &--2,
-        &--3 {
-            border: 2px solid colors.$ink;
-            @include animate($anim-pop-in, $duration-slow, $ease-spring);
-        }
+    .lb-rank--1,
+    .lb-rank--2,
+    .lb-rank--3 {
+        border: 2px solid colors.$ink;
+        @include animate($anim-pop-in, $duration-slow, $ease-spring);
+    }
 
-        &--1 {
-            background: colors.$banana;
-        }
+    .lb-rank--1 {
+        background: colors.$banana;
+    }
 
-        &--2 {
-            background: #dfe4ee;
-        }
+    .lb-rank--2 {
+        background: #dfe4ee;
+    }
 
-        &--3 {
-            background: #eab18a;
-        }
+    .lb-rank--3 {
+        background: #eab18a;
     }
 
     .lb-score {
@@ -82,18 +79,15 @@
     // fit (481px) to its desktop width (1024px), the player takes the rest
     @include breakpoint-between(small, big) {
         .table {
-            th,
-            td {
+            :is(th, td) {
                 padding-inline: 0.5rem;
             }
 
-            th:first-child,
-            td:first-child {
+            :is(th, td):first-child {
                 padding-inline-start: $space-s;
             }
 
-            th:last-child,
-            td:last-child {
+            :is(th, td):last-child {
                 padding-inline-end: $space-s;
             }
 
@@ -101,29 +95,28 @@
                 gap: 0.25rem;
             }
 
-            .table__table__header-cell-icon {
-                width: 0.75rem;
-                height: 0.75rem;
+            [class^='table__table__header-cell-icon'] {
+                @include size(0.75rem);
             }
 
             th[data-category='rank'] {
-                width: clamp(3.3rem, 2.9013rem + 1.326vw, 3.75rem);
+                inline-size: clamp(3.3rem, 2.9013rem + 1.326vw, 3.75rem);
             }
 
             th[data-category='score'] {
-                width: clamp(4.1875rem, 1.6963rem + 8.287vw, 7rem);
+                inline-size: clamp(4.1875rem, 1.6963rem + 8.287vw, 7rem);
             }
 
             th[data-category='games'] {
-                width: clamp(4.625rem, 2.9644rem + 5.525vw, 6.5rem);
+                inline-size: clamp(4.625rem, 2.9644rem + 5.525vw, 6.5rem);
             }
 
             th[data-category='win-rate'] {
-                width: clamp(5.75rem, 2.8713rem + 9.576vw, 9rem);
+                inline-size: clamp(5.75rem, 2.8713rem + 9.576vw, 9rem);
             }
 
             td:nth-child(2) {
-                max-width: 0;
+                max-inline-size: 0;
             }
         }
 
@@ -142,9 +135,8 @@
                 font-size: $text-sm;
             }
 
-            .table__table__header-cell-icon {
-                width: 0.65rem;
-                height: 0.65rem;
+            [class^='table__table__header-cell-icon'] {
+                @include size(0.65rem);
             }
         }
 
@@ -152,7 +144,7 @@
             gap: 0;
         }
 
-        .lb-player__avatar {
+        [class^='lb-player__avatar'] {
             display: none;
         }
 
@@ -170,7 +162,7 @@
             }
         }
 
-        .lb-rank {
+        [class^='lb-rank'] {
             @include size(1.9rem);
             font-size: 0.9375rem;
         }
@@ -180,18 +172,15 @@
         $inset: $space-xs;
 
         .table {
-            td,
-            th {
+            :is(th, td) {
                 padding: 0.35rem 0;
             }
 
-            td:first-child,
-            th:first-child {
+            :is(th, td):first-child {
                 padding-inline-start: $inset;
             }
 
-            td:last-child,
-            th:last-child {
+            :is(th, td):last-child {
                 padding-inline-end: $inset;
             }
 
@@ -203,31 +192,30 @@
                 gap: 0.15rem;
             }
 
-            .table__table__header-cell-icon {
-                width: 0.65rem;
-                height: 0.65rem;
+            [class^='table__table__header-cell-icon'] {
+                @include size(0.65rem);
+            }
 
-                &--off {
-                    display: none;
-                }
+            .table__table__header-cell-icon--off {
+                display: none;
             }
 
             th[data-category='rank'] {
-                width: calc(2.1rem + #{$inset});
+                inline-size: calc(2.1rem + #{$inset});
             }
 
             th[data-category='score'] {
-                width: 3.5rem;
+                inline-size: 3.5rem;
                 padding-inline-start: 0.35rem;
             }
 
             th[data-category='games'] {
-                width: 3.95rem;
+                inline-size: 3.95rem;
                 padding-inline-start: 0.35rem;
             }
 
             th[data-category='win-rate'] {
-                width: calc(4.65rem + #{$inset});
+                inline-size: calc(4.65rem + #{$inset});
                 padding-inline-start: 0.35rem;
 
                 .table__table__header-cell-content {
@@ -244,8 +232,8 @@
             &__cell {
                 font-size: $text-md;
 
-                [class^='lb-']:not(.lb-rank) {
-                    max-width: 100%;
+                [class^='lb-']:not([class^='lb-rank']) {
+                    max-inline-size: 100%;
                     overflow: hidden;
                     text-wrap: nowrap;
                     text-overflow: ellipsis;
@@ -256,7 +244,7 @@
                 }
 
                 [class*='avatar'] {
-                    width: 0;
+                    inline-size: 0;
                     border: 0;
                     visibility: hidden;
                 }
@@ -272,10 +260,10 @@
             }
         }
 
-        .lb-rank {
+        [class^='lb-rank'] {
             @include size(1.8rem);
-            width: auto;
-            min-width: 1.8rem;
+            inline-size: auto;
+            min-inline-size: 1.8rem;
             font-size: $text-md;
         }
 
@@ -295,29 +283,29 @@
             }
 
             th[data-category='rank'] {
-                width: calc(2rem + #{$space-xs});
+                inline-size: calc(2rem + #{$space-xs});
             }
 
             th[data-category='score'] {
-                width: 3.3rem;
+                inline-size: 3.3rem;
                 padding-inline-start: 0.3rem;
             }
 
             th[data-category='games'] {
-                width: 3.7rem;
+                inline-size: 3.7rem;
                 padding-inline-start: 0.3rem;
             }
 
             th[data-category='win-rate'] {
-                width: calc(4.3rem + #{$space-xs});
+                inline-size: calc(4.3rem + #{$space-xs});
                 padding-inline-start: 0.3rem;
             }
         }
 
-        .lb-rank {
+        [class^='lb-rank'] {
             @include size(1.6rem);
-            width: auto;
-            min-width: 1.6rem;
+            inline-size: auto;
+            min-inline-size: 1.6rem;
             padding-inline: 0.2rem;
             font-size: $text-sm;
         }

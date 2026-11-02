@@ -1,4 +1,5 @@
 import { createRouter } from '@tanstack/react-router';
+import RouteError from '@/pages/route-error/RouteError';
 import { queryClient } from '@/queryClient';
 import { routeTree } from '@/routes/routeTree';
 
@@ -6,6 +7,7 @@ export const router = createRouter({
     routeTree,
     context: { queryClient },
     scrollRestoration: true,
+    defaultErrorComponent: RouteError,
     // hovering a link loads its page's data
     defaultPreload: 'intent',
     defaultPreloadDelay: 150,

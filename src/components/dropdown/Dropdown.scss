@@ -7,13 +7,13 @@
     --dropdown-radius: 0.75rem;
 
     position: relative;
-    min-width: 11.5rem;
+    min-inline-size: 11.5rem;
     color: colors.$ink; // don't inherit a soft label color
 
     &--open &__input,
     &--open &__input:focus {
-        border-bottom-left-radius: 0;
-        border-bottom-right-radius: 0;
+        border-end-start-radius: 0;
+        border-end-end-radius: 0;
         box-shadow: var(--dropdown-shadow) var(--dropdown-shadow) 0 colors.$ink;
     }
 
@@ -22,32 +22,34 @@
     &--compact {
         --dropdown-shadow: 3px;
         --dropdown-radius: 0.5rem;
-        min-width: 0;
+        min-inline-size: 0;
 
         .dropdown__input {
-            padding: 0.3rem 1.75rem 0.3rem 0.6rem;
+            padding-block: 0.3rem;
+            padding-inline: 0.6rem 1.75rem;
         }
 
         .dropdown__icon {
-            right: 0.6rem;
+            inset-inline-end: 0.6rem;
         }
 
-        .dropdown__option {
+        [class^='dropdown__option'] {
             padding: 0.4rem 0.6rem;
+        }
 
-            &--active {
-                padding-inline-start: 0.8rem;
-            }
+        .dropdown__option--active {
+            padding-inline-start: 0.8rem;
         }
     }
 
     // ---------- Pill: inside a chip, the list opens as a detached menu ----------
 
     &--pill {
-        min-width: 0;
+        min-inline-size: 0;
 
         .dropdown__input {
-            padding: 0.1rem 1.4rem 0.1rem 0.5rem;
+            padding-block: 0.1rem;
+            padding-inline: 0.5rem 1.4rem;
             font-size: $text-sm;
             font-weight: 500;
             border-width: 1.5px;
@@ -55,14 +57,14 @@
         }
 
         .dropdown__icon {
-            right: 0.45rem;
+            inset-inline-end: 0.45rem;
         }
 
-        .dropdown__list {
-            width: max-content;
-            min-width: 100%;
-            max-width: min(18rem, calc(100vw - 2rem));
-            margin-top: 0.35rem;
+        [class^='dropdown__list'] {
+            inline-size: max-content;
+            min-inline-size: 100%;
+            max-inline-size: min(18rem, calc(100vw - 2rem));
+            margin-block-start: 0.35rem;
             font-size: $text-md;
             border-radius: $radius-inner;
             box-shadow: 3px 3px 0 colors.$ink;
@@ -77,12 +79,12 @@
             animation-timing-function: $ease-out;
         }
 
-        .dropdown__option {
+        [class^='dropdown__option'] {
             padding: 0.4rem 0.65rem;
+        }
 
-            &--active {
-                padding-inline-start: 0.85rem;
-            }
+        .dropdown__option--active {
+            padding-inline-start: 0.85rem;
         }
     }
 

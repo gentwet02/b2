@@ -1,6 +1,7 @@
 import type { ReactNode } from 'react';
 import type { H2hPick, H2hTileKind, Labels } from '@/types/compare';
 import { heroImage, mapImage } from '@/utils/assetOverrides';
+import { bem } from '@/utils/className';
 import { formatNumber, plural } from '@/utils/format';
 import { formatLoadout } from '@/utils/loadout';
 import { formatMap } from '@/utils/map';
@@ -22,7 +23,7 @@ export default function H2hTile(props: H2hTileProps) {
 
     if (!pick) {
         return (
-            <div className='h2h-tile h2h-tile--empty'>
+            <div className={bem('h2h-tile', 'empty')}>
                 <span className='h2h-tile__label'>{label}</span>
                 <span className='h2h-tile__none'>{empty}</span>
             </div>
@@ -49,7 +50,7 @@ export default function H2hTile(props: H2hTileProps) {
     }
 
     return (
-        <div className={`h2h-tile h2h-tile--${kind}`}>
+        <div className={bem('h2h-tile', kind)}>
             {image && <img className='h2h-tile__img' src={image} alt='' loading='lazy' />}
             <span className='h2h-tile__label'>{label}</span>
             <span className='h2h-tile__title'>{title}</span>

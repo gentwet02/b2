@@ -4,8 +4,8 @@ import { queryKeys } from '@/hooks/queries/keys';
 import { fetchData } from '@/services/api/client';
 import { userService } from '@/services/api/user';
 
-export const seasonStatsQueryOptions = (userId: string, season?: number) =>
-    queryOptions({
+export function seasonStatsQueryOptions(userId: string, season?: number) {
+    return queryOptions({
         queryKey: queryKeys.seasonStats(userId, season ?? 'live'),
         queryFn: () =>
             fetchData(
@@ -14,6 +14,7 @@ export const seasonStatsQueryOptions = (userId: string, season?: number) =>
             ),
         staleTime: PLAYER_QUERY.stale,
     });
+}
 
 /** A player's ranked record this season, from the matches our server recorded. */
 export default function useSeasonStats(userId: string, season?: number) {

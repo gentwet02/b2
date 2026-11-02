@@ -1,5 +1,5 @@
-import { Link } from '@tanstack/react-router';
 import { useMemo, useState } from 'react';
+import { Link } from '@tanstack/react-router';
 import Panel from '@/components/panel/Panel';
 import PanelEmpty from '@/components/panel/PanelEmpty';
 import SeasonNote from '@/components/season-note/SeasonNote';
@@ -12,6 +12,7 @@ import OpponentSelect from '@/features/compare/OpponentSelect';
 import useHeadToHead from '@/hooks/queries/useHeadToHead';
 import useOpponentSlots from '@/hooks/useOpponentSlots';
 import { useSplitParams } from '@/hooks/useSplitVariants';
+import { bem } from '@/utils/className';
 import { formatNumber } from '@/utils/format';
 import { playerLabel } from '@/utils/player';
 import { formatRecord, gamesOf, recordTitle } from '@/utils/record';
@@ -73,7 +74,7 @@ export default function HeadToHead(props: HeadToHeadProps) {
 
     return (
         <Panel
-            className={`h2h-card${isPlaceholderData ? ' h2h-card--updating' : ''}`}
+            className={bem('h2h-card', isPlaceholderData && 'updating')}
             title='Head to head'
             actions={scope}
         >
@@ -139,7 +140,7 @@ export default function HeadToHead(props: HeadToHeadProps) {
                 <Link
                     to='/stats'
                     search={{ season, player: userId, players2: 't10', view: 'opponents', ...split }}
-                    className='button button--quiet'
+                    className='button--quiet'
                 >
                     Full head to head
                 </Link>

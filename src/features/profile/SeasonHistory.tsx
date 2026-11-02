@@ -1,5 +1,5 @@
-import { getRouteApi } from '@tanstack/react-router';
 import { useState } from 'react';
+import { getRouteApi } from '@tanstack/react-router';
 import Dropdown from '@/components/dropdown/Dropdown';
 import Panel from '@/components/panel/Panel';
 import RateBar from '@/components/rate-bar/RateBar';
@@ -43,7 +43,6 @@ export default function SeasonHistory(props: SeasonHistoryProps) {
 
     return (
         <Panel
-            className='panel--seasons'
             title='Season by season'
             note={`${seasons.length} ${plural(seasons.length, 'season')}`}
             actions={
@@ -105,7 +104,7 @@ export default function SeasonHistory(props: SeasonHistoryProps) {
                 <div className='season-history__actions'>
                     <button
                         type='button'
-                        className='button button--quiet'
+                        className='button--quiet'
                         onClick={() => setPages({ amount, count: pageCount + 1 })}
                     >
                         Show {Math.min(amount, remaining)} more

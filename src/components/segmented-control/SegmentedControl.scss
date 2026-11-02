@@ -28,7 +28,7 @@
         }
 
         & + & {
-            border-left: 2px solid colors.$ink;
+            border-inline-start: 2px solid colors.$ink;
         }
 
         &[aria-pressed='true'] {

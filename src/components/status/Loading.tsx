@@ -1,5 +1,3 @@
-import './Status.scss';
-
 interface LoadingProps {
     label?: string;
 }
@@ -9,7 +7,7 @@ export default function Loading(props: LoadingProps) {
     const { label = 'Loading…' } = props;
 
     return (
-        <div className='status status--loading' role='status' aria-live='polite'>
+        <div className='status--loading' role='status' aria-live='polite'>
             <svg className='status__bloon' viewBox='0 0 40 60' aria-hidden='true'>
                 <ellipse cx='20' cy='20' rx='16' ry='19' />
                 <path d='M17 38 L20 43 L23 38 Z' />

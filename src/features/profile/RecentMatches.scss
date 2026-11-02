@@ -3,7 +3,7 @@
 
 .recent-matches {
     &__amount {
-        margin-left: auto;
+        margin-inline-start: auto;
         display: inline-flex;
         align-items: center;
         gap: $space-2xs;
@@ -11,7 +11,7 @@
         color: colors.$ink-soft;
 
         .recent-matches__amount-select {
-            width: 4.5rem;
+            inline-size: 4.5rem;
             font-size: $text-md;
         }
     }

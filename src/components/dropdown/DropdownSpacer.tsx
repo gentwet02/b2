@@ -17,10 +17,9 @@ export default function DropdownSpacer(props: DropdownSpacerProps) {
             aria-hidden='true'
             style={{
                 position: 'absolute',
-                left: 0,
-                right: 0,
-                top,
-                height: '1rem',
+                insetInline: 0,
+                insetBlockStart: top,
+                blockSize: '1rem',
                 pointerEvents: 'none',
             }}
         />,

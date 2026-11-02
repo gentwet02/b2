@@ -8,10 +8,10 @@
     @include components.panel(6px);
 
     &__banner {
-        width: 100%;
-        height: var(--fluid-112-176);
+        inline-size: 100%;
+        block-size: var(--fluid-112-176);
         object-fit: cover;
-        border-bottom: 2px solid colors.$ink;
+        border-block-end: 2px solid colors.$ink;
         background: colors.$sky-deep;
         @include enter($anim-fade-in, $duration-slower);
     }
@@ -21,16 +21,17 @@
         flex-wrap: wrap;
         align-items: flex-end;
         gap: $space-s $space-m;
-        padding: 0 $space-s-l $space-m;
+        padding-block: 0 $space-m;
+        padding-inline: $space-s-l;
     }
 
     // without a banner, the avatar shouldn't climb out of the panel
     &:not(:has(.profile-hero__banner)) &__body {
-        padding-top: $space-m;
+        padding-block-start: $space-m;
     }
 
     &:not(:has(.profile-hero__banner)) &__avatar {
-        margin-top: 0;
+        margin-block-start: 0;
     }
 
     &__avatar {
@@ -38,14 +39,14 @@
         z-index: 1;
         flex: none;
         @include size(var(--fluid-88-112));
-        margin-top: calc(var(--fluid-88-112) / -2);
+        margin-block-start: calc(var(--fluid-88-112) / -2);
         // keep it overlapping the banner however tall the name block gets
         align-self: flex-start;
         @include enter($anim-pop-in, $duration-slower, 120ms);
     }
 
     // plain round border; the equipped border frames the whole card instead
-    &__avatar-img {
+    @at-root [class^='profile-hero__avatar-img'] {
         @include cover;
         border-radius: 50%;
         object-fit: cover;
@@ -76,7 +77,7 @@
         flex-wrap: wrap;
         align-items: center;
         gap: $space-2xs;
-        margin-top: $space-3xs;
+        margin-block-start: $space-3xs;
     }
 
     &__equipped-item {
@@ -92,12 +93,12 @@
         display: grid;
         gap: $space-3xs;
         flex: 1 1 16rem;
-        min-width: 0;
+        min-inline-size: 0;
     }
 
     &__name {
         @include display($text-5xl);
-        min-width: 0;
+        min-inline-size: 0;
         overflow-wrap: anywhere;
     }
 
@@ -111,7 +112,7 @@
         display: flex;
         align-items: center;
         gap: $space-2xs;
-        min-width: 0;
+        min-inline-size: 0;
     }
 
     // as tall as the name's capitals
@@ -139,7 +140,7 @@
         }
 
         &__actions {
-            width: 100%;
+            inline-size: 100%;
         }
 
         // the note takes the free space, the buttons keep their size at the end

@@ -1,22 +1,22 @@
 @use '@/styles/utils/colors';
 @use '@/styles/components';
+@use '@/styles/utils' as *;
 
 .user-avatar {
     display: inline-block;
     flex: none;
 
-    &__img {
+    @at-root [class^='user-avatar__img'] {
         display: block;
-        width: 100%;
-        height: 100%;
+        @include size(100%);
         border-radius: 50%;
         border: 1.5px solid colors.$ink;
         background: colors.$paper-dim;
         object-fit: cover;
+    }
 
-        &--empty {
-            @include components.avatar-fallback;
-            line-height: 1;
-        }
+    &__img--empty {
+        @include components.avatar-fallback;
+        line-height: 1;
     }
 }

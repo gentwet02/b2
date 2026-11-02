@@ -2,6 +2,7 @@ import { Link } from '@tanstack/react-router';
 import { RESULT_TEXT } from '@/config/match';
 import type { MatchPick, MatchPlayer, Outcome } from '@/types/match';
 import { heroImage } from '@/utils/assetOverrides';
+import { mods } from '@/utils/className';
 import { formatLabel } from '@/utils/format';
 import { formatHero } from '@/utils/hero';
 import { extractUserId, getAlias } from '@/utils/player';
@@ -23,7 +24,7 @@ export default function PlayerSide(props: PlayerSideProps) {
     const portrait = heroImage(player.hero, player.heroPortrait);
 
     return (
-        <div className={`match-card__side match-card__side--${align} match-card__side--${outcome}`}>
+        <div className={mods('match-card__side', align, outcome)}>
             {portrait ? (
                 <img
                     className='match-card__hero-img'
@@ -34,7 +35,7 @@ export default function PlayerSide(props: PlayerSideProps) {
                     height={44}
                 />
             ) : (
-                <span className='match-card__hero-img match-card__hero-img--empty' aria-hidden />
+                <span className='match-card__hero-img--empty' aria-hidden />
             )}
             <div className='match-card__player'>
                 <div className='match-card__name-row'>
@@ -47,7 +48,7 @@ export default function PlayerSide(props: PlayerSideProps) {
                         {player.displayName}
                     </Link>
 
-                    <span className={`match-card__result match-card__result--${player.result}`}>
+                    <span className={mods('match-card__result', player.result)}>
                         {outcome === 'win' && <span aria-hidden='true'>★ </span>}
                         {RESULT_TEXT[player.result]}
                     </span>

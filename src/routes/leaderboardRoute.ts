@@ -1,4 +1,4 @@
-import { createRoute } from '@tanstack/react-router';
+import { createRoute, notFound } from '@tanstack/react-router';
 import {
     LEADERBOARD_DEFAULT_SIZE,
     LEADERBOARD_MIN_GAMES,
@@ -8,9 +8,10 @@ import {
     LEADERBOARD_SORTS,
 } from '@/config/leaderboard';
 import { leaderboardQueryOptions } from '@/hooks/queries/useLeaderboard';
-import Leaderboard from '@/pages/Leaderboard';
+import Leaderboard from '@/pages/leaderboard/Leaderboard';
+import NotFound from '@/pages/not-found/NotFound';
 import type { LeaderboardSearch } from '@/types/leaderboard';
-import { parseFlag, parseOption } from '@/utils/search';
+import { onlyParsed, parseFlag, parseOption } from '@/utils/search';
 import { rootRoute } from './rootRoute';
 
 function validateSearch(search: Record<string, unknown>): LeaderboardSearch {
@@ -38,8 +39,12 @@ export const leaderboardRoute = createRoute({
         stringify: ({ season }) => ({ season: String(season) }),
     },
     validateSearch,
+    search: { middlewares: [onlyParsed(validateSearch)] },
     loader: ({ context, params }) => {
+        // "/leaderboard/abc": the not found page (see userRoute for why in the loader)
+        if (!Number.isInteger(params.season) || params.season < 0) throw notFound();
         void context.queryClient.prefetchQuery(leaderboardQueryOptions(params.season));
     },
     component: Leaderboard,
+    notFoundComponent: NotFound,
 });

@@ -7,7 +7,7 @@
     &__tag {
         @include components.chip(colors.$paper);
         vertical-align: middle;
-        margin-left: 0.4rem;
+        margin-inline-start: 0.4rem;
         font-family: $font-body;
         font-size: $text-xs;
     }

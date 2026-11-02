@@ -8,12 +8,12 @@
 
     &__text {
         display: grid;
-        min-width: 0;
+        min-inline-size: 0;
     }
 
     &__name {
         display: block;
-        max-width: clamp(5rem, 17vw, 11rem);
+        max-inline-size: clamp(5rem, 17vw, 11rem);
         white-space: nowrap;
         overflow: hidden;
         text-overflow: ellipsis;
@@ -37,7 +37,7 @@
         }
 
         &__name {
-            max-width: none;
+            max-inline-size: none;
         }
 
         &__last {
@@ -46,23 +46,25 @@
     }
 }
 
+// The player tables on small screens. .record-table.compare-members__table weighs two classes:
+// above RecordTable's own rules whatever order the stylesheets load in; the cells are in
+// :where(), so here the later rule wins.
 @include breakpoint-down(phablet) {
     .record-table .opponent-last-met {
         display: none;
     }
 
-    .record-table--player {
-        thead tr > :first-child {
-            width: 100%;
+    .record-table.compare-members__table {
+        :where(thead tr > :first-child) {
+            inline-size: 100%;
         }
 
-        tbody th {
-            max-width: 0;
-            min-width: 6rem;
+        :where(tbody th) {
+            max-inline-size: 0;
+            min-inline-size: 6rem;
         }
 
-        thead tr > :last-child,
-        tbody tr > :last-child {
+        :where(tr > :last-child) {
             padding-inline-end: $space-xs;
         }
     }
@@ -75,25 +77,25 @@
 }
 
 @include breakpoint-down(tiny) {
-    .record-table {
-        &--player :is(td:not(:first-child, :last-child), th:not(:first-child, :last-child)) {
+    .record-table.compare-members__table {
+        :where(tr > :not(:first-child, :last-child)) {
             padding-inline: 0.2rem;
         }
 
-        &--player :is(td:first-child, th:first-child) {
+        :where(tr > :first-child) {
             padding-inline-end: 0.2rem;
         }
 
-        &--player :is(td:last-child, th:last-child) {
-            padding-inline: 0.2rem 0.4rem !important;
+        :where(tr > :last-child) {
+            padding-inline: 0.2rem 0.4rem;
         }
 
-        &--player :is(th:nth-child(2), td:nth-child(2)) {
+        :where(tr > :nth-child(2)) {
             display: none;
         }
 
-        &--player &__games {
-            text-align: center !important;
+        .record-table__games {
+            text-align: center;
         }
     }
 }

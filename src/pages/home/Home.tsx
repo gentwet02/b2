@@ -3,6 +3,7 @@ import Page from '@/components/page/Page';
 import PageHeader from '@/components/page/PageHeader';
 import ErrorState from '@/components/status/ErrorState';
 import Loading from '@/components/status/Loading';
+import StatusMessage from '@/components/status/StatusMessage';
 import LeaderboardScore from '@/features/leaderboard/LeaderboardScore';
 import Podium from '@/features/podium/Podium';
 import useLeaderboardStats from '@/hooks/queries/useLeaderboardStats';
@@ -17,7 +18,13 @@ export default function Home() {
     const { players, data, isLoading, error, refetch } = useRankedPlayers(liveSeason, true);
     const { data: stats } = useLeaderboardStats(liveSeason);
 
-    if (seasons.isLoading) return <Loading label='Finding the live season…' />;
+    if (seasons.isLoading) {
+        return (
+            <Page className='home'>
+                <Loading label='Finding the live season…' />
+            </Page>
+        );
+    }
     if (seasons.error || liveSeason === undefined) {
         return (
             <Page>
@@ -51,6 +58,11 @@ export default function Home() {
                 <div className='home__stage'>
                     {isLoading && <Loading label='Loading leaderboard…' />}
                     {error && <ErrorState error={error} onRetry={() => refetch()} />}
+                    {!isLoading && !error && players.length === 0 && (
+                        <StatusMessage title='No players yet'>
+                            Nobody has a Hall of Masters score this season so far.
+                        </StatusMessage>
+                    )}
                     {players.length > 0 && (
                         <Podium
                             players={players}
@@ -66,7 +78,7 @@ export default function Home() {
                     <PageHeader
                         actions={
                             <>
-                                <Link to='/matches-history' className='button button--quiet'>
+                                <Link to='/matches-history' className='button--quiet'>
                                     Recent matches
                                 </Link>
                                 <Link

@@ -19,7 +19,7 @@
         flex-wrap: wrap;
         align-items: center;
         gap: $space-xs $space-m;
-        margin-left: auto;
+        margin-inline-start: auto;
     }
 
     &__scroll {
@@ -31,14 +31,14 @@
     }
 
     &__table {
-        width: 100%;
+        inline-size: 100%;
         border-collapse: collapse;
 
         th,
         td {
             padding: $space-xs $space-s;
-            text-align: left;
-            border-bottom: 1px solid colors.$line;
+            text-align: start;
+            border-block-end: 1px solid colors.$line;
         }
     }
 

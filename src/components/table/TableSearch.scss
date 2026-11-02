@@ -4,16 +4,17 @@
 .table__search {
     position: relative;
     flex: 1 1 14rem;
-    max-width: min(66%, 22rem);
-    min-width: min(15rem, 100%);
+    max-inline-size: min(66%, 22rem);
+    min-inline-size: min(15rem, 100%);
 
     @include breakpoint-down(small) {
-        max-width: none;
+        max-inline-size: none;
     }
 
     &-input {
-        width: 100%;
-        padding: 0.6rem 1rem 0.6rem 2.5rem;
+        inline-size: 100%;
+        padding-block: 0.6rem;
+        padding-inline: 2.5rem 1rem;
         font-weight: 500;
         background: colors.$paper;
         border: 2px solid colors.$ink;
@@ -28,8 +29,8 @@
 
     &-icon {
         position: absolute;
-        left: 0.85rem;
-        top: 50%;
+        inset-inline-start: 0.85rem;
+        inset-block-start: 50%;
         transform: translateY(-50%);
         color: colors.$ink-soft;
         pointer-events: none;

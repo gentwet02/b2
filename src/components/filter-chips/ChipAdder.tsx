@@ -1,5 +1,6 @@
 import Dropdown from '@/components/dropdown/Dropdown';
 import type { DropdownItem } from '@/types/dropdown';
+import { bem } from '@/utils/className';
 
 interface ChipAdderProps<V extends string> {
     options: DropdownItem<V>[];
@@ -17,7 +18,7 @@ export default function ChipAdder<V extends string>(props: ChipAdderProps<V>) {
 
     return (
         <Dropdown
-            className={excluding ? 'chip-adder chip-adder--exclude' : 'chip-adder'}
+            className={bem('chip-adder', excluding && 'exclude')}
             aria-label={ariaLabel}
             placeholder={placeholder}
             options={options}

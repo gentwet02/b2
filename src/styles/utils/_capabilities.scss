@@ -1,8 +1,16 @@
 // no sticky hover after a tap on touch screens
-@mixin when-hover {
+// $default: a component's own hover look, weighing no more than the element without :hover
+// (:where), so the pages' context rules on the element win over it whatever the load order
+@mixin when-hover($default: false) {
     @media (hover: hover) and (pointer: fine) {
-        &:hover {
-            @content;
+        @if $default {
+            &:where(:hover) {
+                @content;
+            }
+        } @else {
+            &:hover {
+                @content;
+            }
         }
     }
 }

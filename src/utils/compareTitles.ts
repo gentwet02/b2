@@ -4,15 +4,15 @@ import type { Comparison, CompareSideKey, CompareSideInfo, RankBounds } from '@/
 import { formatLabel, formatNumber, lowerFirst } from '@/utils/format';
 import { formatHero, parseHero } from '@/utils/hero';
 import { formatMap } from '@/utils/map';
-import { splitList } from '@/utils/search';
 import { playerLabel } from '@/utils/player';
+import { splitList } from '@/utils/search';
 
 /** Ranks a group side counted in the season shown (one season only). */
-export const sideBounds = (data: Comparison, key: CompareSideKey): RankBounds | null => {
+export function sideBounds(data: Comparison, key: CompareSideKey): RankBounds | null {
     if (data.season === 'all') return null;
     const row = data.seasons[0];
     return (key === 'a' ? row?.boundsA : row?.bounds) ?? null;
-};
+}
 
 /** "Top 10", "Top 50 without the top 10", one season: "Ranks 11–50". */
 export function groupName(side: CompareSideInfo, bounds?: RankBounds | null) {
@@ -36,20 +36,24 @@ export function sideName(data: Comparison, key: CompareSideKey) {
 }
 
 /** "Bob’s", or the range as is: "Top 10" (to put before a noun). */
-export const sidePossessive = (data: Comparison, key: CompareSideKey) =>
-    data[key].mode === 'player'
+export function sidePossessive(data: Comparison, key: CompareSideKey) {
+    return data[key].mode === 'player'
         ? `${sideName(data, key)}’s`
         : data[key].mode === 'anyone'
           ? 'Opponent'
           : // "All HoM players’ loadout", "Top 25 loadout"
             sideName(data, key).replace(/s$/, 's’');
+}
 
 /** Both sides are the same range (the same ranks each season). */
-export const sameSides = (data: Comparison) =>
-    data.a.mode === 'top' &&
-    data.b.mode === 'top' &&
-    data.a.range === data.b.range &&
-    (data.a.exclude ?? null) === (data.b.exclude ?? null);
+export function sameSides(data: Comparison) {
+    return (
+        data.a.mode === 'top' &&
+        data.b.mode === 'top' &&
+        data.a.range === data.b.range &&
+        (data.a.exclude ?? null) === (data.b.exclude ?? null)
+    );
+}
 
 /** Both sides are ranges that share players (those play for side 1). */
 export function sidesOverlap(data: Comparison) {

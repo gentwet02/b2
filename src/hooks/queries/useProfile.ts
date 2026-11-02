@@ -4,9 +4,13 @@ import { queryKeys } from '@/hooks/queries/keys';
 import { toError } from '@/services/api/client';
 import { userService } from '@/services/api/user';
 
+/** The server knows no such player (or the id is wrong): asking again won't help. */
+export const isMissingProfile = (error: Error | null) =>
+    !!error && /not found|invalid|no profile/i.test(error.message);
+
 /** The profile our server stored (/users/:id); the server reads Ninja Kiwi in the background. */
-export const profileQueryOptions = (userId: string) =>
-    queryOptions({
+export function profileQueryOptions(userId: string) {
+    return queryOptions({
         queryKey: queryKeys.profile(userId),
         queryFn: async () => {
             const response = await userService.getProfile(userId);
@@ -16,8 +20,9 @@ export const profileQueryOptions = (userId: string) =>
             return response.data;
         },
         staleTime: PLAYER_QUERY.stale,
-        retry: (count, error) => count < 2 && !/not found|invalid|no profile/i.test(error.message),
+        retry: (count, error) => count < 2 && !isMissingProfile(error),
     });
+}
 
 export default function useProfile(userId: string) {
     return useQuery({ ...profileQueryOptions(userId), enabled: !!userId });

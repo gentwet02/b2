@@ -1,0 +1,74 @@
+@use '@/styles/utils' as *;
+
+// The picks tables (StatsTable, and the maps table of StatsResults) on small screens.
+// .record-table.stats-table weighs two classes: above RecordTable's own rules (one) whatever
+// order the stylesheets load in. The cells are in :where(), so here the later rule wins:
+// the smaller screens come last.
+@include breakpoint-down(phablet) {
+    .record-table.stats-table {
+        .record-table__record {
+            display: none;
+        }
+
+        .drill-link__text {
+            position: absolute;
+            @include size(1px);
+            overflow: hidden;
+            clip-path: inset(50%);
+            white-space: nowrap;
+        }
+
+        .stats-tower {
+            white-space: normal;
+        }
+
+        :where(tr > :nth-last-child(2)) {
+            padding-inline-end: 0;
+        }
+
+        :where(tr > :last-child) {
+            padding-inline: 0.25rem $space-xs;
+        }
+    }
+}
+
+@include breakpoint-down(small) {
+    .record-table.stats-table {
+        :where(tr > :not(:first-child, :last-child, :nth-last-child(2))) {
+            padding-inline: 0.1rem;
+        }
+
+        :where(tr > :nth-last-child(2)) {
+            padding-inline-start: 0.1rem;
+        }
+
+        // a class: above the cells' :where() rules here and below
+        .record-table__rate {
+            padding-inline-end: 0.2rem;
+        }
+    }
+}
+
+@include breakpoint-down(tiny) {
+    .record-table.stats-table {
+        font-size: $text-sm;
+    }
+}
+
+@include breakpoint-down(340px) {
+    .record-table.stats-table {
+        font-size: $text-2xs;
+
+        :where(tr > *) {
+            padding-inline: 0.0625rem;
+        }
+
+        :where(tr > :first-child) {
+            padding-inline: 0.25rem 0.125rem;
+        }
+
+        :where(tr > :last-child) {
+            padding-inline: 0.125rem 0.25rem;
+        }
+    }
+}

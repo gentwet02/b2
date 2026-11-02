@@ -1,6 +1,6 @@
 @use '@/styles/components';
 
 .controls__check {
-    min-height: 2.4rem;
+    min-block-size: 2.4rem;
     @include components.toggle;
 }

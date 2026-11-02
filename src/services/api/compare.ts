@@ -19,13 +19,38 @@ export interface CompareParams {
     filters?: Record<string, string | undefined> | undefined;
 }
 
-const sideQuery = (side: CompareSideParams, suffix: '' | '2') =>
-    'player' in side
+/** A side with nothing empty in it. */
+function normalizeSide(side: CompareSideParams): CompareSideParams {
+    return 'player' in side || 'anyone' in side
+        ? side
+        : side.exclude
+          ? { range: side.range, exclude: side.exclude }
+          : { range: side.range };
+}
+
+/**
+ * The params as the server reads them: no empty filter, `overlap` only when off. The request and
+ * the react-query key are both made from it (key objects are hashed whatever their key order).
+ */
+export function normalizeCompareParams({ season, a, b, overlap, filters }: CompareParams): CompareParams {
+    const kept = Object.entries(filters ?? {}).filter(([, value]) => !!value);
+    return {
+        season,
+        a: normalizeSide(a),
+        b: normalizeSide(b),
+        overlap: overlap === false ? false : undefined,
+        filters: kept.length ? Object.fromEntries(kept) : undefined,
+    };
+}
+
+function sideQuery(side: CompareSideParams, suffix: '' | '2') {
+    return 'player' in side
         ? { [`player${suffix}`]: side.player }
         : 'anyone' in side
           ? {}
           : // the names /stats takes too
             { [`players${suffix}`]: side.range, [`exclude${suffix}`]: side.exclude };
+}
 
 export const compareService = {
     /** `opponents` empty: the server picks the top 10 */

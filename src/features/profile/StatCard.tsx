@@ -1,4 +1,5 @@
 import type { ReactNode } from 'react';
+import { bem } from '@/utils/className';
 
 interface StatCardProps {
     title: ReactNode;
@@ -14,13 +15,7 @@ interface StatCardProps {
 export default function StatCard(props: StatCardProps) {
     const { title, accent, placeholder, busy, children } = props;
 
-    const className = [
-        'stats-panel',
-        accent && 'stats-panel--accent',
-        placeholder && 'stats-panel--loading',
-    ]
-        .filter(Boolean)
-        .join(' ');
+    const className = bem('stats-panel', accent && 'accent', placeholder && 'loading');
     return (
         <section className={className} aria-busy={busy}>
             <h2 className='stats-panel__title'>{title}</h2>

@@ -1,7 +1,7 @@
 import { previousRange, rangeLabel } from '@/config/ranges';
 import { STATS_PLAYERS_DEFAULT } from '@/config/stats';
-import { groupName } from '@/utils/compareTitles';
 import type { Stats } from '@/types/stats';
+import { groupName } from '@/utils/compareTitles';
 import { formatLabel, formatNumber, lowerFirst } from '@/utils/format';
 import { formatHero } from '@/utils/hero';
 import { formatMap } from '@/utils/map';

@@ -12,7 +12,7 @@ $lift-ease: $duration-slow $ease-spring;
         translate: 0 $space-2xs;
     }
 
-    .podium__avatar {
+    [class^='podium__avatar'] {
         translate: 0 0.45rem;
     }
 
@@ -33,14 +33,14 @@ $lift-ease: $duration-slow $ease-spring;
     grid-template-columns: repeat(3, 1fr);
     align-items: end;
     gap: var(--fluid-6-14);
-    max-width: 44rem;
-    width: 100%;
+    max-inline-size: 44rem;
+    inline-size: 100%;
     margin-inline: auto;
 
     &__spot {
         display: grid;
         gap: $space-2xs;
-        min-width: 0;
+        min-inline-size: 0;
         isolation: isolate;
         --podium-lift: max(calc(var(--podium-step) * #{$lift-ratio}), 2.5rem);
         transition: translate $lift-ease;
@@ -70,15 +70,15 @@ $lift-ease: $duration-slow $ease-spring;
                 text-decoration-color: currentColor;
             }
 
-            .podium__avatar {
+            [class^='podium__avatar'] {
                 @include components.avatar-popped;
             }
         }
     }
 
-    &__avatar {
+    @at-root [class^='podium__avatar'] {
         @include size(var(--fluid-48-72));
-        margin-bottom: $space-3xs;
+        margin-block-end: $space-3xs;
         border-radius: 50%;
         border: 2px solid colors.$ink;
         background: colors.$paper-dim;
@@ -87,21 +87,21 @@ $lift-ease: $duration-slow $ease-spring;
         transition:
             transform $duration-base $ease-spring,
             translate $lift-ease;
-
-        &--empty {
-            @include components.avatar-fallback;
-            font-size: $text-3xl;
-        }
     }
 
-    &__spot--1 &__avatar {
+    &__avatar--empty {
+        @include components.avatar-fallback;
+        font-size: $text-3xl;
+    }
+
+    &__spot--1 [class^='podium__avatar'] {
         @include size(var(--fluid-56-88));
         border-color: colors.$banana;
         box-shadow: 0 0 0 2px colors.$ink;
     }
 
     &__name {
-        max-width: 100%;
+        max-inline-size: 100%;
         font-weight: 700;
         font-size: var(--fluid-15-20);
         @include truncate;
@@ -129,12 +129,12 @@ $lift-ease: $duration-slow $ease-spring;
         display: grid;
         grid-template-rows: auto 1fr;
         justify-items: center;
-        height: var(--podium-step);
-        padding-top: $space-2xs;
+        block-size: var(--podium-step);
+        padding-block-start: $space-2xs;
         @include display(var(--fluid-36-52));
         color: colors.$ink;
         border: 2px solid colors.$ink;
-        border-bottom: none;
+        border-block-end: none;
         border-radius: $radius-control $radius-control 0 0;
         box-shadow: 4px 0 0 colors.$ink;
         transform-origin: bottom center;
@@ -144,9 +144,9 @@ $lift-ease: $duration-slow $ease-spring;
             content: '';
             position: absolute;
             z-index: -1;
-            top: 100%;
+            inset-block-start: 100%;
             inset-inline: -2px;
-            height: calc(var(--podium-lift) + 1.5rem);
+            block-size: calc(var(--podium-lift) + 1.5rem);
             background: inherit;
             border-inline: 2px solid colors.$ink;
             box-shadow: 4px 0 0 colors.$ink;

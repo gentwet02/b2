@@ -1,0 +1,50 @@
+@use '@/styles/utils' as *;
+
+// The tabs and minimums above the stats tables. The head class goes on the panel head
+// (StatsPicks, CompareMembers, VersusMatches), the rest on what StatsViewOptions renders.
+.stats-results {
+    // the head is a grid item of the panel: without min-width 0 it widens the column
+    &__head {
+        min-inline-size: 0;
+    }
+
+    // the tabs: a row of their own at the top left, what goes with the table below them;
+    // up to seven, they scroll sideways when the panel is narrower
+    &__tabs {
+        display: flex;
+        flex: 1 0 100%;
+        min-inline-size: 0;
+
+        .segmented-control {
+            flex: 0 1 auto;
+            min-inline-size: 0;
+            max-inline-size: 100%;
+            overflow-x: auto;
+            scrollbar-width: none;
+
+            &::-webkit-scrollbar {
+                display: none;
+            }
+        }
+    }
+
+    &__mins {
+        display: flex;
+        flex-wrap: wrap;
+        gap: $space-2xs $space-s;
+    }
+
+    &__min {
+        display: flex;
+        align-items: center;
+        gap: $space-2xs;
+    }
+
+    &__select {
+        inline-size: 5.5rem;
+    }
+
+    &__sort {
+        inline-size: 9.5rem;
+    }
+}

@@ -8,7 +8,7 @@
     gap: $space-xs;
     line-height: 1.25;
 
-    &__avatar {
+    @at-root [class^='lb-player__avatar'] {
         flex: none;
         @include size(2.25rem);
         border-radius: 50%;
@@ -16,21 +16,21 @@
         background: colors.$paper-dim;
         object-fit: cover;
         @include components.avatar-pop;
+    }
 
-        &--empty {
-            @include components.avatar-fallback;
-        }
+    &__avatar--empty {
+        @include components.avatar-fallback;
     }
 
     @include when-hover {
-        .lb-player__avatar {
+        [class^='lb-player__avatar'] {
             @include components.avatar-popped;
         }
     }
 
     &__names {
         display: grid;
-        min-width: 0;
+        min-inline-size: 0;
     }
 
     &__name {
@@ -52,7 +52,7 @@
 }
 
 @include breakpoint-down(medium) {
-    .lb-player__avatar {
+    [class^='lb-player__avatar'] {
         @include size(2rem);
     }
 }

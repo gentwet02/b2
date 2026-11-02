@@ -10,11 +10,11 @@ import { MAX_EXCLUDED } from '@/config/filters';
 import useSeasons from '@/hooks/queries/useSeasons';
 import type { MapChipOption } from '@/types/map';
 import type { SeasonQuery } from '@/types/season';
-import type { SideMode, Stats, StatsSearch } from '@/types/stats';
+import type { SideMode, SideState, Stats, StatsSearch } from '@/types/stats';
 import { joinList, splitList } from '@/utils/search';
 import { urlSeason } from '@/utils/season';
 import LoadoutFilters from './LoadoutFilters';
-import StatsSides, { type SideState } from './StatsSides';
+import StatsSides from './StatsSides';
 
 interface StatsControlsProps {
     search: StatsSearch;
@@ -76,15 +76,17 @@ export default function StatsControls(props: StatsControlsProps) {
         !!search.towers2 ||
         !!search.exHeroes2 ||
         !!search.exTowers2;
-    const loadoutFilters = (side: '' | '2') => (
-        <LoadoutFilters
-            side={side}
-            search={search}
-            options={side === '2' ? (data?.options2 ?? undefined) : options}
-            maxExcluded={maxExcluded}
-            onChange={onChange}
-        />
-    );
+    function loadoutFilters(side: '' | '2') {
+        return (
+            <LoadoutFilters
+                side={side}
+                search={search}
+                options={side === '2' ? (data?.options2 ?? undefined) : options}
+                maxExcluded={maxExcluded}
+                onChange={onChange}
+            />
+        );
+    }
 
     return (
         <Panel className='stats-controls'>

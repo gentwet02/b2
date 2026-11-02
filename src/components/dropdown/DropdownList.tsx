@@ -1,5 +1,6 @@
 import type { Ref } from 'react';
 import type { DropdownItem, DropdownValue } from '@/types/dropdown';
+import { mods } from '@/utils/className';
 import DropdownOption from './DropdownOption';
 
 interface DropdownListProps<V extends DropdownValue> {
@@ -42,7 +43,7 @@ export default function DropdownList<V extends DropdownValue>(props: DropdownLis
             ref={ref}
             id={id}
             role='listbox'
-            className={closing ? 'dropdown__list dropdown__list--closing' : 'dropdown__list'}
+            className={mods('dropdown__list', closing && 'closing')}
             hidden={hidden}
             onClick={(event) => event.preventDefault()}
             onAnimationEnd={(event) => {

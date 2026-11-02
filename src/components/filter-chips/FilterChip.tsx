@@ -1,4 +1,5 @@
 import type { ReactNode } from 'react';
+import { bem, mods } from '@/utils/className';
 
 interface FilterChipProps {
     name: string;
@@ -15,23 +16,13 @@ interface FilterChipProps {
 export default function FilterChip(props: FilterChipProps) {
     const { name, image, excluded, children, onRemove } = props;
 
-    const className = [
-        'filter-chip',
-        image && 'filter-chip--image',
-        excluded && 'filter-chip--excluded',
-    ]
-        .filter(Boolean)
-        .join(' ');
+    const className = bem('filter-chip', image && 'image', excluded && 'excluded');
 
     return (
         <li className={className}>
             {image?.src && (
                 <img
-                    className={
-                        image.kind === 'map'
-                            ? 'filter-chip__img filter-chip__img--map'
-                            : 'filter-chip__img'
-                    }
+                    className={mods('filter-chip__img', image.kind === 'map' && 'map')}
                     src={image.src}
                     alt=''
                 />

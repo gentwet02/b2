@@ -1,7 +1,7 @@
 import Dropdown from '@/components/dropdown/Dropdown';
+import type { MapChipOption, MapVariant } from '@/types/map';
 import { mapImage } from '@/utils/assetOverrides';
 import { formatNumber } from '@/utils/format';
-import type { MapChipOption, MapVariant } from '@/types/map';
 import { formatMap } from '@/utils/map';
 import FilterChip from './FilterChip';
 

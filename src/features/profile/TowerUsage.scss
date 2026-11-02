@@ -6,10 +6,10 @@
     --row: 2.5rem;
     display: grid;
     gap: $space-xs;
-    max-height: calc(10 * var(--row) + 9 * #{$space-xs});
+    max-block-size: calc(10 * var(--row) + 9 * #{$space-xs});
     overflow-y: auto;
     overscroll-behavior: contain;
-    padding-right: $space-2xs;
+    padding-inline-end: $space-2xs;
     scrollbar-width: thin;
     scrollbar-color: colors.$line transparent;
 
@@ -38,7 +38,7 @@
 
     &__track {
         grid-column: 2 / -1;
-        height: 0.55rem;
+        block-size: 0.55rem;
         background: colors.$paper-dim;
         border-radius: 999px;
         overflow: hidden;
@@ -46,7 +46,7 @@
 
     &__fill {
         display: block;
-        height: 100%;
+        block-size: 100%;
         background: colors.$bloon;
         border-radius: inherit;
         @include grow-bar(150ms);

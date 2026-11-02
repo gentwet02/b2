@@ -9,7 +9,7 @@
 
 body {
     --bloon-bg-clr-rgb: 255, 255, 255;
-    min-height: 100dvh;
+    min-block-size: 100dvh;
     font-family: $font-body;
     font-size: $text-base;
     color: colors.$ink;
@@ -42,7 +42,7 @@ body {
 #root {
     display: flex;
     flex-direction: column;
-    min-height: 100dvh;
+    min-block-size: 100dvh;
 }
 
 input,
@@ -66,12 +66,12 @@ select {
     background: colors.with-opacity('banana', 0.6);
 }
 
-.button {
+[class^='button'] {
     @include components.button;
+}
 
-    &--quiet {
-        @include components.button(colors.$paper, colors.$ink);
-    }
+.button--quiet {
+    @include components.button(colors.$paper, colors.$ink);
 }
 
 .text-link {
@@ -105,15 +105,4 @@ select {
 
 .visually-hidden {
     @extend %visually-hidden;
-}
-
-.site-main {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-
-    > .status--loading {
-        flex: 1;
-        align-content: center;
-    }
 }

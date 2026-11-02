@@ -4,9 +4,9 @@
 .record-table {
     &__more {
         position: sticky;
-        left: 0;
+        inset-inline-start: 0;
         display: block;
-        width: 100%;
+        inline-size: 100%;
         padding: $space-2xs;
         font: inherit;
         font-size: $text-md;
@@ -14,7 +14,7 @@
         color: colors.$ink;
         background: colors.$paper-dim;
         border: none;
-        border-top: 1px solid colors.$line;
+        border-block-start: 1px solid colors.$line;
         cursor: pointer;
         @include transition((color, background-color), $duration-fast);
 

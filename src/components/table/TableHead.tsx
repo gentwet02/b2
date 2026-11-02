@@ -1,6 +1,7 @@
 import { convertString } from 'str-case-converter';
 import { ChevronDownIcon } from '@/components/icons';
 import type { Category, TableSort } from '@/types/table';
+import { mods } from '@/utils/className';
 
 interface TableHeadProps {
     categories: Category[];
@@ -31,7 +32,7 @@ export default function TableHead(props: TableHeadProps) {
                     return (
                         <th
                             key={`table-head-${categoryName}`}
-                            className={`table__head-title${sortable ? ' table__head-title--sortable' : ''}`}
+                            className={mods('table__head-title', sortable && 'sortable')}
                             data-category={categoryName}
                             aria-sort={
                                 active
@@ -56,7 +57,7 @@ export default function TableHead(props: TableHeadProps) {
                                 {sortable && (
                                     <ChevronDownIcon
                                         key={active ? 'on' : 'off'}
-                                        className={`table__table__header-cell-icon${active ? '' : ' table__table__header-cell-icon--off'}`}
+                                        className={mods('table__table__header-cell-icon', !active && 'off')}
                                         rotate={active && sortConfig.direction === 'asc'}
                                     />
                                 )}

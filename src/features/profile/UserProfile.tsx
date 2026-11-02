@@ -1,15 +1,17 @@
 import { useIsFetching, useQueryClient } from '@tanstack/react-query';
+import { Link } from '@tanstack/react-router';
 import Panel from '@/components/panel/Panel';
 import ErrorState from '@/components/status/ErrorState';
+import StatusMessage from '@/components/status/StatusMessage';
 import { playerQueryPrefixes, queryKeys } from '@/hooks/queries/keys';
 import usePlayerName from '@/hooks/queries/usePlayerName';
-import useProfile from '@/hooks/queries/useProfile';
+import useProfile, { isMissingProfile } from '@/hooks/queries/useProfile';
 import useCachedPlayerName from '@/hooks/useCachedPlayerName';
 import { timeAgo } from '@/utils/format';
 import AllTimeStats from './AllTimeStats';
 import BloonStats from './BloonStats';
-import HeadToHead from './HeadToHead';
 import ClanCard from './ClanCard';
+import HeadToHead from './HeadToHead';
 import Medals from './Medals';
 import ProfileHero from './ProfileHero';
 import ProfileHeroPlaceholder from './ProfileHeroPlaceholder';
@@ -36,12 +38,29 @@ export default function UserProfile(props: UserProfileProps) {
         0;
 
     const profile = data?.body;
+    const missing = isMissingProfile(error);
 
-    const refresh = () => {
+    function refresh() {
         for (const queryKey of playerQueryPrefixes(userId)) {
             void queryClient.invalidateQueries({ queryKey });
         }
-    };
+    }
+
+    // no such player: one message, not an error in every section
+    if (missing) {
+        return (
+            <StatusMessage
+                title='No such player'
+                action={
+                    <Link to='/' className='button'>
+                        Go to the live leaderboard
+                    </Link>
+                }
+            >
+                {error?.message}
+            </StatusMessage>
+        );
+    }
 
     return (
         <div className='profile'>
@@ -53,7 +72,7 @@ export default function UserProfile(props: UserProfileProps) {
                     actions={
                         <button
                             type='button'
-                            className='button button--quiet'
+                            className='button--quiet'
                             onClick={refresh}
                             disabled={refreshing}
                         >
@@ -74,7 +93,7 @@ export default function UserProfile(props: UserProfileProps) {
                 </ProfileHeroPlaceholder>
             )}
 
-            <div className='profile__stats'>
+            <div className='profile__columns--even'>
                 <SeasonRecord userId={userId} />
                 <AllTimeStats userId={userId} stats={profile?.rankedStats} loading={isLoading} />
             </div>
@@ -96,7 +115,7 @@ export default function UserProfile(props: UserProfileProps) {
                         <BloonStats bloons={profile._bloonStats ?? []} moabs />
                     </div>
                     {data?.clan ? (
-                        <div className='profile__columns profile__columns--even'>
+                        <div className='profile__columns--even'>
                             <ClanCard clan={data.clan} />
                             <Panel title='Trophies and arenas'>
                                 <SeasonStrip profile={profile} compact />

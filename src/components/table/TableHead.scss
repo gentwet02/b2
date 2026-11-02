@@ -7,7 +7,7 @@
         font-size: $text-md;
         color: colors.$ink-soft;
         background-color: colors.$paper-dim;
-        border-bottom: 2px solid colors.$ink;
+        border-block-end: 2px solid colors.$ink;
         white-space: nowrap;
         user-select: none;
     }
@@ -27,14 +27,13 @@
         gap: $space-2xs;
     }
 
-    &__header-cell-icon {
+    @at-root [class^='table__table__header-cell-icon'] {
         flex-shrink: 0;
-        max-width: none;
-
-        &--off {
-            visibility: hidden;
-        }
-
+        max-inline-size: none;
         @include animate($anim-pop-in, $duration-base, $ease-spring);
+    }
+
+    &__header-cell-icon--off {
+        visibility: hidden;
     }
 }

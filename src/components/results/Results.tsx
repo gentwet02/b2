@@ -1,4 +1,5 @@
 import type { ReactNode } from 'react';
+import { mods } from '@/utils/className';
 
 interface ResultsProps {
     /** older data on screen while the new one loads: faded */
@@ -10,5 +11,5 @@ interface ResultsProps {
 export default function Results(props: ResultsProps) {
     const { updating, children } = props;
 
-    return <div className={updating ? 'results results--updating' : 'results'}>{children}</div>;
+    return <div className={mods('results', updating && 'updating')}>{children}</div>;
 }

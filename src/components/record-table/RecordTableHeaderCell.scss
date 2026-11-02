@@ -23,12 +23,22 @@
             flex-direction: row-reverse;
         }
 
-        &-icon {
+        @at-root [class^='record-table__sort-icon'] {
             flex-shrink: 0;
-            max-width: none;
+            max-inline-size: none;
+        }
 
-            &--off {
-                visibility: hidden;
+        &-icon--off {
+            visibility: hidden;
+        }
+
+        // here rather than in RecordTable.scss: from there, the rule above (same weight, loaded
+        // later) kept the 0.3rem gap at every width
+        @include breakpoint-down(big) {
+            gap: 0.2rem;
+
+            @at-root [class^='record-table__sort-icon'] {
+                @include size(0.6rem);
             }
         }
     }

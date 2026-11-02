@@ -3,11 +3,13 @@
 
 .matches {
     &__summary {
+        // one line kept while the count is loading: the list doesn't jump when it shows
+        min-block-size: 1lh;
         display: flex;
         align-items: center;
         justify-content: space-between;
         gap: $space-s;
-        margin-top: calc(-1 * $space-xs);
+        margin-block-start: calc(-1 * $space-xs);
         font-weight: 600;
     }
 
@@ -19,7 +21,7 @@
     &__crawl {
         font-size: $text-md;
         color: colors.$ink-soft;
-        margin-top: calc(-1 * $space-m);
+        margin-block-start: calc(-1 * $space-m);
     }
 
     &__list {

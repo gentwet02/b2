@@ -2,8 +2,8 @@
 @use '@/styles/utils' as *;
 
 .chip-adder {
-    width: 13rem;
-    min-width: 0;
+    inline-size: 13rem;
+    min-inline-size: 0;
 
     .dropdown__input {
         padding-block: 0.35rem;
@@ -22,7 +22,7 @@
         background-color: colors.$paper;
     }
 
-    .dropdown__list {
+    [class^='dropdown__list'] {
         font-size: $text-md;
     }
 
@@ -34,12 +34,12 @@
         }
     }
 
-    &--exclude.dropdown--open .dropdown__list {
-        border-top-color: colors.darken('bloon', 10%);
+    &--exclude.dropdown--open [class^='dropdown__list'] {
+        border-block-start-color: colors.darken('bloon', 10%);
     }
 
     @include breakpoint-down(small) {
         flex: 1 1 100%;
-        width: auto;
+        inline-size: auto;
     }
 }

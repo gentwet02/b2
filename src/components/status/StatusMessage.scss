@@ -1,0 +1,29 @@
+@use '@/styles/utils/colors';
+@use '@/styles/components';
+@use '@/styles/utils' as *;
+
+.status {
+    &--error,
+    &--empty {
+        @include components.status;
+        @include components.panel;
+        @include enter($anim-fade-up, $duration-slow);
+    }
+
+    &__title {
+        @include display($text-2xl);
+    }
+
+    &__text {
+        max-inline-size: 42ch;
+        color: colors.$ink-soft;
+    }
+
+    &__action {
+        margin-block-start: $space-2xs;
+    }
+
+    &--error &__title {
+        color: colors.$bloon;
+    }
+}

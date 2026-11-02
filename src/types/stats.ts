@@ -14,6 +14,14 @@ export type StatsView = 'heroes' | 'towers' | 'loadouts' | 'maps' | 'players' | 
 /** What a side is: a range of each leaderboard, or one player. */
 export type SideMode = 'top' | 'player';
 
+/** What a side shows, defaults filled in. */
+export interface SideState {
+    mode: SideMode;
+    player: string | undefined;
+    range: string;
+    exclude: string | undefined;
+}
+
 /** A hero base, a tower, a loadout key ("Quincy|Alchemist,Druid,Ninja") or a map key. */
 export type StatsRow = RecordRow;
 
@@ -173,6 +181,20 @@ export interface StatsSearch extends SplitSearch {
     towersOnly?: true | undefined;
     /** games tab: the order of the games (default newest) */
     sort?: MatchSort | undefined;
+}
+
+/** The tabs bar's state: the tabs that fit the sides, the one shown, and its options. */
+export interface StatsViewState {
+    tabs: { value: StatsView; label: string }[];
+    view: StatsView;
+    /** minimum games for a row */
+    min: number;
+    /** minimum pick rate, in % */
+    minPick: number;
+    /** strats table: the 3 towers only */
+    towersOnly: boolean;
+    /** games tab: their order */
+    sort: MatchSort;
 }
 
 /** One of the stats tables: its rows and how they read, sort and focus. */

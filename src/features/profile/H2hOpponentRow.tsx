@@ -1,11 +1,12 @@
-import { Link } from '@tanstack/react-router';
 import { useId, type ReactNode } from 'react';
+import { Link } from '@tanstack/react-router';
 import PlayerAvatar from '@/components/avatar/PlayerAvatar';
 import { ChevronDownIcon } from '@/components/icons';
 import H2hHighlights from '@/features/compare/H2hHighlights';
 import usePlayerAvatar from '@/hooks/queries/usePlayerAvatar';
 import { useSplitParams } from '@/hooks/useSplitVariants';
 import type { H2hOpponent, HeadToHead } from '@/types/compare';
+import { bem } from '@/utils/className';
 import { formatNumber, plural, timeAgo } from '@/utils/format';
 import { formatRate, formatRecord, gamesOf, rateOf, recordTitle } from '@/utils/record';
 import { inScope } from '@/utils/season';
@@ -31,7 +32,7 @@ export default function H2hOpponentRow(props: H2hOpponentRowProps) {
     const rate = rateOf(opponent?.record);
 
     return (
-        <li className={`h2h-row${open ? ' h2h-row--open' : ''}`}>
+        <li className={bem('h2h-row', open && 'open')}>
             <div className='h2h-row__main'>
                 <PlayerAvatar className='h2h-row__avatar' src={avatar} name={name} size={36} lazy />
                 {select}
@@ -45,7 +46,7 @@ export default function H2hOpponentRow(props: H2hOpponentRowProps) {
                             {formatRecord(opponent.record)}
                         </span>
                         <span className='h2h-row__track' aria-hidden='true'>
-                            <span style={{ width: `${rate ?? 0}%` }} />
+                            <span style={{ inlineSize: `${rate ?? 0}%` }} />
                         </span>
                         <span className='h2h-row__rate'>{formatRate(rate)}</span>
                         <span className='h2h-row__meta'>

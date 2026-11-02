@@ -2,6 +2,7 @@ import { useMemo } from 'react';
 import Dropdown from '@/components/dropdown/Dropdown';
 import type { OpponentSlot } from '@/hooks/useOpponentSlots';
 import type { RankedPlayer } from '@/types/leaderboard';
+import { bem } from '@/utils/className';
 import { rankedLabel } from '@/utils/player';
 
 interface OpponentSelectProps {
@@ -31,7 +32,7 @@ export default function OpponentSelect(props: OpponentSelectProps) {
     }, [players, taken, slot.id, fallbackName]);
 
     return (
-        <div className={`opponent-select${slot.custom ? ' opponent-select--custom' : ''}`}>
+        <div className={bem('opponent-select', slot.custom && 'custom')}>
             <Dropdown
                 className='opponent-select__dropdown'
                 variant='compact'

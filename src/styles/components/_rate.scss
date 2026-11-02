@@ -9,18 +9,18 @@
 
     &__value {
         font-weight: 700;
-        text-align: right;
+        text-align: end;
     }
 
     &__bar {
-        height: 0.4rem;
+        block-size: 0.4rem;
         background: color-mix(in srgb, colors.$bloon 25%, colors.$paper-dim);
         border-radius: 999px;
         overflow: hidden;
 
         span {
             display: block;
-            height: 100%;
+            block-size: 100%;
             background: colors.$leaf;
             @include grow-bar(150ms);
         }

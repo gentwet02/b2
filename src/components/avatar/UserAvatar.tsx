@@ -14,7 +14,10 @@ export default function UserAvatar(props: UserAvatarProps) {
 
     const src = usePlayerAvatar(id);
     return (
-        <span className='user-avatar' style={{ width: size, height: size, fontSize: size * 0.45 }}>
+        <span
+            className='user-avatar'
+            style={{ inlineSize: size, blockSize: size, fontSize: size * 0.45 }}
+        >
             <PlayerAvatar className='user-avatar__img' src={src} name={name} size={size} lazy />
         </span>
     );

@@ -7,20 +7,19 @@
     align-items: center;
     gap: $space-2xs;
 
-    &__map {
+    @at-root [class^='item-label__map'] {
         flex: none;
-        width: 3.25rem;
-        height: 1.85rem;
+        inline-size: 3.25rem;
+        block-size: 1.85rem;
         object-fit: cover;
         border: 1.5px solid colors.$ink;
         border-radius: 0.35rem;
         background: colors.$paper-dim;
     }
 
-    &__hero {
+    @at-root [class^='item-label__hero'] {
         flex: none;
-        width: 2rem;
-        height: 2rem;
+        @include size(2rem);
         object-fit: cover;
         border: 1.5px solid colors.$ink;
         border-radius: 50%;
@@ -30,8 +29,8 @@
     &__text {
         display: grid;
         // 8rem from 800px up, less below
-        min-width: clamp(4.5rem, 16vw, 8rem);
-        max-width: 14rem;
+        min-inline-size: clamp(4.5rem, 16vw, 8rem);
+        max-inline-size: 14rem;
         font-weight: 600;
         line-height: 1.25;
         white-space: normal;
@@ -39,7 +38,7 @@
         // below desktop the tables are one per row: the text can use the
         // whole column (tower lists then fit on one line)
         @include breakpoint-down(big) {
-            max-width: none;
+            max-inline-size: none;
         }
     }
 
@@ -52,25 +51,24 @@
     @include breakpoint-down($small) {
         gap: $space-3xs;
 
-        &__map {
-            width: 2.5rem;
-            height: 1.45rem;
+        @at-root [class^='item-label__map'] {
+            inline-size: 2.5rem;
+            block-size: 1.45rem;
         }
 
-        &__hero {
-            width: 1.6rem;
-            height: 1.6rem;
+        @at-root [class^='item-label__hero'] {
+            @include size(1.6rem);
         }
 
         &__text {
-            min-width: 0;
+            min-inline-size: 0;
         }
     }
 
     // the narrowest phones: the name alone
     @include breakpoint-down(tiny) {
-        &__map,
-        &__hero {
+        @at-root [class^='item-label__map'],
+            [class^='item-label__hero'] {
             display: none;
         }
     }

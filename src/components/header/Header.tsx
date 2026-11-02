@@ -11,7 +11,7 @@ export default function Header() {
                 <nav className='header__nav' aria-label='Main'>
                     <Link
                         to='/leaderboard'
-                        className='header__link'
+                        inactiveProps={{ className: 'header__link' }}
                         activeProps={{ className: 'header__link--active' }}
                         activeOptions={{ includeSearch: false }}
                     >
@@ -19,14 +19,14 @@ export default function Header() {
                     </Link>
                     <Link
                         to='/matches-history'
-                        className='header__link'
+                        inactiveProps={{ className: 'header__link' }}
                         activeProps={{ className: 'header__link--active' }}
                     >
                         Matches
                     </Link>
                     <Link
                         to='/stats'
-                        className='header__link'
+                        inactiveProps={{ className: 'header__link' }}
                         activeProps={{ className: 'header__link--active' }}
                         activeOptions={{ includeSearch: false }}
                     >

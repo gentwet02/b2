@@ -12,6 +12,7 @@ import useMatchFilters from '@/hooks/queries/useMatchFilters';
 import useSeasons from '@/hooks/queries/useSeasons';
 import useUrlText from '@/hooks/useUrlText';
 import type { MatchesQuery, MatchPick } from '@/types/match';
+import { bem } from '@/utils/className';
 import { formatNumber, plural, timeAgo } from '@/utils/format';
 import { addPick, isFiltering, NO_FILTERS } from '@/utils/matchFilters';
 import { allSeasonsLabel } from '@/utils/season';
@@ -54,20 +55,18 @@ export default function MatchesHistory() {
     const seasonText = allSeasonsLabel(seasonId, page);
 
     // clicking a hero, tower or map on a card adds it to the filters
-    const pick = (clicked: MatchPick) => {
+    function pick(clicked: MatchPick) {
         const patch = addPick(query, clicked, filters.data);
         if (!patch) return;
         setQuery(patch);
         window.scrollTo({ top: 0, behavior: 'smooth' });
-    };
+    }
 
-    const clearFilters = () => {
+    function clearFilters() {
         setText('');
         setText2('');
         setQuery(NO_FILTERS);
-    };
-
-    if (isLoading) return <Loading label='Loading matches…' />;
+    }
 
     return (
         <Page className='matches'>
@@ -127,6 +126,7 @@ export default function MatchesHistory() {
                 </p>
             )}
 
+            {isLoading && <Loading label='Loading matches…' />}
             {error && <ErrorState error={error} onRetry={() => refetch()} />}
 
             {page && matches.length === 0 && (
@@ -136,7 +136,7 @@ export default function MatchesHistory() {
                         filtering && (
                             <button
                                 type='button'
-                                className='button button--quiet'
+                                className='button--quiet'
                                 onClick={clearFilters}
                             >
                                 Clear filters
@@ -155,16 +155,14 @@ export default function MatchesHistory() {
                     matches={matches}
                     onPick={pick}
                     showSeason={query.season === 'all'}
-                    className={
-                        isPlaceholderData ? 'matches__list matches__list--stale' : 'matches__list'
-                    }
+                    className={bem('matches__list', isPlaceholderData && 'stale')}
                 />
             )}
 
             {hasNextPage && page && (
                 <button
                     type='button'
-                    className='button button--quiet matches__more'
+                    className='button--quiet matches__more'
                     onClick={() => fetchNextPage()}
                     disabled={isFetchingNextPage}
                 >

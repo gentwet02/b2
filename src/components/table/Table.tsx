@@ -69,7 +69,7 @@ export default function Table(props: TableProps) {
     const currentPage = controlled ? (state?.page ?? 1) : ownPage;
     const pageSize = controlled ? (state?.pageSize ?? itemsPerPage) : ownPageSize;
 
-    const update = (patch: Partial<TableState>, cause: TableStateCause) => {
+    function update(patch: Partial<TableState>, cause: TableStateCause) {
         const next = { page: currentPage, pageSize, search: searchTerm, ...patch };
         if (onStateChange) {
             onStateChange(next, cause);
@@ -78,7 +78,7 @@ export default function Table(props: TableProps) {
             setOwnPage(next.page);
             setOwnPageSize(next.pageSize);
         }
-    };
+    }
 
     const columns: Category[] = categories || Object.keys(data[0] || {});
 
@@ -113,7 +113,7 @@ export default function Table(props: TableProps) {
     // keep the page in range when the data shrinks (search, page size, refetch)
     const page = Math.min(Math.max(1, currentPage), totalPages);
 
-    const handleSort = (category: Category) => {
+    function handleSort(category: Category) {
         const key = categoryKey(category);
         if (onSort) {
             if (!sortable || sortable.includes(key)) onSort(key);
@@ -123,7 +123,7 @@ export default function Table(props: TableProps) {
             key,
             direction: previous.key === key && previous.direction === 'asc' ? 'desc' : 'asc',
         }));
-    };
+    }
 
     const handleSearch = (value: string) => update({ search: value, page: 1 }, 'search');
 

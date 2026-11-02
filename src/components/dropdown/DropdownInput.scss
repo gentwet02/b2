@@ -7,8 +7,9 @@
     }
 
     &__input {
-        width: 100%;
-        padding: 0.5rem 2.25rem 0.5rem 0.75rem;
+        inline-size: 100%;
+        padding-block: 0.5rem;
+        padding-inline: 0.75rem 2.25rem;
         font: inherit;
         font-weight: 600;
         text-overflow: ellipsis;
@@ -21,7 +22,8 @@
             $duration-fast
         );
 
-        @include when-hover {
+        // a default: ChipAdder and OpponentSelect keep their own background on hover
+        @include when-hover($default: true) {
             background-color: color-mix(in srgb, colors.$paper-dim 50%, colors.$paper);
         }
 
@@ -49,8 +51,8 @@
 
     &__icon {
         position: absolute;
-        top: 50%;
-        right: 0.85rem;
+        inset-block-start: 50%;
+        inset-inline-end: 0.85rem;
         translate: 0 -50%; // separate from the icon's inline rotate transform
         color: colors.$ink;
         pointer-events: none;

@@ -52,10 +52,11 @@ export function medalTitle(name: string): string {
 export const medalNumeral = (season: number | null) => (season === null ? '' : toRoman(season));
 
 /** Tooltip and alt text: "Season 46 medal: Top 50% of the Hall of Masters" */
-export const medalLabel = (badge: Badge) =>
-    badge.season === null
+export function medalLabel(badge: Badge) {
+    return badge.season === null
         ? `Medal: ${badge.name}`
         : `${seasonLabel(badge.season - 1)} medal: ${badge.name}`;
+}
 
 /** Badges (medals) as NK sends them, read defensively (see Badge). */
 export function readBadges(raw: unknown[] | undefined): Badge[] {

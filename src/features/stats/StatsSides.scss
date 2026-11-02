@@ -16,7 +16,7 @@
         align-content: start;
         justify-items: start;
         gap: $space-xs;
-        min-width: 0;
+        min-inline-size: 0;
         padding: $space-xs;
         border: 2px dashed colors.$line;
         border-radius: $radius-control;
@@ -29,24 +29,24 @@
 
         // about half a stacked box: the pickers don't stretch across the whole page
         > .controls {
-            width: 100%;
-            max-width: 30rem;
+            inline-size: 100%;
+            max-inline-size: 30rem;
             column-gap: $space-s;
         }
 
         // range and leave out share the box's width, side by side when they fit
-        .controls__group {
+        [class^='controls__group'] {
             flex: 1 1 9rem;
-            min-width: 11rem;
+            min-inline-size: 11rem;
         }
 
         .controls__group--grow {
-            max-width: none;
+            max-inline-size: none;
         }
 
         .controls__range {
-            width: 100%;
-            min-width: 0;
+            inline-size: 100%;
+            min-inline-size: 0;
         }
     }
 
@@ -54,12 +54,12 @@
     &__filters {
         display: grid;
         gap: $space-xs;
-        width: 100%;
-        padding-top: $space-xs;
-        border-top: 1px dashed colors.$line;
+        inline-size: 100%;
+        padding-block-start: $space-xs;
+        border-block-start: 1px dashed colors.$line;
 
-        .controls__group {
-            max-width: none;
+        [class^='controls__group'] {
+            max-inline-size: none;
         }
     }
 
@@ -87,8 +87,7 @@
     &__swap {
         display: grid;
         place-items: center;
-        width: 2.25rem;
-        height: 2.25rem;
+        @include size(2.25rem);
         padding: 0;
         color: colors.$ink;
         border: $border-width solid colors.$ink;

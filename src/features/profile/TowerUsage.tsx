@@ -53,7 +53,7 @@ export default function TowerUsage(props: TowerUsageProps) {
                                 <span className='tower-usage__track' aria-hidden='true'>
                                     <span
                                         className='tower-usage__fill'
-                                        style={{ width: `${(tower.used / max) * 100}%` }}
+                                        style={{ inlineSize: `${(tower.used / max) * 100}%` }}
                                     />
                                 </span>
                             </li>

@@ -3,6 +3,7 @@ import clubMember from '@/assets/images/club_member.png';
 import Medal from '@/components/medal/Medal';
 import type { UserProfile } from '@/types/profile';
 import { readBadges } from '@/utils/badges';
+import { bem } from '@/utils/className';
 import { formatLabel } from '@/utils/format';
 
 interface ProfileHeroProps {
@@ -23,7 +24,7 @@ export default function ProfileHero(props: ProfileHeroProps) {
 
     return (
         <section
-            className={`profile-hero${profile.equippedBorderURL ? ' profile-hero--framed' : ''}`}
+            className={bem('profile-hero', !!profile.equippedBorderURL && 'framed')}
             aria-labelledby='profile-name'
         >
             {profile.equippedBannerURL && (

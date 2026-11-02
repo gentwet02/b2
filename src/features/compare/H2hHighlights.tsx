@@ -43,6 +43,17 @@ export default function H2hHighlights(props: H2hHighlightsProps) {
 
     // any played map or loadout can be a best or a worst once `min` is 1
     const need = min > 1 ? `Needs ${min}+ games on one` : 'No game on any';
+    // the server never picks a 0% best or a 100% worst: say so rather than "no game"
+    const [wins, losses] = summary.record;
+    const bestEmpty = (what: string) =>
+        wins === 0 && losses > 0 ? 'No win yet' : `${need} ${what}`;
+    function worstEmpty(what: string) {
+        return losses === 0 && wins > 0
+            ? 'No loss yet'
+            : min > 1
+              ? `${need} more ${what}`
+              : `Every ${what} at the same win rate`;
+    }
     const [splitMaps] = useSplitMaps();
     // the mirror counts each game once from each side: half the record is the games played
     const playedGames = (pick: H2hPick | undefined) =>
@@ -62,21 +73,21 @@ export default function H2hHighlights(props: H2hHighlightsProps) {
                 pick={playedMaps ? (playedMaps[0] ?? null) : maps.best.map}
                 games={playedMaps && playedGames(playedMaps[0])}
                 labels={labels}
-                empty={`${need} map`}
+                empty={bestEmpty('map')}
             />
             <H2hTile
                 label={titles.bestMine}
                 kind='loadout'
                 pick={loadouts.best.mine}
                 labels={loadoutLabels}
-                empty={`${need} loadout`}
+                empty={bestEmpty('loadout')}
             />
             <H2hTile
                 label={titles.bestTheirs}
                 kind='loadout'
                 pick={loadouts.best.theirs}
                 labels={loadoutLabels}
-                empty={`${need} loadout of theirs`}
+                empty={bestEmpty('loadout of theirs')}
             />
             <H2hTile
                 label={playedMaps ? 'Least played map' : 'Worst map'}
@@ -90,21 +101,21 @@ export default function H2hHighlights(props: H2hHighlightsProps) {
                 }
                 games={playedMaps && playedGames(playedMaps[playedMaps.length - 1])}
                 labels={labels}
-                empty={playedMaps ? 'Only one map played' : min > 1 ? `${need} more map` : 'Every map at the same win rate'}
+                empty={playedMaps ? 'Only one map played' : worstEmpty('map')}
             />
             <H2hTile
                 label={titles.worstMine}
                 kind='loadout'
                 pick={loadouts.worst.mine}
                 labels={loadoutLabels}
-                empty={`${need} more loadout`}
+                empty={worstEmpty('loadout')}
             />
             <H2hTile
                 label={titles.worstTheirs}
                 kind='loadout'
                 pick={loadouts.worst.theirs}
                 labels={loadoutLabels}
-                empty={`${need} more loadout of theirs`}
+                empty={worstEmpty('loadout of theirs')}
             />
         </div>
     );

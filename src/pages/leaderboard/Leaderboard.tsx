@@ -1,8 +1,9 @@
 import { useIsFetching, useQueryClient } from '@tanstack/react-query';
-import { getRouteApi } from '@tanstack/react-router';
+import { getRouteApi, Link } from '@tanstack/react-router';
 import Page from '@/components/page/Page';
 import PageHeader from '@/components/page/PageHeader';
 import SeasonSelect from '@/components/season-select/SeasonSelect';
+import StatusMessage from '@/components/status/StatusMessage';
 import {
     LEADERBOARD_DEFAULT_SIZE,
     LEADERBOARD_MIN_GAMES_DEFAULT,
@@ -48,7 +49,7 @@ export default function Leaderboard() {
         minGames: search.min ?? LEADERBOARD_MIN_GAMES_DEFAULT,
     } satisfies Required<LeaderboardView>;
 
-    const onViewChange = (patch: LeaderboardView) => {
+    function onViewChange(patch: LeaderboardView) {
         const next = { ...view, ...patch };
         navigate({
             search: (prev) => ({
@@ -61,9 +62,9 @@ export default function Leaderboard() {
             replace: true,
             resetScroll: false,
         });
-    };
+    }
 
-    const onTableStateChange = (next: TableState, cause: TableStateCause) =>
+    function onTableStateChange(next: TableState, cause: TableStateCause) {
         navigate({
             search: (prev) => ({
                 ...prev,
@@ -75,6 +76,30 @@ export default function Leaderboard() {
             replace: cause === 'search',
             resetScroll: false,
         });
+    }
+
+    // past the live season: nothing to load
+    const future = liveSeason !== undefined && season > liveSeason;
+    if (future) {
+        return (
+            <Page className='leaderboard'>
+                <StatusMessage
+                    title={`${seasonLabel(season)} hasn’t started`}
+                    action={
+                        <Link
+                            to='/leaderboard/$season'
+                            params={{ season: liveSeason }}
+                            className='button'
+                        >
+                            Go to the live season
+                        </Link>
+                    }
+                >
+                    The live season is {seasonLabel(liveSeason)}.
+                </StatusMessage>
+            </Page>
+        );
+    }
 
     const count = data?.data?.length;
     const updated = timeAgo(data?.lastUpdated);

@@ -1,0 +1,11 @@
+@use '../utils' as *;
+
+// The box of a status (Loading, StatusMessage): centered, fading in where content would be.
+@mixin status {
+    display: grid;
+    justify-items: center;
+    gap: $space-xs;
+    padding: $space-xl $space-m;
+    text-align: center;
+    @include enter($anim-fade-in, $duration-slow);
+}

@@ -1,8 +1,8 @@
-import { Link } from '@tanstack/react-router';
 import type { ReactNode } from 'react';
-import UserAvatar from '@/components/avatar/UserAvatar';
 import Panel from '@/components/panel/Panel';
 import Note from '@/components/text/Note';
+import StatsSummaryItem from '@/features/stats/StatsSummaryItem';
+import { useSplitMaps } from '@/hooks/useSplitVariants';
 import type { Comparison, CompareSideKey } from '@/types/compare';
 import {
     groupName,
@@ -13,12 +13,11 @@ import {
     sameSides,
     sidesOverlap,
 } from '@/utils/compareTitles';
-import { useSplitMaps } from '@/hooks/useSplitVariants';
 import { formatNumber, plural, timeAgo } from '@/utils/format';
 import { formatRate, formatRecord, gamesOf, rateOf, recordTitle } from '@/utils/record';
 import { inScope, seasonTitle } from '@/utils/season';
 import H2hHighlights from './H2hHighlights';
-import StatsSummaryItem from '@/features/stats/StatsSummaryItem';
+import SideTitle from './SideTitle';
 
 interface VersusSummaryProps {
     data: Comparison;
@@ -27,23 +26,6 @@ interface VersusSummaryProps {
     /** in the head: the stats tabs and options */
     actions?: ReactNode;
     headClassName?: string;
-}
-
-/** One side in the title: a player (avatar, link to the profile) or the range. */
-function SideTitle(props: { data: Comparison; side: CompareSideKey }) {
-    const { data, side } = props;
-    const name = sideName(data, side);
-    const id = data[side].userId;
-    if (data[side].mode === 'anyone') return <span>anyone</span>;
-    if (!id) return <span>{name}</span>;
-    return (
-        <>
-            <UserAvatar id={id} name={name} size={40} />
-            <Link to='/user/$userId' params={{ userId: id }}>
-                {name}
-            </Link>
-        </>
-    );
 }
 
 /** The record between the sides, and side 1's best and worst maps and loadouts. */
@@ -60,16 +42,16 @@ export default function VersusSummary(props: VersusSummaryProps) {
     const effective = side2Effective(data);
     const where = data.season === 'all' ? null : seasonTitle(data.seasonName);
 
-    const rankOf = (side: CompareSideKey) => {
+    function rankOf(side: CompareSideKey) {
         const member = (side === 'a' ? data.players : data.opponents)[0];
         return data[side].mode === 'player' && member?.rank != null
             ? `${sideName(data, side)} ${data.season === 'all' ? 'best rank' : 'rank'} #${formatNumber(member.rank)}`
             : null;
-    };
+    }
     const ranks = [rankOf('a'), rankOf('b')].filter(Boolean).join(' · ');
 
     // "Top 25 (ranks 1–25)", "ranks 26–569" (side 2 once side 1's players are out), "All HoM players"
-    const describe = (side: 'a' | 'b') => {
+    function describe(side: 'a' | 'b') {
         const bounds = sideBounds(data, side);
         if (side === 'b' && effective) {
             return `ranks ${formatNumber(effective.from)}–${formatNumber(effective.to)}`;
@@ -79,7 +61,7 @@ export default function VersusSummary(props: VersusSummaryProps) {
         return bounds && !whole && !name.startsWith('Ranks')
             ? `${name} (ranks ${formatNumber(bounds.from)}–${formatNumber(bounds.to)})`
             : name;
-    };
+    }
     const groupSides = (['a', 'b'] as const).filter((side) => data[side].mode === 'top');
     const size = groupSides.map((side) => sideBounds(data, side)?.size).find((n) => n != null);
     const shared = sidesOverlap(data);

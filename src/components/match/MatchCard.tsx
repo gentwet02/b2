@@ -1,6 +1,7 @@
 import { NEUTRAL_TEXT } from '@/config/match';
 import type { Match, MatchPick } from '@/types/match';
 import { mapImage } from '@/utils/assetOverrides';
+import { bem } from '@/utils/className';
 import { formatDuration, formatLabel, timeAgo } from '@/utils/format';
 import { formatMap } from '@/utils/map';
 import { matchOutcome } from '@/utils/match';
@@ -35,7 +36,7 @@ export default function MatchCard(props: MatchCardProps) {
     const mapSrc = mapImage(match.map, match.mapURL);
 
     return (
-        <article className={`match-card match-card--${tone}`}>
+        <article className={bem('match-card', tone)}>
             <PlayerSide player={left} align='left' outcome={leftOutcome} onPick={onPick} />
             <div className='match-card__center'>
                 {mapSrc && (

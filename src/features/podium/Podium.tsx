@@ -4,6 +4,7 @@ import { PODIUM_ORDER } from '@/config/leaderboard';
 import usePlayerAvatars from '@/hooks/usePlayerAvatars';
 import type { RankedPlayer } from '@/types/leaderboard';
 import type { Wld } from '@/types/record';
+import { bem } from '@/utils/className';
 import { formatNumber } from '@/utils/format';
 import { getAlias } from '@/utils/player';
 import PodiumStats from './PodiumStats';
@@ -29,7 +30,7 @@ export default function Podium(props: PodiumProps) {
             {top.map(
                 (player) =>
                     player && (
-                        <li key={player.id} className={`podium__spot podium__spot--${player.rank}`}>
+                        <li key={player.id} className={bem('podium__spot', String(player.rank))}>
                             <Link
                                 to='/user/$userId'
                                 params={{ userId: player.id }}

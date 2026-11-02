@@ -10,13 +10,14 @@ import type { SplitSearch } from '@/types/variants';
 function useSplitSearch() {
     const search: SplitSearch = useSearch({ strict: false });
     const navigate = useNavigate();
-    const set = (next: SplitSearch) =>
+    function set(next: SplitSearch) {
         void navigate({
             to: '.',
             search: (prev: Record<string, unknown>) => ({ ...prev, ...next }),
             replace: true,
             resetScroll: false,
         });
+    }
     return { search, set };
 }
 

@@ -9,16 +9,17 @@
     scrollbar-width: thin;
 
     &__table {
-        width: 100%;
+        inline-size: 100%;
         border-collapse: collapse;
         font-size: $text-md;
 
-        th,
-        td {
+        // the cells in :where(): one class, so __num below wins by coming later
+        // (the header row, more specific, keeps its own weight and font)
+        :where(th, td) {
             padding: 0.5rem 0.65rem;
-            text-align: left;
+            text-align: start;
             white-space: nowrap;
-            border-bottom: 1px solid colors.$line;
+            border-block-end: 1px solid colors.$line;
         }
 
         thead th {
@@ -35,18 +36,18 @@
         }
 
         tbody tr:last-child > * {
-            border-bottom: none;
+            border-block-end: none;
         }
     }
 
     &__num {
-        text-align: right !important;
+        text-align: end;
         font-weight: 600;
         font-variant-numeric: tabular-nums;
     }
 
     &__rate {
-        min-width: 8rem;
+        min-inline-size: 8rem;
 
         .rate-bar {
             grid-template-columns: 3rem 1fr;
@@ -54,7 +55,7 @@
     }
 
     &__amount {
-        margin-left: auto;
+        margin-inline-start: auto;
         display: inline-flex;
         align-items: center;
         gap: $space-2xs;
@@ -62,7 +63,7 @@
         color: colors.$ink-soft;
 
         .season-history__amount-select {
-            width: 4.5rem;
+            inline-size: 4.5rem;
             font-size: $text-md;
         }
     }
@@ -74,7 +75,7 @@
 
     @include breakpoint-down(tiny) {
         &__rate {
-            min-width: 6rem;
+            min-inline-size: 6rem;
         }
     }
 }

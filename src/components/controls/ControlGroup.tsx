@@ -1,4 +1,5 @@
 import type { ReactNode } from 'react';
+import { mods } from '@/utils/className';
 import ControlLabel from './ControlLabel';
 
 interface ControlGroupProps {
@@ -15,7 +16,7 @@ export default function ControlGroup(props: ControlGroupProps) {
     const { label, labelId, grow, children } = props;
 
     return (
-        <div className={grow ? 'controls__group controls__group--grow' : 'controls__group'}>
+        <div className={mods('controls__group', grow && 'grow')}>
             <ControlLabel id={labelId}>{label}</ControlLabel>
             {children}
         </div>

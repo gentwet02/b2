@@ -2,47 +2,47 @@
 @use '@/styles/utils' as *;
 
 .match-card {
-    &__side {
+    @at-root [class^='match-card__side'] {
         display: flex;
         align-items: center;
         gap: $space-xs;
-        min-width: 0;
+        min-inline-size: 0;
         padding: $space-2xs $space-xs;
         border-radius: $radius-inner;
+    }
 
-        &--right {
+    &__side--right {
+        flex-direction: row-reverse;
+        text-align: end;
+
+        .match-card__name-row {
             flex-direction: row-reverse;
-            text-align: right;
+        }
 
-            .match-card__name-row {
-                flex-direction: row-reverse;
-            }
-
-            .match-card__towers {
-                justify-content: flex-end;
-            }
+        .match-card__towers {
+            justify-content: flex-end;
         }
     }
 
-    &__hero-img {
+    @at-root [class^='match-card__hero-img'] {
         flex: none;
         @include size(var(--fluid-56-80));
         border: 1.5px solid colors.$ink;
         border-radius: 50%;
         background: colors.$paper-dim;
         @include transition((filter, transform), $duration-base);
-
-        &--empty {
-            display: block;
-        }
     }
 
-    &__side--lose &__hero-img {
+    &__hero-img--empty {
+        display: block;
+    }
+
+    &__side--lose [class^='match-card__hero-img'] {
         filter: saturate(0.25);
     }
 
     @include when-hover {
-        .match-card__side--lose .match-card__hero-img {
+        .match-card__side--lose [class^='match-card__hero-img'] {
             filter: saturate(0.5);
         }
     }
@@ -50,7 +50,7 @@
     &__player {
         display: grid;
         gap: $space-4xs;
-        min-width: 0;
+        min-inline-size: 0;
         flex: 1;
     }
 
@@ -58,7 +58,7 @@
         display: flex;
         align-items: center;
         gap: $space-2xs;
-        min-width: 0;
+        min-inline-size: 0;
     }
 
     &__name {
@@ -94,27 +94,27 @@
         }
     }
 
-    &__result {
+    @at-root [class^='match-card__result'] {
         flex: none;
         font-size: $text-2xs;
         font-weight: 700;
         padding: 0.05rem 0.45rem;
         border-radius: 999px;
+    }
 
-        &--win {
-            color: colors.$leaf;
-            background: color-mix(in srgb, colors.$leaf 14%, colors.$paper);
-        }
+    &__result--win {
+        color: colors.$leaf;
+        background: color-mix(in srgb, colors.$leaf 14%, colors.$paper);
+    }
 
-        &--lose {
-            color: colors.$bloon;
-            background: color-mix(in srgb, colors.$bloon 10%, colors.$paper);
-        }
+    &__result--lose {
+        color: colors.$bloon;
+        background: color-mix(in srgb, colors.$bloon 10%, colors.$paper);
+    }
 
-        &--neutral {
-            color: colors.$banana;
-            background: color-mix(in srgb, colors.$banana 10%, colors.$paper);
-        }
+    &__result--neutral {
+        color: colors.$banana;
+        background: color-mix(in srgb, colors.$banana 10%, colors.$paper);
     }
 
     &__hero {
@@ -138,13 +138,12 @@
     }
 
     @include breakpoint-down(medium) {
-        &__side {
-            &--left {
-                padding-inline: $space-2xs $space-3xs;
-            }
-            &--right {
-                padding-inline: $space-3xs $space-2xs;
-            }
+        &__side--left {
+            padding-inline: $space-2xs $space-3xs;
+        }
+
+        &__side--right {
+            padding-inline: $space-3xs $space-2xs;
         }
         &__name {
             font-size: $text-base;
@@ -153,18 +152,18 @@
 
     @include breakpoint-down(small) {
         // the two players, one under the other
-        &__side {
+        @at-root [class^='match-card__side'] {
             padding-inline: $space-2xs;
             align-items: flex-start;
         }
 
         &__side--right {
-            border-top: 1.5px dashed colors.$paper-dim;
-            border-top-left-radius: 0;
-            border-top-right-radius: 0;
-            padding-top: $space-xs;
+            border-block-start: 1.5px dashed colors.$paper-dim;
+            border-start-start-radius: 0;
+            border-start-end-radius: 0;
+            padding-block-start: $space-xs;
             flex-direction: row;
-            text-align: left;
+            text-align: start;
 
             .match-card__name-row {
                 flex-direction: row;

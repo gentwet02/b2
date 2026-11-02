@@ -6,7 +6,8 @@
     display: grid;
     align-content: start;
     gap: 0.2rem;
-    min-height: 6.25rem;
+    // room for the four lines of a full tile (label, title, two records), empty or not
+    min-block-size: 4lh;
     padding: $space-xs $space-xs;
     background: colors.$paper-dim;
     border: 1.5px solid colors.$ink;
@@ -23,10 +24,9 @@
 
     &__img {
         position: absolute;
-        top: 0.55rem;
-        right: 0.55rem;
-        width: 2.25rem;
-        height: 2.25rem;
+        inset-block-start: 0.55rem;
+        inset-inline-end: 0.55rem;
+        @include size(2.25rem);
         object-fit: cover;
         border: 1.5px solid colors.$ink;
         border-radius: 0.4rem;
@@ -46,20 +46,20 @@
 
     &__label {
         @extend %eyebrow;
-        padding-right: $space-xl;
+        padding-inline-end: $space-xl;
         font-size: $text-2xs;
         color: colors.$ink-soft;
     }
 
     &__title {
         @include display($text-lg);
-        padding-right: $space-xl;
+        padding-inline-end: $space-xl;
         overflow-wrap: anywhere;
     }
 
     &__towers {
         display: block;
-        margin-top: 0.15rem;
+        margin-block-start: 0.15rem;
         font-family: $font-body;
         font-size: $text-xs;
         font-weight: 500;

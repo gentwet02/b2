@@ -5,12 +5,14 @@
 .panel {
     display: grid;
     gap: $space-s;
-    padding: $space-s-m $space-m $space-m;
-    min-width: 0;
+    padding-block: $space-s-m $space-m;
+    padding-inline: $space-m;
+    min-inline-size: 0;
     @include components.panel;
 
     @include breakpoint-down(small) {
-        padding: $space-s $space-xs $space-s-m;
+        padding-block: $space-s $space-s-m;
+        padding-inline: $space-xs;
     }
 
     &__head {

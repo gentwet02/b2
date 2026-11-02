@@ -16,17 +16,19 @@ export default function RecordTableHead<T>(props: RecordTableHeadProps<T>) {
     const { label, columns, after, anyDraw, sort, onSort } = props;
 
     // extra columns sort by their index among columns + after: "col:2"
-    const extra = (col: RecordColumn<T>, index: number, key: string) => (
-        <RecordTableHeaderCell
-            key={key}
-            title={col.title}
-            sortKey={col.sort ? `col:${index}` : null}
-            numeric={col.numeric}
-            className={col.className}
-            sort={sort}
-            onSort={onSort}
-        />
-    );
+    function extra(col: RecordColumn<T>, index: number, key: string) {
+        return (
+            <RecordTableHeaderCell
+                key={key}
+                title={col.title}
+                sortKey={col.sort ? `col:${index}` : null}
+                numeric={col.numeric}
+                className={col.className}
+                sort={sort}
+                onSort={onSort}
+            />
+        );
+    }
 
     return (
         <thead>

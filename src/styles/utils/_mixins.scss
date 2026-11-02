@@ -3,9 +3,10 @@
 @use './variables' as *;
 @use './transition' as *;
 
+// a square box: as wide as it is tall
 @mixin size($size) {
-    width: $size;
-    height: $size;
+    inline-size: $size;
+    block-size: $size;
 }
 
 @mixin truncate {

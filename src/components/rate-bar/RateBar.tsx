@@ -18,7 +18,7 @@ export default function RateBar(props: RateBarProps) {
         <span className={className ? `rate-bar ${className}` : 'rate-bar'} title={title}>
             <span className='rate-bar__value'>{formatRate(rate, digits)}</span>
             <span className='rate-bar__bar' aria-hidden='true'>
-                <span style={{ width: `${rate}%` }} />
+                <span style={{ inlineSize: `${rate}%` }} />
             </span>
         </span>
     );

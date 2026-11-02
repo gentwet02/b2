@@ -2,20 +2,11 @@ import ControlCheckbox from '@/components/controls/ControlCheckbox';
 import ControlLabel from '@/components/controls/ControlLabel';
 import Dropdown from '@/components/dropdown/Dropdown';
 import SegmentedControl from '@/components/segmented-control/SegmentedControl';
-import { STATS_MIN_GAMES_OPTIONS, STATS_MIN_PICK_OPTIONS } from '@/config/stats';
 import { MATCH_SORT_DEFAULT, MATCH_SORT_OPTIONS } from '@/config/match';
-import type { MatchSort } from '@/types/match';
-import type { StatsSearch, StatsView } from '@/types/stats';
+import { STATS_MIN_GAMES_OPTIONS, STATS_MIN_PICK_OPTIONS } from '@/config/stats';
+import type { StatsSearch, StatsView, StatsViewState } from '@/types/stats';
 
-interface StatsViewOptionsProps {
-    /** the tabs: the picks tables, then the players ones that fit the sides */
-    tabs: { value: StatsView; label: string }[];
-    view: StatsView;
-    towersOnly: boolean;
-    min: number;
-    minPick: number;
-    /** games tab: their order */
-    sort: MatchSort;
+interface StatsViewOptionsProps extends StatsViewState {
     onChange: (next: Partial<StatsSearch>) => void;
 }
 

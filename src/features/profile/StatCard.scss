@@ -6,11 +6,13 @@
     display: grid;
     align-content: start;
     gap: $space-s;
-    padding: $space-s-m $space-m $space-m;
+    padding-block: $space-s-m $space-m;
+    padding-inline: $space-m;
     @include components.panel;
 
     @include breakpoint-down(small) {
-        padding: $space-s $gutter $space-s-m;
+        padding-block: $space-s $space-s-m;
+        padding-inline: $gutter;
     }
 
     &--accent {
@@ -18,7 +20,7 @@
     }
 
     &--loading {
-        min-height: 12rem;
+        min-block-size: 12rem;
         background-image: linear-gradient(
             100deg,
             transparent 30%,

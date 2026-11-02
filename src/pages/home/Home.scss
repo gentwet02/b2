@@ -7,7 +7,8 @@
         --hero-pad: #{$space-s-xl};
         display: grid;
         gap: $space-m;
-        padding: $space-m-xl var(--hero-pad) 0;
+        padding-block: $space-m-xl 0;
+        padding-inline: var(--hero-pad);
         overflow: hidden;
         @include components.panel(6px);
     }
@@ -22,7 +23,7 @@
 
     &__title {
         @include display($text-display);
-        max-width: 18ch;
+        max-inline-size: 18ch;
         color: colors.$paper;
         -webkit-text-stroke: 2px colors.$ink;
         text-shadow: 2.5px 2.5px 0 colors.$ink;
@@ -36,14 +37,14 @@
     &__stage {
         display: grid;
         align-items: end;
-        min-height: 12rem;
+        min-block-size: 12rem;
         margin-inline: calc(-1 * var(--hero-pad));
         padding-inline: var(--hero-pad);
         background: linear-gradient(to top, colors.$sky-deep 0 0.9rem, transparent 0.9rem);
-        border-top: 2px dashed colors.$line;
+        border-block-start: 2px dashed colors.$line;
 
         .status--error {
-            margin-bottom: $space-m;
+            margin-block-end: $space-m;
         }
     }
 
@@ -67,7 +68,7 @@
 
     @include breakpoint-down(tiny) {
         .page__actions {
-            width: 100%;
+            inline-size: 100%;
             justify-content: center;
             gap: $space-m;
         }

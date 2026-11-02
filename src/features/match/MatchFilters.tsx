@@ -68,13 +68,15 @@ export default function MatchFilters(props: MatchFiltersProps) {
 
     const heroList = (next: HeroPick[]) => joinList(next.map(formatHeroPick));
     /** both lists' heroes, each base once */
-    const mergeHeroes = (a: HeroPick[], b: HeroPick[]) => [
-        ...a,
-        ...b.filter((h) => !a.some((p) => p.base === h.base)),
-    ];
+    function mergeHeroes(a: HeroPick[], b: HeroPick[]) {
+        return [
+            ...a,
+            ...b.filter((h) => !a.some((p) => p.base === h.base)),
+        ];
+    }
 
     // turning "same player" on: the first hero and 3 towers go to side 1, the rest to side 2
-    const splitSides = () =>
+    function splitSides() {
         onChange(
             {
                 sameSide: true,
@@ -89,9 +91,10 @@ export default function MatchFilters(props: MatchFiltersProps) {
             },
             { viewTransition: { types: ['sides'] } },
         );
+    }
 
     // turning it off: both sides go back into the shared filters
-    const mergeSides = () => {
+    function mergeSides() {
         const name = playerText.trim() || player2Text.trim();
         onChange(
             {
@@ -112,7 +115,7 @@ export default function MatchFilters(props: MatchFiltersProps) {
             },
             { viewTransition: { types: ['sides'] } },
         );
-    };
+    }
 
     return (
         <section className='match-filters' aria-label='Filters'>
@@ -249,8 +252,8 @@ export default function MatchFilters(props: MatchFiltersProps) {
                 </>
             )}
 
-            <div className='match-filters__row match-filters__row--map'>
-                <div className='match-filters__field match-filters__field--map'>
+            <div className='match-filters__row--map'>
+                <div className='match-filters__field--map'>
                     <span className='match-filters__label'>Map</span>
                     <MapChip
                         value={query.map}

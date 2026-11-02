@@ -1,3 +1,4 @@
+import { mods } from '@/utils/className';
 interface DropdownOptionProps {
     id: string;
     index: number;
@@ -13,13 +14,7 @@ interface DropdownOptionProps {
 export default function DropdownOption(props: DropdownOptionProps) {
     const { id, index, label, active, current, onHover, onSelect } = props;
 
-    const className = [
-        'dropdown__option',
-        active && 'dropdown__option--active',
-        current && 'dropdown__option--current',
-    ]
-        .filter(Boolean)
-        .join(' ');
+    const className = mods('dropdown__option', active && 'active', current && 'current');
 
     return (
         <li

@@ -1,24 +1,11 @@
-@use '@/styles/utils/colors';
-@use '@/styles/components';
 @use '@/styles/utils' as *;
 
 .profile {
     display: grid;
     gap: $space-m;
 
-    // both cards always share one height
-    &__stats,
-    &__columns--even {
-        align-items: stretch !important;
-    }
-
-    // a stretched card keeps its content at the top
-    &__columns--even > .panel {
-        align-content: start;
-    }
-
-    &__stats,
-    &__columns {
+    // two cards side by side (stacked on tablets), each its own height
+    @at-root [class^='profile__columns'] {
         display: grid;
         grid-template-columns: repeat(2, minmax(0, 1fr));
         align-items: start;
@@ -26,6 +13,15 @@
 
         @include breakpoint-down(tablet) {
             grid-template-columns: 1fr;
+        }
+    }
+
+    // both cards share one height, their content at the top
+    &__columns--even {
+        align-items: stretch;
+
+        > * {
+            align-content: start;
         }
     }
 }

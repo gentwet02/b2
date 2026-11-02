@@ -8,7 +8,13 @@ import useSeasons from '@/hooks/queries/useSeasons';
 export default function LeaderboardIndex() {
     const { data, isLoading, error, refetch } = useSeasons();
 
-    if (isLoading) return <Loading label='Finding the live season…' />;
+    if (isLoading) {
+        return (
+            <Page>
+                <Loading label='Finding the live season…' />
+            </Page>
+        );
+    }
     if (error || !data) {
         return (
             <Page>

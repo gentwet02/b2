@@ -3,11 +3,11 @@
 
 .header {
     position: sticky;
-    top: 0;
+    inset-block-start: 0;
     z-index: z('header'); // above open dropdown lists scrolling underneath
     background: colors.$paper;
-    border-bottom: $border-width solid colors.$ink;
-    padding-top: env(safe-area-inset-top);
+    border-block-end: $border-width solid colors.$ink;
+    padding-block-start: env(safe-area-inset-top);
 
     &__inner {
         @include container;
@@ -15,7 +15,7 @@
         align-items: center;
         justify-content: space-between;
         gap: $space-s;
-        min-height: var(--fluid-56-64);
+        min-block-size: var(--fluid-56-64);
     }
 
     &__brand {
@@ -26,7 +26,7 @@
         gap: $space-2xs;
 
         > img {
-            width: 1.5rem;
+            inline-size: 1.5rem;
             transform-origin: 50% 90%;
         }
 
@@ -42,7 +42,7 @@
         gap: $space-3xs;
     }
 
-    &__link {
+    @at-root [class^='header__link'] {
         padding: 0.45rem 0.9rem;
         font-weight: 600;
         border: $border-width solid transparent;
@@ -56,20 +56,20 @@
         &:active {
             transform: translateY(1px);
         }
+    }
 
-        &--active {
+    &__link--active {
+        background: colors.$banana;
+        border-color: colors.$ink;
+        @include animate($anim-pop-in, $duration-slow, $ease-spring);
+
+        @include when-hover {
             background: colors.$banana;
-            border-color: colors.$ink;
-            @include animate($anim-pop-in, $duration-slow, $ease-spring);
-
-            @include when-hover {
-                background: colors.$banana;
-            }
         }
     }
 
     @include breakpoint-down(small) {
-        &__link {
+        @at-root [class^='header__link'] {
             padding-inline: $space-2xs;
         }
     }
@@ -87,11 +87,11 @@
             padding-inline-end: 0;
 
             > img {
-                width: 2rem;
+                inline-size: 2rem;
             }
         }
 
-        &__link {
+        @at-root [class^='header__link'] {
             padding-block: $space-4xs;
         }
     }

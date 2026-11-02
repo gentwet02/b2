@@ -24,19 +24,19 @@ export function createStoredValue<T>({
     write,
     syncTabs,
 }: StoredValueOptions<T>) {
-    const load = (): T => {
+    function load(): T {
         try {
             const raw = localStorage.getItem(key);
             return raw === null ? fallback : read(raw);
         } catch {
             return fallback; // private mode, blocked storage, bad JSON
         }
-    };
+    }
 
     let current = load();
     const listeners = new Set<() => void>();
 
-    const set = (next: T) => {
+    function set(next: T) {
         current = next;
         try {
             const raw = write(next);
@@ -46,21 +46,21 @@ export function createStoredValue<T>({
             // still works for this visit
         }
         listeners.forEach((listener) => listener());
-    };
+    }
 
-    const subscribe = (listener: () => void) => {
+    function subscribe(listener: () => void) {
         listeners.add(listener);
-        const onStorage = (event: StorageEvent) => {
+        function onStorage(event: StorageEvent) {
             if (event.key !== key) return;
             current = load();
             listener();
-        };
+        }
         if (syncTabs) window.addEventListener('storage', onStorage);
         return () => {
             listeners.delete(listener);
             if (syncTabs) window.removeEventListener('storage', onStorage);
         };
-    };
+    }
 
     const get = () => current;
     const useValue = () => useSyncExternalStore(subscribe, get, get);

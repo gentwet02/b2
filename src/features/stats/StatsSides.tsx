@@ -10,18 +10,10 @@ import useOpponentsMet from '@/hooks/queries/useOpponentsMet';
 import useRankedPlayers from '@/hooks/queries/useRankedPlayers';
 import useSeasons from '@/hooks/queries/useSeasons';
 import type { SeasonQuery, SeasonScope } from '@/types/season';
-import type { SideMode, StatsSearch } from '@/types/stats';
+import type { SideMode, SideState, StatsSearch } from '@/types/stats';
 import { formatNumber, plural } from '@/utils/format';
 import { nameWithAlias, rankedLabel } from '@/utils/player';
 import { formatRecord, gamesOf } from '@/utils/record';
-
-/** What a side shows, defaults filled in. */
-export interface SideState {
-    mode: SideMode;
-    player: string | undefined;
-    range: string;
-    exclude: string | undefined;
-}
 
 interface StatsSidesProps {
     /** the season picked (whose leaderboard the player pickers list) */

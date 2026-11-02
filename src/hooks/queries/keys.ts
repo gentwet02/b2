@@ -4,10 +4,10 @@ import type { SeasonQuery } from '@/types/season';
 type Part = string | number | object | undefined;
 
 /** Trailing undefined parts are left out, so a key without them is a prefix of the full ones. */
-const key = (...parts: Part[]) => {
+function key(...parts: Part[]) {
     while (parts.length && parts[parts.length - 1] === undefined) parts.pop();
     return parts;
-};
+}
 
 type Season = SeasonQuery | 'live';
 
@@ -24,8 +24,9 @@ export const queryKeys = {
     matchesHistory: (query: Partial<MatchesQuery>, pageSize?: number) =>
         key('matchesHistory', query, pageSize),
     matchFilters: (filters: Omit<MatchesQuery, 'sort'>) => key('matchFilters', filters),
-    stats: (...parts: Part[]) => key('stats', ...parts),
-    /** season, then each side ("p:<id>" or "t50-t10") */
+    /** the normalized params (services/api/stats): objects hash whatever their key order */
+    stats: (params?: object) => key('stats', params),
+    /** the normalized params (services/api/compare), or 'games', the params and the sort */
     compare: (...parts: Part[]) => key('compare', ...parts),
 
     profile: (userId?: string) => key('userProfile', userId),
@@ -39,12 +40,14 @@ export const queryKeys = {
 };
 
 /** What the profile's Refresh reloads: everything that changes when the player plays. */
-export const playerQueryPrefixes = (userId: string) => [
-    queryKeys.profile(userId),
-    queryKeys.seasonStats(userId),
-    queryKeys.matchesHistory({ playerId: userId }),
-    queryKeys.headToHead(userId),
-    // comparisons aren't keyed by player: any of them may hold this one
-    queryKeys.compare(),
-    queryKeys.opponentsMet(userId),
-];
+export function playerQueryPrefixes(userId: string) {
+    return [
+        queryKeys.profile(userId),
+        queryKeys.seasonStats(userId),
+        queryKeys.matchesHistory({ playerId: userId }),
+        queryKeys.headToHead(userId),
+        // comparisons aren't keyed by player: any of them may hold this one
+        queryKeys.compare(),
+        queryKeys.opponentsMet(userId),
+    ];
+}

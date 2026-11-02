@@ -19,11 +19,11 @@
     }
 
     &--compact &__tile:nth-child(2) {
-        border-right: none;
+        border-inline-end: none;
     }
 
     &--compact &__tile:nth-child(-n + 2) {
-        border-bottom: 1px solid colors.$line;
+        border-block-end: 1px solid colors.$line;
     }
 
     @include breakpoint-down(small) {
@@ -36,12 +36,12 @@
         gap: 0.2rem;
         align-content: start;
         padding: $space-s $space-s-m;
-        border-right: 1px solid colors.$line;
+        border-inline-end: 1px solid colors.$line;
         @include enter($anim-fade-up, $duration-slow);
         @include stagger(4, 60ms);
 
         &:last-child {
-            border-right: none;
+            border-inline-end: none;
         }
 
         @include breakpoint-down(small) {
@@ -50,11 +50,11 @@
 
         @include breakpoint-down(tablet) {
             &:nth-child(2) {
-                border-right: none;
+                border-inline-end: none;
             }
 
             &:nth-child(-n + 2) {
-                border-bottom: 1px solid colors.$line;
+                border-block-end: 1px solid colors.$line;
             }
         }
     }
@@ -80,8 +80,8 @@
 
     &__arena-logo {
         flex: none;
-        width: 2.5rem;
-        height: auto;
+        inline-size: 2.5rem;
+        block-size: auto;
     }
 }
 

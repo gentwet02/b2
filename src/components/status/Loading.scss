@@ -1,0 +1,35 @@
+@use '@/styles/utils/colors';
+@use '@/styles/components';
+@use '@/styles/utils' as *;
+
+.status--loading {
+    @include components.status;
+    // don't flash the spinner for fast loads
+    @include animate($anim-fade-in, $duration-base, $ease-out, 150ms);
+}
+
+.status {
+    &__bloon {
+        inline-size: 2.5rem;
+        fill: colors.$bloon;
+        stroke: colors.$ink;
+        stroke-width: 2;
+        stroke-linejoin: round;
+        overflow: visible;
+        transform-origin: 50% 100%;
+
+        @include when-motion-ok {
+            animation: $anim-bob 1.4s $ease-in-out infinite;
+        }
+    }
+
+    &__string {
+        fill: none;
+        stroke-width: 1.5;
+    }
+
+    &__label {
+        color: colors.$ink-soft;
+        font-weight: 500;
+    }
+}

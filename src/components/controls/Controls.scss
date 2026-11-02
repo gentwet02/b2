@@ -15,19 +15,15 @@
     }
 
     &__aside {
-        margin-left: auto;
+        margin-inline-start: auto;
 
         @include breakpoint-down(phablet) {
-            margin-left: 0;
+            margin-inline-start: 0;
         }
     }
 
     &__season {
-        min-width: 11rem;
-    }
-
-    &__range {
-        min-width: 11rem;
+        min-inline-size: 11rem;
     }
 
     .dropdown--open {
@@ -35,9 +31,8 @@
     }
 
     @include breakpoint-down(small) {
-        &__season,
-        &__range {
-            min-width: 0;
+        &__season {
+            min-inline-size: 0;
         }
     }
 }

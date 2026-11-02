@@ -10,8 +10,8 @@ import { isReversedMap, mapBaseKey, mapFilterOf } from '@/utils/map';
 import { joinList, splitList } from '@/utils/search';
 
 /** Is any filter set (the sort aside)? */
-export const isFiltering = (query: MatchesQuery) =>
-    !!(
+export function isFiltering(query: MatchesQuery) {
+    return !!(
         query.player ||
         query.heroes ||
         query.towers ||
@@ -26,6 +26,7 @@ export const isFiltering = (query: MatchesQuery) =>
                 query.exHeroes2 ||
                 query.exTowers2))
     );
+}
 
 /** Every filter off (the season and sort stay). */
 export const NO_FILTERS: Partial<MatchesQuery> = {

@@ -1,0 +1,11 @@
+.site-main {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+
+    // a page that is only loading: the bloon in the middle
+    > .status--loading {
+        flex: 1;
+        align-content: center;
+    }
+}

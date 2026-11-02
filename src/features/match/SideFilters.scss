@@ -5,7 +5,7 @@
     &__side {
         display: grid;
         gap: $space-xs;
-        min-width: 0;
+        min-inline-size: 0;
         padding: $space-xs;
         border: 2px dashed colors.$line;
         border-radius: $radius-control;

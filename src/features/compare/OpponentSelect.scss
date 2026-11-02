@@ -5,11 +5,11 @@
     display: flex;
     align-items: center;
     gap: $space-3xs;
-    min-width: 0;
+    min-inline-size: 0;
 
     &__dropdown {
         flex: 1 1 auto;
-        min-width: 0;
+        min-inline-size: 0;
     }
 
     // the open list must cover the slots below it

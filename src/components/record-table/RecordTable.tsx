@@ -1,6 +1,7 @@
 import { useState, type ReactNode } from 'react';
 import PanelEmpty from '@/components/panel/PanelEmpty';
 import type { RecordColumn, RecordSortKey, RecordSortState, Wld } from '@/types/record';
+import { cx } from '@/utils/className';
 import { recordComparator, sortRecords } from '@/utils/record';
 import RecordTableHead from './RecordTableHead';
 import RecordTableMore from './RecordTableMore';
@@ -52,7 +53,7 @@ export default function RecordTable<T extends { record: Wld }>(props: RecordTabl
     return (
         <div className='record-table-scroll'>
             <table
-                className={`record-table record-table--${label.title.toLowerCase()}${className ? ` ${className}` : ''}`}
+                className={cx('record-table', className)}
             >
                 <RecordTableHead
                     label={{ title: label.title, sortable: !!label.sort }}

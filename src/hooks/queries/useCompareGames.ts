@@ -3,16 +3,26 @@ import { COMPARE_GAMES_PAGE_SIZE } from '@/config/compare';
 import { AGGREGATE_QUERY } from '@/config/queries';
 import { queryKeys } from '@/hooks/queries/keys';
 import { fetchData } from '@/services/api/client';
-import { compareService, type CompareParams } from '@/services/api/compare';
+import {
+    compareService,
+    normalizeCompareParams,
+    type CompareParams,
+} from '@/services/api/compare';
 import type { MatchSort } from '@/types/match';
 
 /** The games between the two sides, sorted, a page per "show more". */
 export default function useCompareGames(params: CompareParams, sort: MatchSort, enabled = true) {
+    const normalized = normalizeCompareParams(params);
     return useInfiniteQuery({
-        queryKey: queryKeys.compare('games', JSON.stringify(params), sort),
+        queryKey: queryKeys.compare('games', normalized, sort),
         queryFn: ({ pageParam }) =>
             fetchData(
-                compareService.getCompareGames(params, sort, pageParam, COMPARE_GAMES_PAGE_SIZE),
+                compareService.getCompareGames(
+                    normalized,
+                    sort,
+                    pageParam,
+                    COMPARE_GAMES_PAGE_SIZE,
+                ),
                 'Could not load the games',
             ),
         initialPageParam: 0,

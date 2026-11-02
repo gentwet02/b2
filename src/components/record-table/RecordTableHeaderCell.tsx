@@ -1,5 +1,6 @@
 import { ChevronDownIcon } from '@/components/icons';
 import type { RecordSortKey, RecordSortState } from '@/types/record';
+import { bem, mods } from '@/utils/className';
 
 interface RecordTableHeaderCellProps {
     title: string;
@@ -30,14 +31,14 @@ export default function RecordTableHeaderCell(props: RecordTableHeaderCellProps)
             {sortKey ? (
                 <button
                     type='button'
-                    className={`record-table__sort${on ? ' record-table__sort--on' : ''}`}
+                    className={bem('record-table__sort', on && 'on')}
                     onClick={() => onSort(sortKey)}
                     title={on ? 'Reverse the order' : `Sort by ${title.toLowerCase()}`}
                 >
                     {title}
                     <ChevronDownIcon
                         key={on ? 'on' : 'off'}
-                        className={`record-table__sort-icon${on ? '' : ' record-table__sort-icon--off'}`}
+                        className={mods('record-table__sort-icon', !on && 'off')}
                         width={10}
                         height={10}
                         rotate={ascending}

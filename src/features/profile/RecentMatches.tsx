@@ -44,7 +44,6 @@ export default function RecentMatches(props: RecentMatchesProps) {
 
     return (
         <Panel
-            className='panel--matches'
             title='Recent matches'
             actions={
                 <>
@@ -83,7 +82,7 @@ export default function RecentMatches(props: RecentMatchesProps) {
                 {!useLive && stored.hasNextPage && (
                     <button
                         type='button'
-                        className='button button--quiet'
+                        className='button--quiet'
                         onClick={() => stored.fetchNextPage()}
                         disabled={stored.isFetchingNextPage}
                     >

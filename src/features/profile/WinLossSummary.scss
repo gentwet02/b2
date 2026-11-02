@@ -19,7 +19,7 @@
 
     &__bar {
         display: flex;
-        height: 0.9rem;
+        block-size: 0.9rem;
         background: colors.$bloon;
         border: 2px solid colors.$ink;
         border-radius: 999px;

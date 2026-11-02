@@ -44,7 +44,6 @@ export default function VersusMatches(props: VersusMatchesProps) {
 
     return (
         <Panel
-            className='panel--matches'
             {...(tabs
                 ? {
                       headClassName: 'stats-results__head',
@@ -75,7 +74,7 @@ export default function VersusMatches(props: VersusMatchesProps) {
                         <div className='versus-matches__more'>
                             <button
                                 type='button'
-                                className='button button--quiet'
+                                className='button--quiet'
                                 onClick={() => games.fetchNextPage()}
                                 disabled={games.isFetchingNextPage}
                             >
