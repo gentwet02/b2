@@ -1,6 +1,12 @@
 import useSeasons from '@/hooks/queries/useSeasons';
 import type { SeasonScope } from '@/types/season';
-import { incompleteSeasonsText, isIncompleteSeason, seasonLabel } from '@/utils/season';
+import {
+    incompleteSeasonsText,
+    isIncompleteSeason,
+    isUnfilteredSeason,
+    seasonLabel,
+    unfilteredSeasonsText,
+} from '@/utils/season';
 import './SeasonNote.scss';
 
 interface SeasonNoteProps {
@@ -13,7 +19,8 @@ interface SeasonNoteProps {
 
 /**
  * Under a season pick: "all seasons" only reaches back to the first season recorded,
- * and a few seasons are missing some matches (marked with an asterisk).
+ * a few seasons are missing some matches (marked with an asterisk), and in a few others
+ * NK's history let some non-Hall of Masters games through.
  */
 export default function SeasonNote(props: SeasonNoteProps) {
     const { season, className } = props;
@@ -35,20 +42,33 @@ export default function SeasonNote(props: SeasonNoteProps) {
                     <span className='season-note__mark'>*</span>
                     {incompleteSeasonsText()} are missing some matches.
                 </span>
-            </p>
-        );
-    }
-
-    if (typeof current === 'number' && isIncompleteSeason(current)) {
-        return (
-            <p className={classes}>
                 <span className='season-note__line'>
-                    <span className='season-note__mark'>*</span>
-                    {seasonLabel(current)} is missing some matches.
+                    {unfilteredSeasonsText()} include some games played outside Hall of
+                    Masters.
                 </span>
             </p>
         );
     }
 
-    return null;
+    if (typeof current !== 'number') return null;
+    const incomplete = isIncompleteSeason(current);
+    const unfiltered = isUnfilteredSeason(current);
+    if (!incomplete && !unfiltered) return null;
+
+    return (
+        <p className={classes}>
+            {incomplete && (
+                <span className='season-note__line'>
+                    <span className='season-note__mark'>*</span>
+                    {seasonLabel(current)} is missing some matches.
+                </span>
+            )}
+            {unfiltered && (
+                <span className='season-note__line'>
+                    {seasonLabel(current)} includes some games played outside Hall of
+                    Masters.
+                </span>
+            )}
+        </p>
+    );
 }

@@ -1,4 +1,4 @@
-import { INCOMPLETE_SEASON_NUMBERS } from '@/config/seasons';
+import { INCOMPLETE_SEASON_NUMBERS, UNFILTERED_SEASON_NUMBERS } from '@/config/seasons';
 import type { MatchesPage } from '@/types/match';
 import type { SeasonScope, SeasonSummary } from '@/types/season';
 
@@ -11,12 +11,33 @@ export const isIncompleteSeason = (seasonId: number) =>
 /** "*" after the seasons with missing data. */
 export const incompleteMark = (seasonId: number) => (isIncompleteSeason(seasonId) ? '*' : '');
 
-/** "Seasons 20, 21, 24, 29 and 31" */
-export function incompleteSeasonsText() {
-    const n = INCOMPLETE_SEASON_NUMBERS;
-    const list = n.length > 1 ? `${n.slice(0, -1).join(', ')} and ${n[n.length - 1]}` : `${n[0]}`;
-    return `${n.length > 1 ? 'Seasons' : 'Season'} ${list}`;
+/** Some of this season's matches weren't played in Hall of Masters. */
+export const isUnfilteredSeason = (seasonId: number) =>
+    UNFILTERED_SEASON_NUMBERS.includes(seasonId + 1);
+
+/** "Seasons 17–21, 24 and 40–43": runs of three or more seasons shortened to a range. */
+function seasonsText(numbers: readonly number[]) {
+    const parts: string[] = [];
+    for (let i = 0; i < numbers.length; ) {
+        let j = i;
+        while (j + 1 < numbers.length && numbers[j + 1] === numbers[j]! + 1) j++;
+        if (j - i >= 2) {
+            parts.push(`${numbers[i]}–${numbers[j]}`);
+        } else {
+            parts.push(...numbers.slice(i, j + 1).map(String));
+        }
+        i = j + 1;
+    }
+    const list =
+        parts.length > 1 ? `${parts.slice(0, -1).join(', ')} and ${parts.at(-1)}` : parts[0];
+    return `${numbers.length > 1 ? 'Seasons' : 'Season'} ${list}`;
 }
+
+/** "Seasons 20, 21, 24, 29 and 31" */
+export const incompleteSeasonsText = () => seasonsText(INCOMPLETE_SEASON_NUMBERS);
+
+/** "Seasons 17–21 and 40–43" */
+export const unfilteredSeasonsText = () => seasonsText(UNFILTERED_SEASON_NUMBERS);
 
 export function allSeasonsLabel(
     seasonId: SeasonScope | undefined,
