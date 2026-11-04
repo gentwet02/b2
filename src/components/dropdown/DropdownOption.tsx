@@ -1,8 +1,13 @@
+import FoundAs from '@/components/text/FoundAs';
+import type { DropdownKeyword } from '@/types/dropdown';
 import { mods } from '@/utils/className';
+
 interface DropdownOptionProps {
     id: string;
     index: number;
     label: string;
+    /** the hidden keyword the search found this option by (e.g. an old name) */
+    matched?: DropdownKeyword | undefined;
     /** where the arrow keys / pointer are */
     active: boolean;
     /** the selected value */
@@ -12,7 +17,7 @@ interface DropdownOptionProps {
 }
 
 export default function DropdownOption(props: DropdownOptionProps) {
-    const { id, index, label, active, current, onHover, onSelect } = props;
+    const { id, index, label, matched, active, current, onHover, onSelect } = props;
 
     const className = mods('dropdown__option', active && 'active', current && 'current');
 
@@ -29,6 +34,7 @@ export default function DropdownOption(props: DropdownOptionProps) {
             onClick={onSelect}
         >
             {label}
+            {matched && <FoundAs found={matched} className='dropdown__option-matched' />}
         </li>
     );
 }

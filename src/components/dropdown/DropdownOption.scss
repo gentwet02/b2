@@ -29,3 +29,8 @@
 .dropdown__option--current.dropdown__option--active {
     background: color-mix(in srgb, colors.$banana 55%, colors.$paper);
 }
+
+.dropdown__option-matched {
+    // may wrap in the narrow list: the full name stays readable
+    white-space: normal;
+}

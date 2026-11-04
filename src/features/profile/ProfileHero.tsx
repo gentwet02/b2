@@ -5,20 +5,24 @@ import type { UserProfile } from '@/types/profile';
 import { readBadges } from '@/utils/badges';
 import { bem } from '@/utils/className';
 import { formatLabel } from '@/utils/format';
+import { getAlias } from '@/utils/player';
+import OldNames from './OldNames';
 
 interface ProfileHeroProps {
     profile: UserProfile;
     alias?: string | null | undefined;
+    /** the names the player went by before, most recently used first */
+    oldNames?: string[] | undefined;
     actions?: ReactNode;
     /** e.g. "Updated 3 minutes ago" */
     note?: string | null;
 }
 
 export default function ProfileHero(props: ProfileHeroProps) {
-    const { profile, alias, actions, note } = props;
+    const { profile, alias, oldNames, actions, note } = props;
 
     const badges = readBadges(profile.badges_equipped);
-    const knownAs = alias && alias !== profile.displayName ? alias : null;
+    const knownAs = getAlias({ alias, displayName: profile.displayName });
     const title =
         profile.equippedTitle && profile.equippedTitle !== 'None' ? profile.equippedTitle : null;
 
@@ -55,6 +59,7 @@ export default function ProfileHero(props: ProfileHeroProps) {
                         )}
                     </div>
                     {knownAs && <p className='profile-hero__alias'>Known as {knownAs}</p>}
+                    {oldNames && oldNames.length > 0 && <OldNames names={oldNames} />}
                     {title && <p className='profile-hero__title'>{formatLabel(title)}</p>}
                     {badges.length > 0 && (
                         <ul className='profile-hero__equipped' aria-label='Equipped medals'>

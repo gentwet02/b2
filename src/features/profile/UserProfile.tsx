@@ -68,6 +68,7 @@ export default function UserProfile(props: UserProfileProps) {
                 <ProfileHero
                     profile={profile}
                     alias={alias}
+                    oldNames={data?.names}
                     note={data?.fetchedAt ? `Updated ${timeAgo(data.fetchedAt)}` : null}
                     actions={
                         <button

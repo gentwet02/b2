@@ -47,6 +47,7 @@ export default function Leaderboard() {
         sort: search.sort ?? LEADERBOARD_SORT_DEFAULT,
         reverse: !!search.reverse,
         minGames: search.min ?? LEADERBOARD_MIN_GAMES_DEFAULT,
+        allNames: !!search.allNames,
     } satisfies Required<LeaderboardView>;
 
     function onViewChange(patch: LeaderboardView) {
@@ -57,6 +58,7 @@ export default function Leaderboard() {
                 sort: next.sort !== LEADERBOARD_SORT_DEFAULT ? next.sort : undefined,
                 reverse: next.reverse ? true : undefined,
                 min: next.minGames !== LEADERBOARD_MIN_GAMES_DEFAULT ? next.minGames : undefined,
+                allNames: next.allNames ? true : undefined,
                 page: undefined,
             }),
             replace: true,

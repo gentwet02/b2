@@ -1,5 +1,6 @@
 import { useMemo, useState } from 'react';
 import { Link } from '@tanstack/react-router';
+import OldNamesCheckbox from '@/components/controls/OldNamesCheckbox';
 import Panel from '@/components/panel/Panel';
 import PanelEmpty from '@/components/panel/PanelEmpty';
 import SeasonNote from '@/components/season-note/SeasonNote';
@@ -128,6 +129,7 @@ export default function HeadToHead(props: HeadToHeadProps) {
             {allSeasons && <SeasonNote season='all' />}
 
             <div className='h2h-card__foot'>
+                <OldNamesCheckbox />
                 {hasCustom ? (
                     <button type='button' className='text-link h2h-card__reset' onClick={reset}>
                         Back to the top 10

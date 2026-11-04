@@ -28,6 +28,7 @@ function validateSearch(search: Record<string, unknown>): LeaderboardSearch {
         sort: parseOption(search.sort, LEADERBOARD_SORTS, LEADERBOARD_SORT_DEFAULT),
         reverse: parseFlag(search.reverse),
         min: parseOption(Number(search.min), LEADERBOARD_MIN_GAMES, LEADERBOARD_MIN_GAMES_DEFAULT),
+        allNames: parseFlag(search.allNames),
     };
 }
 

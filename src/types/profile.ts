@@ -114,6 +114,8 @@ export interface UserProfileData extends BaseApiResponse {
     clan?: Clan | null;
     /** when our server last read this profile from Ninja Kiwi */
     fetchedAt?: string;
+    /** the names the player went by before, most recently used first */
+    names?: string[];
 }
 
 export interface UserSearch extends SplitSearch {

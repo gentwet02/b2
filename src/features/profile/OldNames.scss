@@ -1,0 +1,69 @@
+@use '@/styles/utils/colors';
+@use '@/styles/utils' as *;
+
+// the button
+.old-names {
+    @include bare-button;
+    display: inline-flex;
+    align-items: center;
+    justify-self: start;
+    gap: $space-3xs;
+    max-inline-size: 100%;
+    color: colors.$ink-soft;
+    font-weight: 500;
+    text-align: start;
+    border-radius: $radius-inner;
+    @include transition(color, $duration-fast);
+
+    @include when-hover {
+        color: colors.$ink;
+    }
+
+    &:focus-visible {
+        @include field-focus;
+    }
+
+    strong {
+        color: colors.$ink;
+        font-weight: 700;
+    }
+}
+
+.old-names__chevron {
+    display: inline-flex;
+    flex: none;
+    @include transition(transform, $duration-fast);
+}
+
+.old-names--open .old-names__chevron {
+    transform: rotate(180deg);
+}
+
+// portaled to the page: floats over the profile header instead of growing it
+.old-names__list {
+    position: absolute;
+    z-index: z('popover');
+    display: grid;
+    inline-size: max-content;
+    max-inline-size: min(22rem, 100vw - 24px);
+    max-block-size: 16rem;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    background: colors.$paper;
+    border: $border-width solid colors.$ink;
+    border-radius: $radius-inner;
+    box-shadow: $shadow-md $shadow-md 0 colors.$ink;
+    scrollbar-width: thin;
+    @include animate($anim-fade-down, $duration-base);
+}
+
+.old-names__item {
+    padding: $space-2xs $space-xs;
+    font-weight: 600;
+    color: colors.$ink;
+    overflow-wrap: anywhere;
+
+    & + & {
+        border-block-start: 1px solid colors.$line;
+    }
+}

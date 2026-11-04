@@ -1,6 +1,11 @@
 import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import type { ChangeEvent, KeyboardEvent, MouseEvent } from 'react';
-import type { DropdownItem, DropdownOption, DropdownValue } from '@/types/dropdown';
+import type {
+    DropdownItem,
+    DropdownOption,
+    DropdownShownItem,
+    DropdownValue,
+} from '@/types/dropdown';
 
 interface UseDropdownOptions<V extends DropdownValue> {
     options: readonly DropdownOption<V>[];
@@ -30,8 +35,8 @@ export default function useDropdown<V extends DropdownValue>(props: UseDropdownO
     const [activeIndex, setActiveIndex] = useState(-1);
     const [spacerTop, setSpacerTop] = useState(0);
     // after closing, the list stays rendered with its last options until its exit animation ends
-    const [exitItems, setExitItems] = useState<DropdownItem<V>[] | null>(null);
-    const openItemsRef = useRef<DropdownItem<V>[]>([]);
+    const [exitItems, setExitItems] = useState<DropdownShownItem<V>[] | null>(null);
+    const openItemsRef = useRef<DropdownShownItem<V>[]>([]);
     const wasOpenRef = useRef(false);
 
     const items = useMemo(
@@ -46,13 +51,19 @@ export default function useDropdown<V extends DropdownValue>(props: UseDropdownO
     const selectedLabel = items[selectedIndex]?.label ?? '';
     const inputValue = isFiltering ? query : selectedLabel;
 
-    const filteredItems = useMemo(() => {
+    const filteredItems = useMemo((): DropdownShownItem<V>[] => {
         const search = query.trim().toLowerCase();
         if (!isFiltering || !search) return items;
-        return items.filter((item) => item.label.toLowerCase().includes(search));
+        return items.flatMap((item) => {
+            if (item.label.toLowerCase().includes(search)) return [item];
+            const matched = item.keywords?.find((k) => k.text.toLowerCase().includes(search));
+            return matched ? [{ ...item, matched }] : [];
+        });
     }, [items, query, isFiltering]);
 
-    const activeItem: DropdownItem<V> | undefined = isOpen ? filteredItems[activeIndex] : undefined;
+    const activeItem: DropdownShownItem<V> | undefined = isOpen
+        ? filteredItems[activeIndex]
+        : undefined;
     const isClosing = !isOpen && exitItems !== null;
     const shownItems = isOpen ? filteredItems : (exitItems ?? []);
 

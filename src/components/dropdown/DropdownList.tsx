@@ -1,12 +1,12 @@
 import type { Ref } from 'react';
-import type { DropdownItem, DropdownValue } from '@/types/dropdown';
+import type { DropdownItem, DropdownShownItem, DropdownValue } from '@/types/dropdown';
 import { mods } from '@/utils/className';
 import DropdownOption from './DropdownOption';
 
 interface DropdownListProps<V extends DropdownValue> {
     ref: Ref<HTMLUListElement>;
     id: string;
-    items: DropdownItem<V>[];
+    items: DropdownShownItem<V>[];
     /** the selected value */
     value: V | '';
     activeIndex: number;
@@ -66,6 +66,7 @@ export default function DropdownList<V extends DropdownValue>(props: DropdownLis
                         id={optionId(index)}
                         index={index}
                         label={item.label}
+                        matched={item.matched}
                         active={index === activeIndex}
                         current={item.value === value}
                         onHover={() => onHover(index)}

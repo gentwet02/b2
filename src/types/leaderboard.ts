@@ -8,18 +8,27 @@ export interface LeaderboardPlayer {
     name: string;
     score: number;
     currentlyInHoM: boolean;
+    /** names the player went by before */
+    oldNames?: string[];
+    /** the player's current name, when they ranked under another one (past seasons) */
+    currentName?: string;
 }
 
 export interface RankedPlayer extends LeaderboardPlayer {
     rank: number;
 }
 
-/** The server's compact player: i = id, r = alias, n = name, d = in HoM flag + score */
+/**
+ * The server's compact player: i = id, r = alias, n = name, d = in HoM flag + score,
+ * o = old names, c = current name (when it isn't n)
+ */
 export interface LeaderboardPlayerEncoded {
     i: string;
     r?: string;
     n: string;
     d: string;
+    o?: string[];
+    c?: string;
 }
 
 /** GET /leaderboard/:season */
@@ -48,12 +57,15 @@ export interface LeaderboardSearch {
     /** the sort's opposite order */
     reverse?: true | undefined;
     min?: number | undefined;
+    /** the search also matches the names players had before */
+    allNames?: true | undefined;
 }
 
 export interface LeaderboardView {
     sort?: LeaderboardSort;
     reverse?: boolean;
     minGames?: number;
+    allNames?: boolean;
 }
 
 /** A leaderboard row: the player and their recorded games. */

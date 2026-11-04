@@ -1,9 +1,11 @@
 import { useMemo } from 'react';
 import Dropdown from '@/components/dropdown/Dropdown';
+import useOldNamesSearch from '@/hooks/useOldNamesSearch';
 import type { OpponentSlot } from '@/hooks/useOpponentSlots';
+import type { DropdownItem } from '@/types/dropdown';
 import type { RankedPlayer } from '@/types/leaderboard';
 import { bem } from '@/utils/className';
-import { rankedLabel } from '@/utils/player';
+import { nameKeywords, rankedLabel } from '@/utils/player';
 
 interface OpponentSelectProps {
     slot: OpponentSlot;
@@ -19,17 +21,22 @@ interface OpponentSelectProps {
 /** One opponent slot: a searchable select, and a way back to the default player once replaced. */
 export default function OpponentSelect(props: OpponentSelectProps) {
     const { slot, players, taken, fallbackName, onChange } = props;
+    const oldNames = useOldNamesSearch();
 
     const options = useMemo(() => {
-        const list = players
+        const list: DropdownItem<string>[] = players
             .filter((p) => p.id === slot.id || !taken.has(p.id))
-            .map((p) => ({ value: p.id, label: rankedLabel(p) }));
+            .map((p) => ({
+                value: p.id,
+                label: rankedLabel(p),
+                keywords: nameKeywords(p, oldNames),
+            }));
         // a pick from another season's leaderboard still needs a label
         if (!list.some((o) => o.value === slot.id)) {
             list.unshift({ value: slot.id, label: fallbackName ?? 'Unknown player' });
         }
         return list;
-    }, [players, taken, slot.id, fallbackName]);
+    }, [players, taken, slot.id, fallbackName, oldNames]);
 
     return (
         <div className={bem('opponent-select', slot.custom && 'custom')}>

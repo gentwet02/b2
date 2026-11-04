@@ -1,0 +1,17 @@
+@use '@/styles/utils/colors';
+@use '@/styles/utils' as *;
+
+// same look as the match cards' old-name line
+.found-as {
+    display: block;
+    font-size: $text-xs;
+    font-style: italic;
+    font-weight: 500;
+    color: colors.$ink-soft;
+    @include truncate;
+
+    strong {
+        font-style: normal;
+        font-weight: 700;
+    }
+}

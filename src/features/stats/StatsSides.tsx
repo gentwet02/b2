@@ -1,6 +1,7 @@
 import { useMemo, type ReactNode } from 'react';
 import ControlGroup from '@/components/controls/ControlGroup';
 import Controls from '@/components/controls/Controls';
+import OldNamesCheckbox from '@/components/controls/OldNamesCheckbox';
 import RangeControl from '@/components/controls/RangeControl';
 import Dropdown from '@/components/dropdown/Dropdown';
 import { SwapIcon } from '@/components/icons';
@@ -9,10 +10,11 @@ import { STATS_MODES } from '@/config/stats';
 import useOpponentsMet from '@/hooks/queries/useOpponentsMet';
 import useRankedPlayers from '@/hooks/queries/useRankedPlayers';
 import useSeasons from '@/hooks/queries/useSeasons';
+import useOldNamesSearch from '@/hooks/useOldNamesSearch';
 import type { SeasonQuery, SeasonScope } from '@/types/season';
 import type { SideMode, SideState, StatsSearch } from '@/types/stats';
 import { formatNumber, plural } from '@/utils/format';
-import { nameWithAlias, rankedLabel } from '@/utils/player';
+import { nameKeywords, nameWithAlias, rankedLabel } from '@/utils/player';
 import { formatRecord, gamesOf } from '@/utils/record';
 
 interface StatsSidesProps {
@@ -58,15 +60,21 @@ export default function StatsSides(props: StatsSidesProps) {
     // against one player, with one player: the players they met, with the record
     const met = useOpponentsMet(b.mode === 'player' && a.player ? a.player : '', seasonQuery);
 
+    const oldNames = useOldNamesSearch();
+
     const optionsA = useMemo(() => {
         const list: Option[] = ranked.players
             .filter((p) => p.id !== b.player)
-            .map((p) => ({ value: p.id, label: rankedLabel(p) }));
+            .map((p) => ({
+                value: p.id,
+                label: rankedLabel(p),
+                keywords: nameKeywords(p, oldNames),
+            }));
         if (a.player && !list.some((o) => o.value === a.player)) {
             list.unshift({ value: a.player, label: names[a.player] ?? 'Selected player' });
         }
         return list;
-    }, [ranked.players, a.player, b.player, names]);
+    }, [ranked.players, a.player, b.player, names, oldNames]);
 
     const optionsB = useMemo(() => {
         const list: Option[] = a.player
@@ -75,17 +83,22 @@ export default function StatsSides(props: StatsSidesProps) {
                   return {
                       value: o.userId,
                       label: `${nameWithAlias(o)} · ${formatNumber(games)} ${plural(games, 'game')} · ${formatRecord(o.record)}`,
+                      keywords: nameKeywords(o, oldNames),
                   };
               })
             : ranked.players
                   .filter((p) => p.id !== a.player)
-                  .map((p) => ({ value: p.id, label: rankedLabel(p) }));
+                  .map((p) => ({
+                      value: p.id,
+                      label: rankedLabel(p),
+                      keywords: nameKeywords(p, oldNames),
+                  }));
         if (b.player && !list.some((o) => o.value === b.player)) {
             const name = names[b.player] ?? 'Selected player';
             list.unshift({ value: b.player, label: a.player ? `${name} · never met` : name });
         }
         return list;
-    }, [met.data, ranked.players, a.player, b.player, names]);
+    }, [met.data, ranked.players, a.player, b.player, names, oldNames]);
 
     const pickerB = a.player
         ? {
@@ -115,7 +128,7 @@ export default function StatsSides(props: StatsSidesProps) {
                     value={a.mode}
                     onChange={onModeA}
                 />
-                <Controls>
+                <Controls aside={a.mode === 'player' ? <OldNamesCheckbox /> : undefined}>
                     {a.mode === 'player' ? (
                         <ControlGroup label='Player' grow>
                             <Dropdown
@@ -169,7 +182,11 @@ export default function StatsSides(props: StatsSidesProps) {
                     value={b.mode}
                     onChange={onModeB}
                 />
-                <Controls>
+                <Controls
+                    aside={
+                        b.mode === 'player' && a.mode !== 'player' ? <OldNamesCheckbox /> : undefined
+                    }
+                >
                     {b.mode === 'player' ? (
                         <ControlGroup label='Opponent' grow>
                             <Dropdown

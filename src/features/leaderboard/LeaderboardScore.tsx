@@ -19,6 +19,7 @@ import type { Row, TableState, TableStateCause, TableStateInput } from '@/types/
 import { mods } from '@/utils/className';
 import { formatNumber } from '@/utils/format';
 import { compareLines } from '@/utils/leaderboard';
+import { nameKeywords } from '@/utils/player';
 import { recordTitle, winRate } from '@/utils/record';
 import PlayerName from './PlayerName';
 
@@ -53,6 +54,7 @@ export default function LeaderboardScore(props: LeaderboardScoreProps) {
     const { players, isLoading, error, refetch } = useRankedPlayers(season, live);
     const { data: stats, isPending: statsPending } = useLeaderboardStats(season);
     const avatars = usePlayerAvatars(stats?.avatars);
+    const oldNames = !!view?.allNames;
 
     const sort = view?.sort ?? LEADERBOARD_SORT_DEFAULT;
     const minGames = view?.minGames ?? LEADERBOARD_MIN_GAMES_DEFAULT;
@@ -114,6 +116,8 @@ export default function LeaderboardScore(props: LeaderboardScoreProps) {
                         player={player}
                         avatar={avatars[player.id]}
                         avatarReady={!statsPending}
+                        searchTerm={tableState?.search}
+                        withOldNames={oldNames}
                     />
                 ),
                 score: <span className='lb-score'>{formatNumber(player.score)}</span>,
@@ -125,12 +129,21 @@ export default function LeaderboardScore(props: LeaderboardScoreProps) {
                         <RateBar rate={rate} title={recordTitle([wins, losses, draws])} />
                     ),
             })),
-        [lines, avatars, stats, statsPending],
+        [lines, avatars, stats, statsPending, tableState?.search, oldNames],
     );
 
     const searchText = useMemo(
-        () => lines.map(({ player }) => [player.alias, player.name].filter(Boolean).join(' ')),
-        [lines],
+        () =>
+            lines.map(({ player }) =>
+                [
+                    player.alias,
+                    player.name,
+                    ...nameKeywords(player, oldNames).map((k) => k.text),
+                ]
+                    .filter(Boolean)
+                    .join(' '),
+            ),
+        [lines, oldNames],
     );
     const searchIds = useMemo(() => lines.map(({ player }) => player.id), [lines]);
 

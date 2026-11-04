@@ -142,6 +142,8 @@ export interface MetOpponent {
     userId: string;
     name: string | null;
     alias: string | null;
+    /** names the player went by before */
+    oldNames?: string[];
     record: Wld;
 }
 
