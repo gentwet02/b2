@@ -18,7 +18,7 @@ export function headToHeadQueryOptions(userId: string, opponents: string[], seas
                 compareService.getHeadToHead(userId, opponents, season),
                 'Could not load the head to head',
             ),
-        // the server caches 5 minutes too; a set of opponents seen once comes back instantly
+        // the server caches too; a set of opponents seen once comes back instantly
         staleTime: AGGREGATE_QUERY.stale,
         gcTime: AGGREGATE_QUERY.gc,
     });

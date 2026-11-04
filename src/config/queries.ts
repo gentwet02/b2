@@ -40,7 +40,7 @@ export const PLAYER_QUERY = {
     ranksStale: 5 * MINUTE,
 };
 
-/** Head to head, versus, opponents met and stats: heavy for the server, which caches 5 minutes too. */
+/** Head to head, versus, opponents met and stats: heavy for the server, which caches too. */
 export const AGGREGATE_QUERY = {
     stale: 5 * MINUTE,
     gc: 30 * MINUTE,
