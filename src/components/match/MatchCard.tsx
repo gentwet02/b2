@@ -6,7 +6,7 @@ import { formatDuration, formatLabel, timeAgo } from '@/utils/format';
 import { formatMap } from '@/utils/map';
 import { matchOutcome } from '@/utils/match';
 import { extractUserId } from '@/utils/player';
-import { incompleteMark, seasonLabel } from '@/utils/season';
+import { seasonLabel } from '@/utils/season';
 import Pickable from './Pickable';
 import PlayerSide from './PlayerSide';
 
@@ -72,7 +72,7 @@ export default function MatchCard(props: MatchCardProps) {
                         )}
                         {showSeason && match.seasonId !== undefined && (
                             <span className='match-card__meta match-card__season'>
-                                {seasonLabel(match.seasonId)}{incompleteMark(match.seasonId)}
+                                {seasonLabel(match.seasonId)}
                             </span>
                         )}
                     </div>

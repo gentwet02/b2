@@ -3,7 +3,7 @@ import RecordTable from '@/components/record-table/RecordTable';
 import type { Comparison, CompareSeasonRow, RankBounds } from '@/types/compare';
 import { formatNumber, timeAgo } from '@/utils/format';
 import { gamesOf } from '@/utils/record';
-import { incompleteMark, seasonTitle } from '@/utils/season';
+import { seasonTitle } from '@/utils/season';
 
 interface VersusSeasonsProps {
     data: Comparison;
@@ -48,7 +48,7 @@ export default function VersusSeasons(props: VersusSeasonsProps) {
                 rowKey={(s) => String(s.seasonId)}
                 label={{
                     title: 'Season',
-                    render: (s) => `${seasonTitle(s.name)}${incompleteMark(s.seasonId)}`,
+                    render: (s) => `${seasonTitle(s.name)}`,
                     sort: (a, b) => a.seasonId - b.seasonId,
                 }}
                 initialSort='none'

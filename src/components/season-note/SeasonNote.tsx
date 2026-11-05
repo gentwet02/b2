@@ -43,6 +43,7 @@ export default function SeasonNote(props: SeasonNoteProps) {
                     {incompleteSeasonsText()} are missing some matches.
                 </span>
                 <span className='season-note__line'>
+                    <span className='season-note__mark'>*</span>
                     {unfilteredSeasonsText()} include some games played outside Hall of Masters.
                 </span>
             </p>

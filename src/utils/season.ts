@@ -8,9 +8,6 @@ export const seasonLabel = (seasonId: number) => `Season ${seasonId + 1}`;
 export const isIncompleteSeason = (seasonId: number) =>
     INCOMPLETE_SEASON_NUMBERS.includes(seasonId + 1);
 
-/** "*" after the seasons with missing data. */
-export const incompleteMark = (seasonId: number) => (isIncompleteSeason(seasonId) ? '*' : '');
-
 /** Some of this season's matches weren't played in Hall of Masters. */
 export const isUnfilteredSeason = (seasonId: number) =>
     UNFILTERED_SEASON_NUMBERS.includes(seasonId + 1);
@@ -39,9 +36,7 @@ export const incompleteSeasonsText = () => seasonsText(INCOMPLETE_SEASON_NUMBERS
 /** "Seasons 17–21 and 40–43" */
 export const unfilteredSeasonsText = () => seasonsText(UNFILTERED_SEASON_NUMBERS);
 
-export function allSeasonsLabel(
-    seasonId: SeasonScope | undefined,
-    page: MatchesPage | undefined,) {
+export function allSeasonsLabel(seasonId: SeasonScope | undefined, page: MatchesPage | undefined) {
     if (seasonId === 'all') {
         const first = page?.firstSeasonId;
         return `all seasons${first ? ` (since ${seasonLabel(first)})` : ''}`;
@@ -64,11 +59,10 @@ export function inScope(d: { season: SeasonScope; seasonName: string }) {
 export const urlSeason = <S extends SeasonScope>(season: S, liveSeason: number | undefined) =>
     season === liveSeason ? undefined : season;
 
-/** Dropdown options: "Season 48 (live)", newest last, like the server sends them;
- *  `markIncomplete`: "Season 20*" for the seasons with missing data. */
-export function seasonOptions(seasons: SeasonSummary[], markIncomplete = false) {
+/** Dropdown options: "Season 48 (live)", newest last. */
+export function seasonOptions(seasons: SeasonSummary[]) {
     return seasons.map((s) => ({
         value: s.id,
-        label: `${seasonLabel(s.id)}${markIncomplete ? incompleteMark(s.id) : ''}${s.live ? ' (live)' : ''}`,
+        label: `${seasonLabel(s.id)}${s.live ? ' (live)' : ''}`,
     }));
 }
