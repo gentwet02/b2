@@ -1,6 +1,7 @@
 import type { MATCH_SORTS } from '@/config/match';
 import type { BaseApiResponse } from '@/types/api';
 import type { MapVariant } from '@/types/map';
+import type { PlayerTag } from '@/types/player';
 import type { SeasonScope } from '@/types/season';
 
 export type MatchResult = 'win' | 'lose' | 'draw' | 'cancelled' | 'lobbyDC' | 'opponentLobbyDC';
@@ -19,6 +20,8 @@ export interface MatchPlayer {
     profileURL: string;
     /** Stored matches: the player's known alias, when there is one. */
     alias?: string;
+    /** Stored matches: the player's tag, when they have one. */
+    tag?: PlayerTag;
     /** "Include old names" searches: the older name the search found this player by. */
     matchedName?: string;
 }

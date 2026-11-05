@@ -1,6 +1,8 @@
 import type { ReactNode } from 'react';
 import clubMember from '@/assets/images/club_member.png';
 import Medal from '@/components/medal/Medal';
+import { PLAYER_TAG_LABELS } from '@/config/player';
+import type { PlayerTag } from '@/types/player';
 import type { UserProfile } from '@/types/profile';
 import { readBadges } from '@/utils/badges';
 import { bem } from '@/utils/className';
@@ -11,6 +13,8 @@ import OldNames from './OldNames';
 interface ProfileHeroProps {
     profile: UserProfile;
     alias?: string | null | undefined;
+    /** from the server's tag lists: shown as a badge next to the name */
+    tag?: PlayerTag | null | undefined;
     /** the names the player went by before, most recently used first */
     oldNames?: string[] | undefined;
     actions?: ReactNode;
@@ -19,7 +23,7 @@ interface ProfileHeroProps {
 }
 
 export default function ProfileHero(props: ProfileHeroProps) {
-    const { profile, alias, oldNames, actions, note } = props;
+    const { profile, alias, tag, oldNames, actions, note } = props;
 
     const badges = readBadges(profile.badges_equipped);
     const knownAs = getAlias({ alias, displayName: profile.displayName });
@@ -56,6 +60,11 @@ export default function ProfileHero(props: ProfileHeroProps) {
                                 alt='Club member'
                                 title='Club member'
                             />
+                        )}
+                        {tag && (
+                            <span className={bem('profile-hero__tag', tag)}>
+                                {PLAYER_TAG_LABELS[tag]}
+                            </span>
                         )}
                     </div>
                     {knownAs && <p className='profile-hero__alias'>Known as {knownAs}</p>}

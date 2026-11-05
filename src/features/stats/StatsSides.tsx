@@ -14,7 +14,7 @@ import useOldNamesSearch from '@/hooks/useOldNamesSearch';
 import type { SeasonQuery, SeasonScope } from '@/types/season';
 import type { SideMode, SideState, StatsSearch } from '@/types/stats';
 import { formatNumber, plural } from '@/utils/format';
-import { nameKeywords, nameWithAlias, rankedLabel } from '@/utils/player';
+import { nameWithAlias, playerKeywords, rankedLabel } from '@/utils/player';
 import { formatRecord, gamesOf } from '@/utils/record';
 
 interface StatsSidesProps {
@@ -68,7 +68,8 @@ export default function StatsSides(props: StatsSidesProps) {
             .map((p) => ({
                 value: p.id,
                 label: rankedLabel(p),
-                keywords: nameKeywords(p, oldNames),
+                searchLabel: rankedLabel({ ...p, tag: null }),
+                keywords: playerKeywords(p, p.id, oldNames),
             }));
         if (a.player && !list.some((o) => o.value === a.player)) {
             list.unshift({ value: a.player, label: names[a.player] ?? 'Selected player' });
@@ -83,7 +84,8 @@ export default function StatsSides(props: StatsSidesProps) {
                   return {
                       value: o.userId,
                       label: `${nameWithAlias(o)} · ${formatNumber(games)} ${plural(games, 'game')} · ${formatRecord(o.record)}`,
-                      keywords: nameKeywords(o, oldNames),
+                      searchLabel: nameWithAlias({ ...o, tag: null }),
+                      keywords: playerKeywords(o, o.userId, oldNames),
                   };
               })
             : ranked.players
@@ -91,7 +93,8 @@ export default function StatsSides(props: StatsSidesProps) {
                   .map((p) => ({
                       value: p.id,
                       label: rankedLabel(p),
-                      keywords: nameKeywords(p, oldNames),
+                      searchLabel: rankedLabel({ ...p, tag: null }),
+                      keywords: playerKeywords(p, p.id, oldNames),
                   }));
         if (b.player && !list.some((o) => o.value === b.player)) {
             const name = names[b.player] ?? 'Selected player';

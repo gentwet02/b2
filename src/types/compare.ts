@@ -1,5 +1,6 @@
 import type { BaseApiResponse } from '@/types/api';
 import type { Match } from '@/types/match';
+import type { PlayerTag } from '@/types/player';
 import type { RecordRow, Wld } from '@/types/record';
 import type { GroupMode, SeasonScope } from '@/types/season';
 
@@ -33,6 +34,7 @@ export interface H2hOpponent extends H2hSummary {
     userId: string;
     name: string | null;
     alias: string | null;
+    tag?: PlayerTag | null;
     /** rank in the season's leaderboard (live one for "all seasons") */
     rank: number | null;
 }
@@ -54,6 +56,7 @@ export interface HeadToHead extends BaseApiResponse {
     labels: Labels;
     name: string | null;
     alias: string | null;
+    tag?: PlayerTag | null;
     /** against every opponent together */
     total: H2hSummary;
     opponents: H2hOpponent[];
@@ -64,6 +67,7 @@ export interface CompareMember {
     userId: string;
     name: string | null;
     alias: string | null;
+    tag?: PlayerTag | null;
     /** best rank among the seasons counted */
     rank: number | null;
     /** seasons the player was on that side */
@@ -142,6 +146,7 @@ export interface MetOpponent {
     userId: string;
     name: string | null;
     alias: string | null;
+    tag?: PlayerTag | null;
     /** names the player went by before */
     oldNames?: string[];
     record: Wld;

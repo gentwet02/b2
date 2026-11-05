@@ -5,7 +5,7 @@ import type { OpponentSlot } from '@/hooks/useOpponentSlots';
 import type { DropdownItem } from '@/types/dropdown';
 import type { RankedPlayer } from '@/types/leaderboard';
 import { bem } from '@/utils/className';
-import { nameKeywords, rankedLabel } from '@/utils/player';
+import { playerKeywords, rankedLabel } from '@/utils/player';
 
 interface OpponentSelectProps {
     slot: OpponentSlot;
@@ -29,7 +29,8 @@ export default function OpponentSelect(props: OpponentSelectProps) {
             .map((p) => ({
                 value: p.id,
                 label: rankedLabel(p),
-                keywords: nameKeywords(p, oldNames),
+                searchLabel: rankedLabel({ ...p, tag: null }),
+                keywords: playerKeywords(p, p.id, oldNames),
             }));
         // a pick from another season's leaderboard still needs a label
         if (!list.some((o) => o.value === slot.id)) {

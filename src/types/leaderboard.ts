@@ -1,10 +1,12 @@
 import type { LEADERBOARD_SORTS } from '@/config/leaderboard';
 import type { BaseApiResponse } from '@/types/api';
+import type { PlayerTag } from '@/types/player';
 import type { Wld } from '@/types/record';
 
 export interface LeaderboardPlayer {
     id: string;
     alias?: string;
+    tag?: PlayerTag;
     name: string;
     score: number;
     currentlyInHoM: boolean;
@@ -19,12 +21,13 @@ export interface RankedPlayer extends LeaderboardPlayer {
 }
 
 /**
- * The server's compact player: i = id, r = alias, n = name, d = in HoM flag + score,
+ * The server's compact player: i = id, r = alias, t = tag, n = name, d = in HoM flag + score,
  * o = old names, c = current name (when it isn't n)
  */
 export interface LeaderboardPlayerEncoded {
     i: string;
     r?: string;
+    t?: PlayerTag;
     n: string;
     d: string;
     o?: string[];

@@ -31,8 +31,8 @@ interface TableProps {
     onSort?: ((key: string) => void) | undefined;
     sortable?: string[] | undefined;
     controls?: ReactNode;
-    searchText?: string[] | undefined;
-    searchExact?: (string | undefined)[] | undefined;
+    /** whether row `index` matches the lowercased search; default: any cell's text contains it */
+    searchMatch?: ((index: number, term: string) => boolean) | undefined;
     state?: TableStateInput | undefined;
     onStateChange?: ((next: TableState, cause: TableStateCause) => void) | undefined;
 }
@@ -49,8 +49,7 @@ export default function Table(props: TableProps) {
         disableSearch = false,
         disablePageSize = false,
         disableSorting = false,
-        searchText,
-        searchExact,
+        searchMatch,
         state,
         onStateChange,
         sort,
@@ -87,10 +86,13 @@ export default function Table(props: TableProps) {
         const processedData = term
             ? data.filter(
                   (item, i) =>
-                      searchExact?.[i]?.toLowerCase() === term ||
-                      (searchText?.[i] ?? Object.values(item).map(nodeText).join(' '))
-                          .toLowerCase()
-                          .includes(term),
+                      searchMatch
+                          ? searchMatch(i, term)
+                          : Object.values(item)
+                                .map(nodeText)
+                                .join(' ')
+                                .toLowerCase()
+                                .includes(term),
               )
             : [...data];
 
@@ -107,7 +109,7 @@ export default function Table(props: TableProps) {
         }
 
         return processedData;
-    }, [data, searchText, searchExact, searchTerm, sortConfig, onSort]);
+    }, [data, searchMatch, searchTerm, sortConfig, onSort]);
 
     const totalPages = Math.max(1, Math.ceil(filteredAndSortedData.length / pageSize));
     // keep the page in range when the data shrinks (search, page size, refetch)

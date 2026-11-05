@@ -115,6 +115,22 @@
         min-inline-size: 0;
     }
 
+    &__tag {
+        flex: none;
+        @include components.chip(colors.$paper-dim);
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+
+        &--cheater {
+            background: colors.$bloon;
+            color: #fff;
+        }
+
+        &--nuker {
+            background: colors.$banana;
+        }
+    }
+
     // as tall as the name's capitals
     &__club {
         flex: none;

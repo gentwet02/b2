@@ -30,7 +30,7 @@ export default function UserProfile(props: UserProfileProps) {
 
     const queryClient = useQueryClient();
     const { data, isLoading, error, refetch } = useProfile(userId);
-    const { data: alias } = usePlayerName(userId);
+    const { data: known } = usePlayerName(userId);
     const cachedName = useCachedPlayerName(userId);
     const refreshing =
         useIsFetching({ queryKey: queryKeys.profile(userId) }) +
@@ -67,7 +67,8 @@ export default function UserProfile(props: UserProfileProps) {
             {profile ? (
                 <ProfileHero
                     profile={profile}
-                    alias={alias}
+                    alias={known?.alias}
+                    tag={known?.tag}
                     oldNames={data?.names}
                     note={data?.fetchedAt ? `Updated ${timeAgo(data.fetchedAt)}` : null}
                     actions={

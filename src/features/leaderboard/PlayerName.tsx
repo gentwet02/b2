@@ -3,7 +3,7 @@ import PlayerAvatar from '@/components/avatar/PlayerAvatar';
 import FoundAs from '@/components/text/FoundAs';
 import usePlayerAvatar from '@/hooks/queries/usePlayerAvatar';
 import type { LeaderboardPlayer } from '@/types/leaderboard';
-import { getAlias, matchedKeyword, nameKeywords } from '@/utils/player';
+import { aliasWithTag, matchedKeyword, nameKeywords } from '@/utils/player';
 
 interface PlayerNameProps {
     player: LeaderboardPlayer;
@@ -15,12 +15,12 @@ interface PlayerNameProps {
     withOldNames?: boolean | undefined;
 }
 
-/** Avatar, name (a link to the profile) and alias, in a leaderboard row. */
+/** Avatar, name (a link to the profile), alias and tag, in a leaderboard row. */
 export default function PlayerName(props: PlayerNameProps) {
     const { player, avatar, avatarReady = true, searchTerm, withOldNames = true } = props;
 
     const src = usePlayerAvatar(player.id, avatar, avatarReady);
-    const alias = getAlias(player);
+    const alias = aliasWithTag(player);
     const matched = matchedKeyword(
         `${player.name} ${alias ?? ''}`,
         nameKeywords(player, withOldNames),

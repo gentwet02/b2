@@ -1,4 +1,4 @@
-import { useMemo, type ReactNode } from 'react';
+import { useCallback, useMemo, type ReactNode } from 'react';
 import RateBar from '@/components/rate-bar/RateBar';
 import ErrorState from '@/components/status/ErrorState';
 import Loading from '@/components/status/Loading';
@@ -19,7 +19,7 @@ import type { Row, TableState, TableStateCause, TableStateInput } from '@/types/
 import { mods } from '@/utils/className';
 import { formatNumber } from '@/utils/format';
 import { compareLines } from '@/utils/leaderboard';
-import { nameKeywords } from '@/utils/player';
+import { playerMatches } from '@/utils/player';
 import { recordTitle, winRate } from '@/utils/record';
 import PlayerName from './PlayerName';
 
@@ -132,20 +132,13 @@ export default function LeaderboardScore(props: LeaderboardScoreProps) {
         [lines, avatars, stats, statsPending, tableState?.search, oldNames],
     );
 
-    const searchText = useMemo(
-        () =>
-            lines.map(({ player }) =>
-                [
-                    player.alias,
-                    player.name,
-                    ...nameKeywords(player, oldNames).map((k) => k.text),
-                ]
-                    .filter(Boolean)
-                    .join(' '),
-            ),
+    const searchMatch = useCallback(
+        (i: number, term: string) => {
+            const player = lines[i]?.player;
+            return !!player && playerMatches(player, player.id, term, oldNames);
+        },
         [lines, oldNames],
     );
-    const searchIds = useMemo(() => lines.map(({ player }) => player.id), [lines]);
 
     if (isLoading) {
         return (
@@ -189,9 +182,8 @@ export default function LeaderboardScore(props: LeaderboardScoreProps) {
                 itemsPerPage={range ? Math.max(1, rows.length) : itemsPerPage}
                 pageSizeOptions={LEADERBOARD_PAGE_SIZES}
                 searchPlaceHolder='Find a player'
-                searchAriaLabel='Find a player by name or full id'
-                searchText={searchText}
-                searchExact={searchIds}
+                searchAriaLabel='Find a player by name, alias, id or tag'
+                searchMatch={searchMatch}
                 state={range ? undefined : tableState}
                 onStateChange={range ? undefined : onTableStateChange}
             />

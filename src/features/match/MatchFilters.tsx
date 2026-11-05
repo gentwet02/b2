@@ -125,7 +125,7 @@ export default function MatchFilters(props: MatchFiltersProps) {
                         value={playerText}
                         onChange={onPlayerText}
                         label='Player'
-                        placeholder='Name, alias or id'
+                        placeholder='Name, alias, id or tag'
                         visibleLabel
                     />
                 )}

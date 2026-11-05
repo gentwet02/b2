@@ -4,6 +4,7 @@ export function decodeLeaderboardPlayer(player: LeaderboardPlayerEncoded): Leade
     return {
         id: player.i,
         ...(player.r && { alias: player.r }),
+        ...(player.t && { tag: player.t }),
         name: player.n,
         currentlyInHoM: player.d[0] === '1',
         score: Number(player.d.slice(1)),

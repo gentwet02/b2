@@ -6,7 +6,7 @@ import type { RankedPlayer } from '@/types/leaderboard';
 import type { Wld } from '@/types/record';
 import { bem } from '@/utils/className';
 import { formatNumber } from '@/utils/format';
-import { getAlias } from '@/utils/player';
+import { aliasWithTag } from '@/utils/player';
 import PodiumStats from './PodiumStats';
 
 interface PodiumProps {
@@ -43,7 +43,7 @@ export default function Podium(props: PodiumProps) {
                                     size={72}
                                 />
                                 <span className='podium__name'>{player.name}</span>
-                                <span className='podium__alias'>{getAlias(player)}</span>
+                                <span className='podium__alias'>{aliasWithTag(player)}</span>
                                 <span className='podium__score'>{formatNumber(player.score)}</span>
                             </Link>
                             <div className='podium__step'>

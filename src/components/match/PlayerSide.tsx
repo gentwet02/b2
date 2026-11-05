@@ -5,7 +5,7 @@ import { heroImage } from '@/utils/assetOverrides';
 import { mods } from '@/utils/className';
 import { formatLabel } from '@/utils/format';
 import { formatHero } from '@/utils/hero';
-import { extractUserId, getAlias } from '@/utils/player';
+import { aliasWithTag, extractUserId } from '@/utils/player';
 import Pickable from './Pickable';
 
 interface PlayerSideProps {
@@ -20,7 +20,7 @@ export default function PlayerSide(props: PlayerSideProps) {
 
     const userId = extractUserId(player.profileURL);
     const towers = [player.towerone, player.towertwo, player.towerthree];
-    const alias = getAlias(player);
+    const alias = aliasWithTag(player);
     const portrait = heroImage(player.hero, player.heroPortrait);
 
     return (

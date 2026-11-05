@@ -6,6 +6,7 @@ import type {
     DropdownShownItem,
     DropdownValue,
 } from '@/types/dropdown';
+import { keywordHit } from '@/utils/player';
 
 interface UseDropdownOptions<V extends DropdownValue> {
     options: readonly DropdownOption<V>[];
@@ -39,13 +40,13 @@ export default function useDropdown<V extends DropdownValue>(props: UseDropdownO
     const openItemsRef = useRef<DropdownShownItem<V>[]>([]);
     const wasOpenRef = useRef(false);
 
-    const items = useMemo(
-        () =>
-            options.map((option) =>
-                isItem(option) ? option : { value: option, label: String(option) },
-            ),
-        [options],
-    );
+    // one option per value: the list is keyed by value, and a repeated key leaves stale rows
+    const items = useMemo(() => {
+        const seen = new Set<V>();
+        return options
+            .map((option) => (isItem(option) ? option : { value: option, label: String(option) }))
+            .filter((item) => !seen.has(item.value) && !!seen.add(item.value));
+    }, [options]);
 
     const selectedIndex = items.findIndex((item) => item.value === value);
     const selectedLabel = items[selectedIndex]?.label ?? '';
@@ -55,8 +56,8 @@ export default function useDropdown<V extends DropdownValue>(props: UseDropdownO
         const search = query.trim().toLowerCase();
         if (!isFiltering || !search) return items;
         return items.flatMap((item) => {
-            if (item.label.toLowerCase().includes(search)) return [item];
-            const matched = item.keywords?.find((k) => k.text.toLowerCase().includes(search));
+            if ((item.searchLabel ?? item.label).toLowerCase().includes(search)) return [item];
+            const matched = item.keywords?.find((k) => keywordHit(k, search));
             return matched ? [{ ...item, matched }] : [];
         });
     }, [items, query, isFiltering]);
