@@ -129,6 +129,10 @@
         &--nuker {
             background: colors.$banana;
         }
+
+        &--suspicious {
+            background: color-mix(in srgb, colors.$banana 75%, colors.$bloon);
+        }
     }
 
     // as tall as the name's capitals

@@ -9,4 +9,5 @@ export const PLAYER_TAG_LABELS = {
     cheater: 'Cheater',
     nuker: 'Nuker',
     booster: 'Booster',
+    suspicious: 'Suspicious',
 } as const;
