@@ -1,5 +1,5 @@
 import type { ReactNode } from 'react';
-import clubMember from '@/assets/images/club_member.png';
+import clubMember from '@/assets/images/club_member.webp';
 import Medal from '@/components/medal/Medal';
 import { PLAYER_TAG_LABELS } from '@/config/player';
 import type { PlayerTag } from '@/types/player';

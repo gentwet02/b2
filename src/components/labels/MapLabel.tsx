@@ -1,5 +1,5 @@
 import type { Labels } from '@/types/compare';
-import { mapImage } from '@/utils/assetOverrides';
+import { mapThumb } from '@/utils/assetOverrides';
 import { formatMap } from '@/utils/map';
 import ItemLabel from './ItemLabel';
 
@@ -13,7 +13,7 @@ export default function MapLabel(props: MapLabelProps) {
 
     const map = labels.maps[mapKey];
     return (
-        <ItemLabel kind='map' image={mapImage(map?.map, map?.image ?? undefined)}>
+        <ItemLabel kind='map' image={mapThumb(map?.map, map?.image ?? undefined)}>
             {formatMap(map?.map ?? mapKey)}
         </ItemLabel>
     );

@@ -47,7 +47,7 @@ export default function Dropdown<V extends DropdownValue>(props: DropdownProps<V
     const listboxId = `${inputId}-listbox`;
     const optionId = (index: number) => `${inputId}-option-${index}`;
 
-    const dropdown = useDropdown({ options, value, onSelect, disabled, searchable });
+    const { rootRef, listRef, ...dropdown } = useDropdown({ options, value, onSelect, disabled, searchable });
 
     const rootClassName = cx(
         bem('dropdown', variant !== 'default' && variant, dropdown.isOpen && 'open'),
@@ -55,7 +55,7 @@ export default function Dropdown<V extends DropdownValue>(props: DropdownProps<V
     );
 
     return (
-        <div ref={dropdown.rootRef} className={rootClassName}>
+        <div ref={rootRef} className={rootClassName}>
             <DropdownInput
                 id={inputId}
                 listboxId={listboxId}
@@ -75,7 +75,7 @@ export default function Dropdown<V extends DropdownValue>(props: DropdownProps<V
             />
 
             <DropdownList
-                ref={dropdown.listRef}
+                ref={listRef}
                 id={listboxId}
                 items={dropdown.shownItems}
                 value={value}

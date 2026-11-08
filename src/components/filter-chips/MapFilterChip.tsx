@@ -1,6 +1,6 @@
 import Dropdown from '@/components/dropdown/Dropdown';
 import type { MapChipOption, MapVariant } from '@/types/map';
-import { mapImage } from '@/utils/assetOverrides';
+import { mapThumb } from '@/utils/assetOverrides';
 import { formatNumber } from '@/utils/format';
 import { formatMap } from '@/utils/map';
 import FilterChip from './FilterChip';
@@ -34,7 +34,7 @@ export default function MapFilterChip(props: MapFilterChipProps) {
     return (
         <FilterChip
             name={name}
-            image={{ src: mapImage(option?.map, option?.image ?? undefined), kind: 'map' }}
+            image={{ src: mapThumb(option?.map, option?.image ?? undefined), kind: 'map' }}
             excluded={excluded}
             onRemove={onRemove}
         >

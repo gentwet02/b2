@@ -1,6 +1,6 @@
 import type { ReactNode } from 'react';
 import type { H2hPick, H2hTileKind, Labels } from '@/types/compare';
-import { heroImage, mapImage } from '@/utils/assetOverrides';
+import { heroImage, mapThumb } from '@/utils/assetOverrides';
 import { bem } from '@/utils/className';
 import { formatNumber, plural } from '@/utils/format';
 import { formatLoadout } from '@/utils/loadout';
@@ -35,7 +35,7 @@ export default function H2hTile(props: H2hTileProps) {
     if (kind === 'map') {
         const map = labels.maps[pick.key];
         title = formatMap(map?.map ?? pick.key);
-        image = mapImage(map?.map, map?.image ?? undefined);
+        image = mapThumb(map?.map, map?.image ?? undefined);
     } else {
         const { hero, towers } = formatLoadout(pick.key);
         const base = pick.key.split('|')[0] ?? '';

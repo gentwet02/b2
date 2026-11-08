@@ -17,7 +17,7 @@ export default function RouteError(props: ErrorComponentProps) {
 
     return (
         <Page>
-            <ErrorState title='This page hit a snag' error={error} onRetry={retry} />
+            <ErrorState title='This page hit a snag' error={error instanceof Error ? error : null} onRetry={retry} />
         </Page>
     );
 }

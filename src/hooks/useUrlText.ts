@@ -16,9 +16,11 @@ export default function useUrlText(
         if (debounced !== (value ?? '')) set(debounced || undefined);
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [debounced]);
-    useEffect(() => {
+    // the URL changed by itself: follow it (set while rendering, no extra effect pass)
+    const [prevValue, setPrevValue] = useState(value);
+    if (value !== prevValue) {
+        setPrevValue(value);
         if ((value ?? '') !== debounced) setText(value ?? '');
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [value]);
+    }
     return [text, setText] as const;
 }

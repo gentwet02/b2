@@ -12,8 +12,6 @@ interface UseThrottleParams<T extends CallbackFunction> {
     leading?: boolean;
     /** Execute again after delay if called during wait (default: false) */
     trailing?: boolean;
-    /** React dependencies that should trigger recreation of the throttled function */
-    dependencies?: React.DependencyList;
 }
 
 export default function useThrottle<T extends CallbackFunction>({
@@ -21,7 +19,6 @@ export default function useThrottle<T extends CallbackFunction>({
     delay = 300, // In milliseconds
     leading = true, // Execute immediately on first call
     trailing = false, // Execute again after delay if called during wait
-    dependencies = [],
 }: UseThrottleParams<T>): T {
     const timeoutRef = useRef<TimeoutId>(undefined);
     const lastExecutedRef = useRef<number>(0);
@@ -37,8 +34,8 @@ export default function useThrottle<T extends CallbackFunction>({
         };
     }, []);
 
-    return useCallback(
-        ((...args: Parameters<T>) => {
+    const throttled = useCallback(
+        (...args: Parameters<T>) => {
             const now = Date.now();
             const timeSinceLastExecution = now - lastExecutedRef.current;
 
@@ -73,9 +70,8 @@ export default function useThrottle<T extends CallbackFunction>({
                     pendingRef.current = false;
                 }, remainingTime);
             }
-        }) as T,
-        // disable eslint for the deconstruct unknown dependencies
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-        [callback, delay, leading, trailing, ...dependencies],
+        },
+        [callback, delay, leading, trailing],
     );
+    return throttled as T;
 }
