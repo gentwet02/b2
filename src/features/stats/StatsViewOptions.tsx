@@ -23,6 +23,7 @@ export default function StatsViewOptions(props: StatsViewOptionsProps) {
             <div className='stats-results__tabs'>
                 <SegmentedControl
                     aria-label='Show'
+                    wrap
                     options={tabs}
                     value={view}
                     onChange={(next) => onChange({ view: next })}

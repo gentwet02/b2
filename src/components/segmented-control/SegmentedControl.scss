@@ -35,4 +35,30 @@
             background: colors.$banana;
         }
     }
+
+    // narrow screens: a full-width grid of --per-row options a row. The ink shows through
+    // 2px gaps as the lines between options and rows; a shorter last row's options grow
+    // to fill it, so no empty ink is left at its end.
+    &--wrap {
+        @include breakpoint-down(phablet) {
+            flex-wrap: wrap;
+            gap: 2px;
+            inline-size: 100%;
+            background: colors.$ink;
+            border-radius: 1.25rem;
+
+            .segmented-control__option {
+                // one gap of slack per row, which the options grow back into
+                flex: 1 0 calc((100% - var(--per-row) * 2px) / var(--per-row));
+                min-inline-size: 0;
+                padding-inline: 0.4rem;
+                // long range names ("Players: Top 100") wrap inside their cell
+                white-space: normal;
+            }
+
+            .segmented-control__option + .segmented-control__option {
+                border-inline-start: none;
+            }
+        }
+    }
 }
