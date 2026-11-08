@@ -4,8 +4,10 @@ import Panel from '@/components/panel/Panel';
 import PanelEmpty from '@/components/panel/PanelEmpty';
 import ErrorState from '@/components/status/ErrorState';
 import Loading from '@/components/status/Loading';
+import ControlCheckbox from '@/components/controls/ControlCheckbox';
 import { MATCH_SORT_LABELS } from '@/config/match';
 import useCompareGames from '@/hooks/queries/useCompareGames';
+import useKeepSide, { setKeepSide } from '@/hooks/useKeepSide';
 import type { CompareParams } from '@/services/api/compare';
 import type { Comparison } from '@/types/compare';
 import type { MatchSort } from '@/types/match';
@@ -32,6 +34,14 @@ export default function VersusMatches(props: VersusMatchesProps) {
     const total = pages[0]?.total ?? 0;
     const remaining = total - matches.length;
     const bothPlayers = data.a.mode === 'player' && data.b.mode === 'player';
+    const perspectiveId = data.a.userId ?? undefined;
+    const keepSide = useKeepSide();
+    // only side 1 being a player gives the cards someone to keep on the left
+    const keepSideToggle = perspectiveId ? (
+        <ControlCheckbox checked={keepSide} onChange={setKeepSide}>
+            {bothPlayers ? 'Player 1 on the left' : 'Player on the left'}
+        </ControlCheckbox>
+    ) : null;
 
     const note = [
         games.data
@@ -50,11 +60,16 @@ export default function VersusMatches(props: VersusMatchesProps) {
                       actions: (
                           <>
                               {tabs}
+                              {keepSideToggle}
                               {note && <span className='panel__note'>{note}</span>}
                           </>
                       ),
                   }
-                : { title: bothPlayers ? 'Their games' : 'Latest games', note })}
+                : {
+                      title: bothPlayers ? 'Their games' : 'Latest games',
+                      note,
+                      actions: keepSideToggle,
+                  })}
         >
             {games.isLoading ? (
                 <Loading label='Looking up the games…' />
@@ -64,10 +79,9 @@ export default function VersusMatches(props: VersusMatchesProps) {
                 <PanelEmpty>No recorded game between them.</PanelEmpty>
             ) : (
                 <>
-                    {/* side 1 on the left when it's a player */}
                     <MatchList
                         matches={matches}
-                        perspectiveId={data.a.userId ?? undefined}
+                        perspectiveId={perspectiveId}
                         showSeason={data.season === 'all'}
                     />
                     {remaining > 0 && (

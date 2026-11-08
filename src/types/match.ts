@@ -7,6 +7,7 @@ import type { SeasonScope } from '@/types/season';
 export type MatchResult = 'win' | 'lose' | 'draw' | 'cancelled' | 'lobbyDC' | 'opponentLobbyDC';
 export type Outcome = 'win' | 'lose' | 'neutral';
 export type MatchPick = { kind: 'hero' | 'tower' | 'map'; value: string };
+export type MatchSide = 'left' | 'right';
 
 export interface MatchPlayer {
     displayName: string;
@@ -39,6 +40,8 @@ export interface Match {
     seenAt?: string;
     /** Stored matches only: the season the match was recorded in. */
     seasonId?: number;
+    /** Match history with a player search: the side the searched player is on. */
+    searchedSide?: MatchSide;
 }
 
 export interface CrawlProgress {

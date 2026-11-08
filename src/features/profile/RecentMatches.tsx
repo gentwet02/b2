@@ -1,4 +1,5 @@
 import { getRouteApi, Link } from '@tanstack/react-router';
+import ControlCheckbox from '@/components/controls/ControlCheckbox';
 import Dropdown from '@/components/dropdown/Dropdown';
 import MatchList from '@/components/match/MatchList';
 import Panel from '@/components/panel/Panel';
@@ -8,6 +9,7 @@ import Loading from '@/components/status/Loading';
 import { PROFILE_MATCH_AMOUNTS, PROFILE_MATCH_DEFAULT } from '@/config/profile';
 import useMatchesHistory from '@/hooks/queries/useMatchesHistory';
 import useUserMatches from '@/hooks/queries/useUserMatches';
+import useKeepSide, { setKeepSide } from '@/hooks/useKeepSide';
 
 const routeApi = getRouteApi('/user/$userId');
 
@@ -33,6 +35,7 @@ export default function RecentMatches(props: RecentMatchesProps) {
     const isLoading = stored.isLoading || (useLive && live.isLoading);
     const error = stored.error ?? (useLive ? live.error : null);
     const remaining = page ? page.total - recorded.length : 0;
+    const keepSide = useKeepSide();
 
     function setAmount(n: number) {
         navigate({
@@ -45,6 +48,7 @@ export default function RecentMatches(props: RecentMatchesProps) {
     return (
         <Panel
             title='Recent matches'
+            className='panel-recent-matches'
             actions={
                 <>
                     {page && page.total > 0 && (
@@ -53,16 +57,21 @@ export default function RecentMatches(props: RecentMatchesProps) {
                     {useLive && matches.length > 0 && (
                         <span className='panel__note'>Latest matches from Ninja Kiwi</span>
                     )}
-                    <div className='recent-matches__amount'>
-                        <span aria-hidden='true'>Show</span>
-                        <Dropdown
-                            variant='compact'
-                            className='recent-matches__amount-select'
-                            aria-label='Matches shown'
-                            options={PROFILE_MATCH_AMOUNTS}
-                            value={amount}
-                            onSelect={setAmount}
-                        />
+                    <div className='recent-matches__controls'>
+                        <ControlCheckbox checked={keepSide} onChange={setKeepSide}>
+                            Player on the left
+                        </ControlCheckbox>
+                        <div className='recent-matches__amount'>
+                            <span aria-hidden='true'>Show</span>
+                            <Dropdown
+                                variant='compact'
+                                className='recent-matches__amount-select'
+                                aria-label='Matches shown'
+                                options={PROFILE_MATCH_AMOUNTS}
+                                value={amount}
+                                onSelect={setAmount}
+                            />
+                        </div>
                     </div>
                 </>
             }

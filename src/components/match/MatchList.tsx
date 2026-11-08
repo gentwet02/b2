@@ -1,9 +1,10 @@
+import useKeepSide from '@/hooks/useKeepSide';
 import type { Match, MatchPick } from '@/types/match';
 import MatchCard from './MatchCard';
 
 interface MatchListProps {
     matches: Match[];
-    /** the profile being viewed: its side of each card goes left */
+    /** the profile being viewed: each card shows its result, and with "keep side" it goes left */
     perspectiveId?: string | undefined;
     /** hero, towers and map become buttons that filter on them */
     onPick?: ((pick: MatchPick) => void) | undefined;
@@ -14,6 +15,7 @@ interface MatchListProps {
 
 export default function MatchList(props: MatchListProps) {
     const { matches, perspectiveId, onPick, className, showSeason } = props;
+    const keepSide = useKeepSide();
 
     return (
         <ul className={className ? `match-list ${className}` : 'match-list'}>
@@ -22,6 +24,7 @@ export default function MatchList(props: MatchListProps) {
                     <MatchCard
                         match={match}
                         perspectiveId={perspectiveId}
+                        keepSide={keepSide}
                         onPick={onPick}
                         showSeason={showSeason}
                     />

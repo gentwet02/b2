@@ -1,7 +1,23 @@
 @use '@/styles/utils/colors';
 @use '@/styles/utils' as *;
 
+.panel-recent-matches {
+    .panel__head {
+        justify-content: flex-start;
+        white-space: nowrap;
+    }
+
+    .panel__note {
+        flex: 1;
+    }
+}
+
 .recent-matches {
+    &__controls {
+        display: flex;
+        gap: 1rem;
+    }
+
     &__amount {
         margin-inline-start: auto;
         display: inline-flex;

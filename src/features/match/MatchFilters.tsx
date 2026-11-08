@@ -13,6 +13,7 @@ import {
     SIDE_MAX_HEROES,
     SIDE_MAX_TOWERS,
 } from '@/config/match';
+import useKeepSide, { setKeepSide } from '@/hooks/useKeepSide';
 import type { HeroPick } from '@/types/hero';
 import type { MatchFilterOptions, MatchesQuery } from '@/types/match';
 import type { SeasonScope, SeasonSummary } from '@/types/season';
@@ -53,6 +54,7 @@ export default function MatchFilters(props: MatchFiltersProps) {
     } = props;
 
     const split = !!query.sameSide;
+    const keepSide = useKeepSide();
     const heroes = splitList(query.heroes).map(parseHero);
     const towers = splitList(query.towers);
     const heroes2 = splitList(query.heroes2).map(parseHero);
@@ -284,6 +286,16 @@ export default function MatchFilters(props: MatchFiltersProps) {
                             onChange={(e) => onChange({ allNames: e.target.checked || undefined })}
                         />
                         <span>Include old names</span>
+                    </label>
+                    <label className='match-filters__toggle'>
+                        <input
+                            type='checkbox'
+                            checked={keepSide}
+                            onChange={(e) => setKeepSide(e.target.checked)}
+                        />
+                        <span>
+                            {split ? 'Player 1 on the left' : 'Searched player on the left'}
+                        </span>
                     </label>
                 </div>
             </div>

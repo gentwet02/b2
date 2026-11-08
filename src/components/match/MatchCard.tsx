@@ -12,8 +12,10 @@ import PlayerSide from './PlayerSide';
 
 interface MatchCardProps {
     match: Match;
-    /** Profile being viewed: its side goes left and the card edge shows its result. */
+    /** Profile being viewed: the card edge shows its result. */
     perspectiveId?: string | undefined;
+    /** The viewed (or else searched) player goes left, whatever side they played on. */
+    keepSide?: boolean | undefined;
     /** When set, hero, towers and map become buttons that filter on them. */
     onPick?: ((pick: MatchPick) => void) | undefined;
     /** say which season the match was recorded in */
@@ -21,22 +23,27 @@ interface MatchCardProps {
 }
 
 export default function MatchCard(props: MatchCardProps) {
-    const { match, perspectiveId, onPick, showSeason } = props;
+    const { match, perspectiveId, keepSide, onPick, showSeason } = props;
 
-    let [left, right] = [match.playerLeft, match.playerRight];
-    if (perspectiveId && extractUserId(right.profileURL) === perspectiveId) {
-        [left, right] = [right, left];
-    }
+    const { playerLeft, playerRight } = match;
+    const focusRight = perspectiveId
+        ? extractUserId(playerRight.profileURL) === perspectiveId
+        : match.searchedSide === 'right';
+    const [left, right] =
+        keepSide && focusRight ? [playerRight, playerLeft] : [playerLeft, playerRight];
     const leftOutcome = matchOutcome(left.result);
     const rightOutcome = matchOutcome(right.result);
-    const tone = perspectiveId ? leftOutcome : 'neutral';
+    const viewed = focusRight ? playerRight : playerLeft;
+    // the result stripe goes on the viewed player's edge
+    const rightViewed = viewed === right;
+    const tone = perspectiveId ? matchOutcome(viewed.result) : 'neutral';
     const nobodyWon = leftOutcome === 'neutral' && rightOutcome === 'neutral';
     const middle = nobodyWon ? (NEUTRAL_TEXT[left.result] ?? formatLabel(left.result)) : 'vs';
     const seen = timeAgo(match.seenAt);
     const mapSrc = mapImage(match.map, match.mapURL);
 
     return (
-        <article className={bem('match-card', tone)}>
+        <article className={bem('match-card', tone, perspectiveId && rightViewed && 'edge-right')}>
             <PlayerSide player={left} align='left' outcome={leftOutcome} onPick={onPick} />
             <div className='match-card__center'>
                 {mapSrc && (

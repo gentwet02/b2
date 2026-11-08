@@ -39,6 +39,10 @@
         --accent: #{colors.$banana};
     }
 
+    &--edge-right {
+        --shadowWidth: -5px;
+    }
+
     &__center {
         display: grid;
         justify-items: center;
