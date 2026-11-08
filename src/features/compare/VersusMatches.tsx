@@ -38,7 +38,11 @@ export default function VersusMatches(props: VersusMatchesProps) {
     const keepSide = useKeepSide();
     // only side 1 being a player gives the cards someone to keep on the left
     const keepSideToggle = perspectiveId ? (
-        <ControlCheckbox checked={keepSide} onChange={setKeepSide}>
+        <ControlCheckbox
+            className='versus-matches__keep-side'
+            checked={keepSide}
+            onChange={setKeepSide}
+        >
             {bothPlayers ? 'Player 1 on the left' : 'Player on the left'}
         </ControlCheckbox>
     ) : null;

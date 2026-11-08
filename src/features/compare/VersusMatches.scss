@@ -1,5 +1,10 @@
 @use '@/styles/utils' as *;
 
+// next to the sort, the note pushed to the right (the head spreads its items out)
+.versus-matches__keep-side {
+    margin-inline-end: auto;
+}
+
 .versus-matches__more {
     display: flex;
     justify-content: center;
