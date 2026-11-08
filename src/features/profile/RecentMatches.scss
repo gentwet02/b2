@@ -1,25 +1,24 @@
 @use '@/styles/utils/colors';
 @use '@/styles/utils' as *;
 
-.panel-recent-matches {
-    .panel__head {
+.recent-matches {
+    &__head {
         justify-content: flex-start;
         white-space: nowrap;
+
+        // stretch the note if present, otherwise the title to keep the controls on the right when not wrapped
+        .panel__note,
+        &:not(:has(.panel__note)) .panel__title {
+            flex: 1;
+        }
     }
 
-    .panel__note {
-        flex: 1;
-    }
-}
-
-.recent-matches {
     &__controls {
         display: flex;
-        gap: 1rem;
+        gap: $space-xs;
     }
 
     &__amount {
-        margin-inline-start: auto;
         display: inline-flex;
         align-items: center;
         gap: $space-2xs;

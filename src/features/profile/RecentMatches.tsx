@@ -48,7 +48,7 @@ export default function RecentMatches(props: RecentMatchesProps) {
     return (
         <Panel
             title='Recent matches'
-            className='panel-recent-matches'
+            headClassName='recent-matches__head'
             actions={
                 <>
                     {page && page.total > 0 && (
