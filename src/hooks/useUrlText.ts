@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useEffectEvent, useState } from 'react';
 import useDebouncedValue from '@/hooks/useDebouncedValue';
 
 /**
@@ -12,9 +12,13 @@ export default function useUrlText(
 ) {
     const [text, setText] = useState(value ?? '');
     const debounced = useDebouncedValue(text.trim(), delay);
+    // reads the latest `value` and `set` without them restarting the effect: only a pause in
+    // typing should write the URL
+    const pushToUrl = useEffectEvent((next: string) => {
+        if (next !== (value ?? '')) set(next || undefined);
+    });
     useEffect(() => {
-        if (debounced !== (value ?? '')) set(debounced || undefined);
-        // eslint-disable-next-line react-hooks/exhaustive-deps
+        pushToUrl(debounced);
     }, [debounced]);
     // the URL changed by itself: follow it (set while rendering, no extra effect pass)
     const [prevValue, setPrevValue] = useState(value);
