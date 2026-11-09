@@ -2,7 +2,7 @@ import type { MatchResult, MatchSort } from '@/types/match';
 
 /** Pages of the match history (the server clamps to 50). */
 export const MATCHES_PAGE_SIZE = 20;
-/** A match card's height (px) before it's measured, the gap under it included. */
+/** A match card's height (px) before any is measured, the gap under it included (desktop). */
 export const MATCH_LIST_ROW_ESTIMATE = 190;
 /** Cards rendered past each edge of the viewport. */
 export const MATCH_LIST_OVERSCAN = 4;

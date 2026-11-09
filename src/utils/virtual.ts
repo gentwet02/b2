@@ -10,8 +10,11 @@ export function virtualWindow<S extends Element | Window, I extends Element>(
     const last = items[items.length - 1];
     return {
         items,
-        before: first ? first.start - margin : 0,
-        after: last ? virtualizer.getTotalSize() - (last.end - margin) : 0,
+        // never negative: the virtualizer shifts the items back while it holds a scroll
+        // correction (iOS, mid-swipe), and the browser drops a negative padding
+        before: first ? Math.max(0, first.start - margin) : 0,
+        // nothing rendered (the viewport isn't known on the first render): still the full height
+        after: virtualizer.getTotalSize() - (last ? last.end - margin : 0),
     };
 }
 

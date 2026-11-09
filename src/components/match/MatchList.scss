@@ -5,6 +5,11 @@
     // the gap is part of each card's row, so the measured heights include it; the last one's
     // is taken back here
     margin-block-end: calc(-1 * #{$space-xs});
+    // the padding stands in for the cards that aren't rendered: it has to change in the same
+    // frame as they do. The reduced-motion reset gives every element a 0.01ms transition on
+    // every property, which holds the old padding for one more frame: the cards jump, the
+    // browser and the virtualizer both correct the scroll, and the page fights the wheel
+    transition-property: none;
 
     > li {
         max-inline-size: 100%;

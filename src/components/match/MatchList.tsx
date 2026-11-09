@@ -6,6 +6,7 @@ import {
     MATCH_LIST_ROW_ESTIMATE,
 } from '@/config/match';
 import useKeepSide from '@/hooks/useKeepSide';
+import useRowEstimate from '@/hooks/useRowEstimate';
 import useScrollMargin from '@/hooks/useScrollMargin';
 import type { Match, MatchPick } from '@/types/match';
 import { cx } from '@/utils/className';
@@ -35,13 +36,15 @@ export default function MatchList(props: MatchListProps) {
 
     const listRef = useRef<HTMLUListElement>(null);
     const margin = useScrollMargin(listRef);
+    const estimate = useRowEstimate(listRef, 'match', MATCH_LIST_ROW_ESTIMATE);
     const virtualizer = useWindowVirtualizer({
         count: matches.length,
-        estimateSize: () => MATCH_LIST_ROW_ESTIMATE,
+        estimateSize: () => estimate,
         overscan: MATCH_LIST_OVERSCAN,
         scrollMargin: margin,
         scrollToFn: windowScrollInstant,
-        // a card keeps its measured height when new matches come in above it
+        // a card keeps its measured height when new matches come in above it. A new function
+        // each render on purpose: that's what makes the virtualizer lay out with a new estimate
         getItemKey: (i) => matchKey(matches[i]!),
     });
 
