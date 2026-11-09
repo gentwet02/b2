@@ -5,10 +5,8 @@ import Loading from '@/components/status/Loading';
 import StatusMessage from '@/components/status/StatusMessage';
 import Table from '@/components/table/Table';
 import {
-    LEADERBOARD_DEFAULT_SIZE,
     LEADERBOARD_MIN_GAMES_DEFAULT,
     LEADERBOARD_HEADER_SORTS,
-    LEADERBOARD_PAGE_SIZES,
     LEADERBOARD_SORT_DEFAULT,
 } from '@/config/leaderboard';
 import useLeaderboardStats from '@/hooks/queries/useLeaderboardStats';
@@ -26,13 +24,12 @@ import PlayerName from './PlayerName';
 interface LeaderboardScoreProps {
     season: number;
     live?: boolean | undefined;
-    itemsPerPage?: number | undefined;
     /** only these ranks (the home page's 4 to 25), not sortable or searchable */
     range?: [number, number] | undefined;
     view?: LeaderboardView | undefined;
     /** a click on a column header: sort by it, or reverse it when it's already the sort */
     onViewChange?: ((patch: LeaderboardView) => void) | undefined;
-    /** extra controls next to the page size selector */
+    /** extra controls next to the search */
     controls?: ReactNode;
     tableState?: TableStateInput | undefined;
     onTableStateChange?: ((next: TableState, cause: TableStateCause) => void) | undefined;
@@ -42,7 +39,6 @@ export default function LeaderboardScore(props: LeaderboardScoreProps) {
     const {
         season,
         live = false,
-        itemsPerPage = LEADERBOARD_DEFAULT_SIZE,
         range,
         view,
         onViewChange,
@@ -103,32 +99,32 @@ export default function LeaderboardScore(props: LeaderboardScoreProps) {
 
     const rows = useMemo(
         () =>
-            lines.map(({ player, wins, losses, draws, games, rate }): Row => ({
-                rank: (
-                    <span
-                        className={mods('lb-rank', player.rank <= 3 && String(player.rank))}
-                    >
-                        {formatNumber(player.rank)}
-                    </span>
-                ),
-                player: (
-                    <PlayerName
-                        player={player}
-                        avatar={avatars[player.id]}
-                        avatarReady={!statsPending}
-                        searchTerm={tableState?.search}
-                        withOldNames={oldNames}
-                    />
-                ),
-                score: <span className='lb-score'>{formatNumber(player.score)}</span>,
-                games: <span className='lb-num'>{stats ? formatNumber(games) : '…'}</span>,
-                winRate:
-                    rate === null ? (
-                        <span className='lb-num--empty'>–</span>
-                    ) : (
-                        <RateBar rate={rate} title={recordTitle([wins, losses, draws])} />
+            lines.map(
+                ({ player, wins, losses, draws, games, rate }): Row => ({
+                    rank: (
+                        <span className={mods('lb-rank', player.rank <= 3 && String(player.rank))}>
+                            {formatNumber(player.rank)}
+                        </span>
                     ),
-            })),
+                    player: (
+                        <PlayerName
+                            player={player}
+                            avatar={avatars[player.id]}
+                            avatarReady={!statsPending}
+                            searchTerm={tableState?.search}
+                            withOldNames={oldNames}
+                        />
+                    ),
+                    score: <span className='lb-score'>{formatNumber(player.score)}</span>,
+                    games: <span className='lb-num'>{stats ? formatNumber(games) : '…'}</span>,
+                    winRate:
+                        rate === null ? (
+                            <span className='lb-num--empty'>–</span>
+                        ) : (
+                            <RateBar rate={rate} title={recordTitle([wins, losses, draws])} />
+                        ),
+                }),
+            ),
         [lines, avatars, stats, statsPending, tableState?.search, oldNames],
     );
 
@@ -178,9 +174,9 @@ export default function LeaderboardScore(props: LeaderboardScoreProps) {
                 controls={controls}
                 disableSorting={!!range}
                 disableSearch={!!range}
-                disablePageSize={!!range}
-                itemsPerPage={range ? Math.max(1, rows.length) : itemsPerPage}
-                pageSizeOptions={LEADERBOARD_PAGE_SIZES}
+                disablePageSize
+                itemsPerPage={Math.max(1, rows.length)}
+                virtual={!range}
                 searchPlaceHolder='Find a player'
                 searchAriaLabel='Find a player by name, alias, id or tag'
                 searchMatch={searchMatch}

@@ -53,8 +53,6 @@ export type LeaderboardSort = (typeof LEADERBOARD_SORTS)[number];
 
 /** /leaderboard/:season URL search */
 export interface LeaderboardSearch {
-    page?: number | undefined;
-    size?: number | undefined;
     q?: string | undefined;
     sort?: LeaderboardSort | undefined;
     /** the sort's opposite order */

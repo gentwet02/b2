@@ -5,7 +5,6 @@ import PageHeader from '@/components/page/PageHeader';
 import SeasonSelect from '@/components/season-select/SeasonSelect';
 import StatusMessage from '@/components/status/StatusMessage';
 import {
-    LEADERBOARD_DEFAULT_SIZE,
     LEADERBOARD_MIN_GAMES_DEFAULT,
     LEADERBOARD_REFRESH_THROTTLE_MS,
     LEADERBOARD_SORT_DEFAULT,
@@ -17,7 +16,7 @@ import useLeaderboard from '@/hooks/queries/useLeaderboard';
 import useSeasons from '@/hooks/queries/useSeasons';
 import useThrottle from '@/hooks/useThrottle';
 import type { LeaderboardView } from '@/types/leaderboard';
-import type { TableState, TableStateCause } from '@/types/table';
+import type { TableState } from '@/types/table';
 import { formatNumber, timeAgo } from '@/utils/format';
 import { seasonLabel } from '@/utils/season';
 
@@ -59,23 +58,18 @@ export default function Leaderboard() {
                 reverse: next.reverse ? true : undefined,
                 min: next.minGames !== LEADERBOARD_MIN_GAMES_DEFAULT ? next.minGames : undefined,
                 allNames: next.allNames ? true : undefined,
-                page: undefined,
             }),
             replace: true,
             resetScroll: false,
         });
     }
 
-    function onTableStateChange(next: TableState, cause: TableStateCause) {
+    // the table is one virtual list: the search is the only state it hands back
+    function onTableStateChange(next: TableState) {
         navigate({
-            search: (prev) => ({
-                ...prev,
-                page: next.page > 1 ? next.page : undefined,
-                size: next.pageSize !== LEADERBOARD_DEFAULT_SIZE ? next.pageSize : undefined,
-                q: next.search || undefined,
-            }),
+            search: (prev) => ({ ...prev, q: next.search || undefined }),
             // typing in the search box: one history entry
-            replace: cause === 'search',
+            replace: true,
             resetScroll: false,
         });
     }
@@ -144,10 +138,7 @@ export default function Leaderboard() {
                                 liveSeason={liveSeason}
                                 value={season}
                                 onChange={(next) =>
-                                    navigate({
-                                        params: { season: next },
-                                        search: (prev) => ({ ...prev, page: undefined }),
-                                    })
+                                    navigate({ params: { season: next }, search: (prev) => prev })
                                 }
                             />
                         )}
@@ -169,8 +160,7 @@ export default function Leaderboard() {
                 view={view}
                 onViewChange={onViewChange}
                 controls={<LeaderboardFilters view={view} onChange={onViewChange} />}
-                itemsPerPage={LEADERBOARD_DEFAULT_SIZE}
-                tableState={{ page: search.page, pageSize: search.size, search: search.q }}
+                tableState={{ search: search.q }}
                 onTableStateChange={onTableStateChange}
             />
         </Page>

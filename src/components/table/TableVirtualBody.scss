@@ -1,0 +1,15 @@
+.table__table--virtual {
+    // rows mount as they scroll into view: fading each one in would flicker
+    tbody tr.table__row {
+        animation: none;
+    }
+
+    .table__spacer {
+        pointer-events: none;
+
+        td {
+            padding: 0;
+            border: 0;
+        }
+    }
+}

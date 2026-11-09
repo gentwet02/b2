@@ -52,21 +52,18 @@
             gap: $space-s;
         }
 
-        .leaderboard-filters,
-        .table__page-size {
+        .leaderboard-filters {
             flex: 1 1 auto;
             min-inline-size: 0;
         }
 
-        .leaderboard-filters__select,
-        .table__page-size-select {
+        .leaderboard-filters__select {
             flex: 1 1 auto;
             inline-size: auto;
             min-inline-size: 3.5rem;
         }
 
-        .leaderboard-filters__label,
-        .table__page-size-label {
+        .leaderboard-filters__label {
             text-wrap: nowrap;
         }
     }

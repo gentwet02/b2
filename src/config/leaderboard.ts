@@ -1,7 +1,5 @@
 import type { LeaderboardSort } from '@/types/leaderboard';
 
-export const LEADERBOARD_DEFAULT_SIZE = 25;
-export const LEADERBOARD_PAGE_SIZES = [10, 25, 50, 100];
 export const LEADERBOARD_REFRESH_THROTTLE_MS = 2000;
 export const LEADERBOARD_MIN_GAMES = [1, 5, 10, 25, 50, 100];
 export const LEADERBOARD_MIN_GAMES_DEFAULT = 1;

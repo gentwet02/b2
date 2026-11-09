@@ -9,12 +9,14 @@ import type {
     TableStateCause,
     TableStateInput,
 } from '@/types/table';
+import { bem } from '@/utils/className';
 import { categoryKey, nodeText, sortValue } from '@/utils/table';
 import TableBody from './TableBody';
 import TableHead from './TableHead';
 import TablePageSizeSelector from './TablePageSizeSelector';
 import TablePagination from './TablePagination';
 import TableSearch from './TableSearch';
+import TableVirtualBody from './TableVirtualBody';
 
 interface TableProps {
     categories?: Category[];
@@ -34,6 +36,8 @@ interface TableProps {
     /** whether row `index` matches the lowercased search; default: any cell's text contains it */
     searchMatch?: ((index: number, term: string) => boolean) | undefined;
     state?: TableStateInput | undefined;
+    /** every row on one page, only the ones near the viewport rendered (no pagination) */
+    virtual?: boolean | undefined;
     onStateChange?: ((next: TableState, cause: TableStateCause) => void) | undefined;
 }
 
@@ -51,6 +55,7 @@ export default function Table(props: TableProps) {
         disableSorting = false,
         searchMatch,
         state,
+        virtual = false,
         onStateChange,
         sort,
         onSort,
@@ -134,7 +139,9 @@ export default function Table(props: TableProps) {
     const handlePage = (value: number | ((previous: number) => number)) =>
         update({ page: typeof value === 'function' ? value(page) : value }, 'page');
 
-    const paginatedData = filteredAndSortedData.slice((page - 1) * pageSize, page * pageSize);
+    const paginatedData = virtual
+        ? filteredAndSortedData
+        : filteredAndSortedData.slice((page - 1) * pageSize, page * pageSize);
 
     return (
         <div
@@ -166,7 +173,10 @@ export default function Table(props: TableProps) {
                 </div>
             )}
             <div className='table__scroll'>
-                <table className='table__table'>
+                <table
+                    className={bem('table__table', virtual && 'virtual')}
+                    aria-rowcount={virtual ? paginatedData.length + 1 : undefined}
+                >
                     <TableHead
                         categories={columns}
                         handleSort={handleSort}
@@ -176,10 +186,14 @@ export default function Table(props: TableProps) {
                             onSort ? !sortable || sortable.includes(key) : !disableSorting
                         }
                     />
-                    <TableBody categories={columns} data={paginatedData} />
+                    {virtual ? (
+                        <TableVirtualBody categories={columns} data={paginatedData} />
+                    ) : (
+                        <TableBody categories={columns} data={paginatedData} />
+                    )}
                 </table>
             </div>
-            {totalPages > 1 && (
+            {!virtual && totalPages > 1 && (
                 <TablePagination
                     currentPage={page}
                     totalPages={totalPages}
