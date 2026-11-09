@@ -14,3 +14,18 @@ export function virtualWindow<S extends Element | Window, I extends Element>(
         after: last ? virtualizer.getTotalSize() - (last.end - margin) : 0,
     };
 }
+
+/**
+ * A window virtualizer's `scrollToFn`. When a card above the viewport turns out taller or shorter
+ * than estimated, the virtualizer moves the scroll by the difference so nothing shifts on screen.
+ * It leaves `behavior` unset for that, and the page's `scroll-behavior: smooth` (when the user
+ * doesn't prefer reduced motion) would animate each correction: cards bounce and the scroll
+ * fights the user's.
+ */
+export function windowScrollInstant(
+    offset: number,
+    options: { adjustments?: number; behavior?: ScrollBehavior },
+) {
+    const { adjustments = 0, behavior = 'instant' } = options;
+    window.scrollTo({ top: offset + adjustments, behavior });
+}

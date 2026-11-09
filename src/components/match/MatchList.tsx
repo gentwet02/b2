@@ -10,7 +10,7 @@ import useScrollMargin from '@/hooks/useScrollMargin';
 import type { Match, MatchPick } from '@/types/match';
 import { cx } from '@/utils/className';
 import { matchKey, uniqueMatches } from '@/utils/match';
-import { virtualWindow } from '@/utils/virtual';
+import { virtualWindow, windowScrollInstant } from '@/utils/virtual';
 import MatchCard from './MatchCard';
 
 interface MatchListProps {
@@ -40,6 +40,7 @@ export default function MatchList(props: MatchListProps) {
         estimateSize: () => MATCH_LIST_ROW_ESTIMATE,
         overscan: MATCH_LIST_OVERSCAN,
         scrollMargin: margin,
+        scrollToFn: windowScrollInstant,
         // a card keeps its measured height when new matches come in above it
         getItemKey: (i) => matchKey(matches[i]!),
     });

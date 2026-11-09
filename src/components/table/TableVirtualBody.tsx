@@ -4,7 +4,7 @@ import VirtualSpacer from '@/components/virtual/VirtualSpacer';
 import { TABLE_VIRTUAL_OVERSCAN, TABLE_VIRTUAL_ROW_ESTIMATE } from '@/config/table';
 import useScrollMargin from '@/hooks/useScrollMargin';
 import type { Category, Row } from '@/types/table';
-import { virtualWindow } from '@/utils/virtual';
+import { virtualWindow, windowScrollInstant } from '@/utils/virtual';
 import TableBody from './TableBody';
 
 interface TableVirtualBodyProps {
@@ -29,6 +29,7 @@ export default function TableVirtualBody(props: TableVirtualBodyProps) {
         estimateSize: () => TABLE_VIRTUAL_ROW_ESTIMATE,
         overscan: TABLE_VIRTUAL_OVERSCAN,
         scrollMargin: margin,
+        scrollToFn: windowScrollInstant,
     });
 
     if (empty) return <TableBody categories={categories} data={data} />;
