@@ -1,13 +1,33 @@
 import react from '@vitejs/plugin-react';
 import path from 'path';
 import { fileURLToPath } from 'url';
-import { defineConfig } from 'vite';
+import { defineConfig, type Plugin } from 'vite';
 import autoCssImport from 'vitejs-plugin-auto-css-import';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
+/** Changes on every build: the app compares it with the deployed version.json to spot updates. */
+const BUILD_ID = Date.now().toString(36);
+
+function versionFile(): Plugin {
+    return {
+        name: 'btdb2-version-file',
+        apply: 'build',
+        generateBundle() {
+            this.emitFile({
+                type: 'asset',
+                fileName: 'version.json',
+                source: JSON.stringify({ id: BUILD_ID }),
+            });
+        },
+    };
+}
+
 export default defineConfig({
-    plugins: [autoCssImport(), react()],
+    plugins: [autoCssImport(), react(), versionFile()],
+    define: {
+        __BUILD_ID__: JSON.stringify(BUILD_ID),
+    },
     resolve: {
         alias: {
             '@': path.resolve(__dirname, './src'),
