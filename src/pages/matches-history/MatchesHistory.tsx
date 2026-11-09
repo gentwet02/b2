@@ -156,6 +156,12 @@ export default function MatchesHistory() {
                     onPick={pick}
                     showSeason={query.season === 'all'}
                     className={bem('matches__list', isPlaceholderData && 'stale')}
+                    // more as the end scrolls into view; not while a new search loads
+                    onEnd={
+                        hasNextPage && !isFetchingNextPage && !isPlaceholderData
+                            ? () => fetchNextPage()
+                            : undefined
+                    }
                 />
             )}
 

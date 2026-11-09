@@ -13,7 +13,7 @@
 
     &__name {
         display: block;
-        max-inline-size: clamp(5rem, 17vw, 11rem);
+        inline-size: clamp(5rem, 17vw, 11rem);
         white-space: nowrap;
         overflow: hidden;
         text-overflow: ellipsis;
@@ -36,8 +36,9 @@
             display: none;
         }
 
+        // the column takes what's left (see the table rules below)
         &__name {
-            max-inline-size: none;
+            inline-size: auto;
         }
 
         &__last {

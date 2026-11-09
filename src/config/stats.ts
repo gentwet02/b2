@@ -29,10 +29,6 @@ export const STATS_MIN_PICK_OPTIONS = STATS_MIN_PICK.map((n) => ({
 
 export const STATS_MAX_TOWERS = 3;
 
-/** Rows per "show more" of the big tables. */
-export const STATS_PAGE_SIZE = 50;
-export const STATS_TOWERS_PAGE_SIZE = 60;
-
 /** Who each side is: a range of each leaderboard, or one player. */
 export const STATS_MODES = [
     { value: 'top', label: 'Top players' },

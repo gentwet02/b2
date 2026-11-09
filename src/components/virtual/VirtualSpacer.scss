@@ -1,0 +1,11 @@
+// tbody > tr > td.class: above every table's own cell rules (the leaderboard's phone padding
+// weighs two classes), whatever order the stylesheets load in
+tbody > tr.virtual-spacer {
+    pointer-events: none;
+
+    > td.virtual-spacer__cell {
+        padding: 0;
+        border: 0;
+        background: none;
+    }
+}

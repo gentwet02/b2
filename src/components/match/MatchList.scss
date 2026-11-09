@@ -2,9 +2,12 @@
 
 .match-list {
     display: grid;
-    gap: $space-xs;
+    // the gap is part of each card's row, so the measured heights include it; the last one's
+    // is taken back here
+    margin-block-end: calc(-1 * #{$space-xs});
 
     > li {
         max-inline-size: 100%;
+        padding-block-end: $space-xs;
     }
 }

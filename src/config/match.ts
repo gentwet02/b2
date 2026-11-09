@@ -2,6 +2,12 @@ import type { MatchResult, MatchSort } from '@/types/match';
 
 /** Pages of the match history (the server clamps to 50). */
 export const MATCHES_PAGE_SIZE = 20;
+/** A match card's height (px) before it's measured, the gap under it included. */
+export const MATCH_LIST_ROW_ESTIMATE = 190;
+/** Cards rendered past each edge of the viewport. */
+export const MATCH_LIST_OVERSCAN = 4;
+/** The list asks for more when its last rendered card is this close to the end. */
+export const MATCH_LIST_END_THRESHOLD = 5;
 
 /** "Filter sides separately": what one side can hold. */
 export const SIDE_MAX_HEROES = 1;

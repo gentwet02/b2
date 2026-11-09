@@ -1,7 +1,7 @@
 import RecordTable from '@/components/record-table/RecordTable';
 import Note from '@/components/text/Note';
 import type { StatsRow, StatsSearch, StatsTableSpec } from '@/types/stats';
-import { formatNumber } from '@/utils/format';
+import { formatNumber, plural } from '@/utils/format';
 import { formatShare, gamesOf, keepRows, share } from '@/utils/record';
 import { byText } from '@/utils/sort';
 import FocusButton from './FocusButton';
@@ -22,12 +22,14 @@ interface StatsTableProps {
 export default function StatsTable(props: StatsTableProps) {
     const { spec, groupGames, min, minPick, empty, onFocus } = props;
     const pickOf = (r: StatsRow) => share(gamesOf(r.record), groupGames) ?? 0;
+    const rows = keepRows(spec.rows, pickOf, min, minPick);
+    const total = spec.rows.length;
 
     return (
         <>
             <RecordTable<StatsRow>
                 className='stats-table'
-                rows={keepRows(spec.rows, pickOf, min, minPick)}
+                rows={rows}
                 rowKey={(r) => r.key}
                 label={{ title: spec.title, render: spec.render, sort: byText(spec.name) }}
                 columns={[
@@ -45,12 +47,11 @@ export default function StatsTable(props: StatsTableProps) {
                     },
                 ]}
                 empty={empty}
-                pageSize={spec.pageSize}
             />
-            {spec.cut && spec.cut.total > spec.rows.length && (
+            {spec.counted && rows.length > 0 && (
                 <Note>
-                    The {formatNumber(spec.rows.length)} most played of{' '}
-                    {formatNumber(spec.cut.total)} {spec.cut.noun}.
+                    {rows.length < total && `${formatNumber(rows.length)} of `}
+                    {formatNumber(total)} {plural(total, spec.counted)}
                 </Note>
             )}
         </>

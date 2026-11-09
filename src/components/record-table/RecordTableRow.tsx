@@ -1,4 +1,4 @@
-import type { ReactNode } from 'react';
+import type { ReactNode, Ref } from 'react';
 import RateBar from '@/components/rate-bar/RateBar';
 import type { RecordColumn, Wld } from '@/types/record';
 import { formatNumber } from '@/utils/format';
@@ -11,16 +11,19 @@ interface RecordTableRowProps<T extends { record: Wld }> {
     label: ReactNode;
     columns: RecordColumn<T>[];
     after: RecordColumn<T>[];
+    /** a virtual table's measuring ref, and the row's index for it */
+    ref?: Ref<HTMLTableRowElement> | undefined;
+    index?: number | undefined;
 }
 
 /** One row: its label, extra columns, games, W–D–L and win rate bar. */
 export default function RecordTableRow<T extends { record: Wld }>(props: RecordTableRowProps<T>) {
-    const { row, label, columns, after } = props;
+    const { row, label, columns, after, ref, index } = props;
 
     const games = gamesOf(row.record);
 
     return (
-        <tr>
+        <tr ref={ref} data-index={index}>
             <th scope='row'>{label}</th>
             {columns.map((col) => (
                 <RecordTableCell key={col.title} column={col} row={row} />

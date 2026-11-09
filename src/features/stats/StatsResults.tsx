@@ -2,7 +2,7 @@ import HeroLabel from '@/components/labels/HeroLabel';
 import LoadoutLabel from '@/components/labels/LoadoutLabel';
 import MapLabel from '@/components/labels/MapLabel';
 import RecordTable from '@/components/record-table/RecordTable';
-import { STATS_MAX_TOWERS, STATS_PAGE_SIZE, STATS_TOWERS_PAGE_SIZE } from '@/config/stats';
+import { STATS_MAX_TOWERS } from '@/config/stats';
 import { useSplitHeroes, useSplitMaps } from '@/hooks/useSplitVariants';
 import type {
     Stats,
@@ -116,7 +116,6 @@ export default function StatsResults(props: StatsResultsProps) {
                 filters.towers.includes(r.key) || filters.towers.length >= STATS_MAX_TOWERS
                     ? null
                     : { towers: joinList([...filters.towers, r.key]) },
-            pageSize: STATS_TOWERS_PAGE_SIZE,
         });
     }
 
@@ -130,8 +129,7 @@ export default function StatsResults(props: StatsResultsProps) {
                 name: (r) => formatTowerList(r.key, ' '),
                 focus: (r) =>
                     [...filters.towers].sort().join(',') === r.key ? null : { towers: r.key },
-                pageSize: STATS_PAGE_SIZE,
-                cut: { total: data.trioCount, noun: 'tower picks' },
+                counted: 'tower pick',
             });
         }
         if (splitHeroes) {
@@ -148,8 +146,7 @@ export default function StatsResults(props: StatsResultsProps) {
                     const base = labels.variants[hero]?.base ?? hero;
                     return { hero: formatHeroPick({ base, hero }), towers: joinList(towers) };
                 },
-                pageSize: STATS_PAGE_SIZE,
-                cut: { total: data.loadoutVariantCount, noun: 'strats' },
+                counted: 'strat',
             });
         }
         return table({
@@ -162,8 +159,7 @@ export default function StatsResults(props: StatsResultsProps) {
                 const { hero, towers } = parseLoadout(r.key);
                 return { hero, towers: joinList(towers) };
             },
-            pageSize: STATS_PAGE_SIZE,
-            cut: { total: data.loadoutCount, noun: 'strats' },
+            counted: 'strat',
         });
     }
 

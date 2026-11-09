@@ -36,6 +36,24 @@
         font-variant-numeric: tabular-nums;
     }
 
+    // as wide as the widest value of every row (counted by RecordTable), so the columns don't
+    // follow the rows a virtual table happens to render
+    td.record-table__games,
+    td.record-table__record {
+        box-sizing: content-box;
+    }
+
+    // a minimum too: a table wider than its box shrinks the columns to their content
+    td.record-table__games {
+        inline-size: calc(var(--games-chars, 0) * 1ch);
+        min-inline-size: calc(var(--games-chars, 0) * 1ch);
+    }
+
+    td.record-table__record {
+        inline-size: calc(var(--record-chars, 0) * 1ch);
+        min-inline-size: calc(var(--record-chars, 0) * 1ch);
+    }
+
     @include when-hover {
         tbody tr:hover > * {
             background: color-mix(in srgb, colors.$sky 35%, colors.$paper);

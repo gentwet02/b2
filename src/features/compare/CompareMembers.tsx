@@ -3,7 +3,6 @@ import { Link } from '@tanstack/react-router';
 import UserAvatar from '@/components/avatar/UserAvatar';
 import Panel from '@/components/panel/Panel';
 import RecordTable from '@/components/record-table/RecordTable';
-import { COMPARE_OPPONENTS_PAGE_SIZE } from '@/config/compare';
 import type { Comparison, CompareMember, CompareSideKey } from '@/types/compare';
 import { formatNumber, timeAgo } from '@/utils/format';
 import { nameWithAlias, playerLabel } from '@/utils/player';
@@ -127,7 +126,6 @@ export default function CompareMembers(props: CompareMembersProps) {
                         ),
                     },
                 ]}
-                pageSize={COMPARE_OPPONENTS_PAGE_SIZE}
             />
         </Panel>
     );

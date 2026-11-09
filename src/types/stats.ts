@@ -78,15 +78,12 @@ export interface Stats extends BaseApiResponse {
     /** one row per hero variant (raw hero, "Quincy_Cyber") */
     heroVariants: StatsRow[];
     towers: StatsRow[];
-    /** most played first, at most 500 */
+    /** most played first */
     loadouts: StatsRow[];
-    loadoutCount: number;
-    /** strats with the exact hero variant: "Quincy_Cyber|Alchemist,Druid,Ninja", at most 500 */
+    /** strats with the exact hero variant: "Quincy_Cyber|Alchemist,Druid,Ninja" */
     loadoutVariants: StatsRow[];
-    loadoutVariantCount: number;
-    /** strats without the hero: "Alchemist,Druid,Ninja", at most 500 */
+    /** strats without the hero: "Alchemist,Druid,Ninja" */
     trios: StatsRow[];
-    trioCount: number;
     /** the focus on every map (the map filter is ignored here) */
     maps: StatsMapRow[];
     /** classic and reversed apart: "oasis", "oasis:reversed" */
@@ -207,7 +204,6 @@ export interface StatsTableSpec {
     name: (r: StatsRow) => string;
     /** the filters "Focus →" sets, null: already focused */
     focus: (r: StatsRow) => Partial<StatsSearch> | null;
-    pageSize?: number;
-    /** rows sent / rows there are, and what they are */
-    cut?: { total: number; noun: string };
+    /** what a row is ("strat"): the table's rows counted under it */
+    counted?: string;
 }
