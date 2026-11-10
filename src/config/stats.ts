@@ -2,7 +2,7 @@ import type { LeaderboardRange } from '@/config/ranges';
 import type { StatsView } from '@/types/stats';
 
 /** "All HoM players" is everyone: the leaderboard (the other players met are not counted). */
-export const STATS_PLAYERS_DEFAULT: LeaderboardRange = 't25';
+export const STATS_PLAYERS_DEFAULT: LeaderboardRange = 'all';
 
 export const STATS_VIEWS: { value: StatsView; label: string }[] = [
     { value: 'heroes', label: 'Heroes' },
