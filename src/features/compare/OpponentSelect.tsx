@@ -1,7 +1,7 @@
 import { useMemo } from 'react';
 import Dropdown from '@/components/dropdown/Dropdown';
 import useOldNamesSearch from '@/hooks/useOldNamesSearch';
-import type { OpponentSlot } from '@/hooks/useOpponentSlots';
+import type { OpponentSlot } from '@/types/compare';
 import type { DropdownItem } from '@/types/dropdown';
 import type { RankedPlayer } from '@/types/leaderboard';
 import { bem } from '@/utils/className';

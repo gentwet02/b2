@@ -1,4 +1,4 @@
-import type { ReactNode } from 'react';
+import { useMemo, type ReactNode } from 'react';
 import MatchList from '@/components/match/MatchList';
 import Panel from '@/components/panel/Panel';
 import PanelEmpty from '@/components/panel/PanelEmpty';
@@ -24,7 +24,7 @@ interface VersusMatchesProps {
     focus?: string[] | undefined;
 }
 
-/** A player on a side: the games between the sides, sorted, more on demand. */
+/** A player or a clan on a side: the games between the sides, sorted, more on demand. */
 export default function VersusMatches(props: VersusMatchesProps) {
     const { data, params, sort, tabs, focus = [] } = props;
 
@@ -34,18 +34,29 @@ export default function VersusMatches(props: VersusMatchesProps) {
     const total = pages[0]?.total ?? 0;
     const remaining = total - matches.length;
     const bothPlayers = data.a.mode === 'player' && data.b.mode === 'player';
+    // side 1 goes left: its player, or whichever of its players (a clan's, a range's) played
     const perspectiveId = data.a.userId ?? undefined;
+    const group = data.a.mode !== 'player';
+    const perspectiveIds = useMemo(
+        () => (group ? new Set(data.players.map((p) => p.userId)) : undefined),
+        [group, data.players],
+    );
     const keepSide = useKeepSide();
-    // only side 1 being a player gives the cards someone to keep on the left
-    const keepSideToggle = perspectiveId ? (
+    const keepSideToggle = (
         <ControlCheckbox
             className='versus-matches__keep-side'
             checked={keepSide}
             onChange={setKeepSide}
         >
-            {bothPlayers ? 'Player 1 on the left' : 'Player on the left'}
+            {data.a.mode === 'clan'
+                ? 'Clan on the left'
+                : group
+                  ? 'Players on the left'
+                  : bothPlayers
+                    ? 'Player 1 on the left'
+                    : 'Player on the left'}
         </ControlCheckbox>
-    ) : null;
+    );
 
     const note = [
         games.data
@@ -86,6 +97,7 @@ export default function VersusMatches(props: VersusMatchesProps) {
                     <MatchList
                         matches={matches}
                         perspectiveId={perspectiveId}
+                        perspectiveIds={perspectiveIds}
                         showSeason={data.season === 'all'}
                     />
                     {remaining > 0 && (

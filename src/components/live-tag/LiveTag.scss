@@ -1,0 +1,28 @@
+@use '@/styles/utils/colors';
+@use '@/styles/components';
+@use '@/styles/utils' as *;
+
+.live-tag {
+    @include components.chip(colors.$bloon, #fff);
+    margin-inline-start: $space-xs;
+    font-family: $font-body;
+    font-size: $text-md;
+    vertical-align: middle;
+    @include animate($anim-pop-in, $duration-slow, $ease-spring, 200ms);
+
+    &::before {
+        content: '';
+        @include size(0.5rem);
+        border-radius: 50%;
+        background: #fff;
+
+        @include when-motion-ok {
+            animation: $anim-pulse 1.6s $ease-in-out infinite;
+        }
+    }
+
+    &--small {
+        margin-inline-start: 0.4rem;
+        font-size: $text-xs;
+    }
+}

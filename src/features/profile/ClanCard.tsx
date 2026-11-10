@@ -1,11 +1,12 @@
 import { Link } from '@tanstack/react-router';
-import type { Clan } from '@/types/profile';
+import type { Clan } from '@/types/clan';
 import { formatNumber } from '@/utils/format';
 
 interface ClanCardProps {
     clan: Clan;
 }
 
+/** A player's clan: banner, name, tagline, members and leader, and a link to its page. */
 export default function ClanCard(props: ClanCardProps) {
     const { clan } = props;
 
@@ -34,6 +35,11 @@ export default function ClanCard(props: ClanCardProps) {
                         </div>
                     )}
                 </dl>
+                <p className='clan-card__more'>
+                    <Link to='/clan/$clanId' params={{ clanId: clan.id }} className='text-link'>
+                        Members and stats →
+                    </Link>
+                </p>
             </div>
         </section>
     );

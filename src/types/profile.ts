@@ -1,5 +1,7 @@
 import type { ReactNode } from 'react';
 import type { BaseApiResponse } from '@/types/api';
+import type { Clan } from '@/types/clan';
+import type { SeasonRecord } from '@/types/record';
 import type { SplitSearch } from '@/types/variants';
 
 /** NK's ranked or casual totals (lifetime). */
@@ -90,20 +92,6 @@ export interface ProfileSeason {
     lastSeen: string;
 }
 
-/** A player's clan (NK calls them guilds), as our server last read it. */
-export interface Clan {
-    id: string;
-    name: string;
-    bannerURL: string | null;
-    tagline: string | null;
-    members: number;
-    /** OPEN | FILTERED | CLOSED */
-    status: string;
-    ownerId: string | null;
-    /** the owner's name, when they are a player our server knows */
-    ownerName: string | null;
-}
-
 /** GET /users/:id — the stored profile, in Ninja Kiwi's shape, plus our season records. */
 export interface UserProfileData extends BaseApiResponse {
     body: UserProfile;
@@ -127,6 +115,8 @@ export interface UserSearch extends SplitSearch {
 export interface SeasonStats extends BaseApiResponse {
     seasonId: number;
     seasonName: string;
+    /** false: not the live season, but the last one they played in (the live one has no game) */
+    live?: boolean;
     recorded: number;
     wins: number;
     losses: number;
@@ -144,12 +134,7 @@ export interface SeasonStats extends BaseApiResponse {
 }
 
 /** A player's games in one season, from the matches our server recorded (HoM vs HoM). */
-export interface PlayerSeasonRecord {
-    seasonId: number;
-    wins: number;
-    draws: number;
-    losses: number;
-}
+export type PlayerSeasonRecord = SeasonRecord;
 
 export interface PlayerSeasonRecords extends BaseApiResponse {
     seasons: PlayerSeasonRecord[];

@@ -65,21 +65,31 @@ export default function VersusSummary(props: VersusSummaryProps) {
     const groupSides = (['a', 'b'] as const).filter((side) => data[side].mode === 'top');
     const size = groupSides.map((side) => sideBounds(data, side)?.size).find((n) => n != null);
     const shared = sidesOverlap(data);
+    const hasClan = data.a.mode === 'clan' || data.b.mode === 'clan';
+    const bothGroups = [data.a.mode, data.b.mode].every((m) => m === 'top' || m === 'clan');
     const notes = [
-        where
-            ? `${groupSides.map(describe).join(' vs ')}${size != null ? `, of the ${formatNumber(size)} players in its leaderboard` : ''}.`
-            : 'Ranks come from each season’s own leaderboard.',
+        groupSides.length > 0 &&
+            (where
+                ? `${groupSides.map(describe).join(' vs ')}${size != null ? `, of the ${formatNumber(size)} players in its leaderboard` : ''}.`
+                : 'Ranks come from each season’s own leaderboard.'),
+        hasClan &&
+            'A clan is the HoM players known in it today, in every season, whatever clan they were in then.',
+        // a clan and another group: who they share isn't known here, only the rule
+        hasClan &&
+            bothGroups &&
+            (data.overlap !== false
+                ? 'A player on both sides counts on both.'
+                : 'A player on both sides only counts for the first.'),
         shared && data.overlap !== false && 'Shared players count on both sides.',
         shared &&
             data.overlap === false &&
             `Games between two ${sideName(data, 'a')} players aren’t counted.`,
         data.b.mode === 'anyone' &&
-            data.a.mode === 'top' &&
+            data.a.mode !== 'player' &&
             'A game between two of these players counts for both.',
         missing > 0 &&
             `${formatNumber(missing)} ${plural(missing, 'season is', 'seasons are')} skipped, their leaderboard isn’t loaded yet.`,
     ].filter(Boolean);
-    const hasGroup = data.a.mode === 'top' || data.b.mode === 'top';
     // the same players on both sides, counted on both, no loadout filter: every map at 50%
     const mirror = !!mirrored && sidesOverlap(data) && data.overlap !== false && sameSides(data);
     const anyone = data.b.mode === 'anyone';
@@ -92,11 +102,11 @@ export default function VersusSummary(props: VersusSummaryProps) {
             label: `in ${formatNumber(games)} ${plural(games, 'game')}`,
             title: recordTitle(total.record),
         },
-        data.a.mode === 'top' && {
+        data.a.mode !== 'player' && {
             value: formatNumber(metA),
             label: `of ${formatNumber(data.players.length)} players played`,
         },
-        data.b.mode === 'top' && {
+        (data.b.mode === 'top' || data.b.mode === 'clan') && {
             value: formatNumber(metB),
             label: `of ${formatNumber(data.opponents.length)} opponents met`,
         },
@@ -132,7 +142,7 @@ export default function VersusSummary(props: VersusSummaryProps) {
                 </div>
             )}
 
-            {hasGroup && <Note>{notes.join(' ')}</Note>}
+            {notes.length > 0 && <Note>{notes.join(' ')}</Note>}
 
             {games > 0 && (
                 <H2hHighlights

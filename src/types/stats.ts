@@ -1,5 +1,6 @@
 import type { ReactNode } from 'react';
 import type { BaseApiResponse } from '@/types/api';
+import type { ClanSideInfo } from '@/types/clan';
 import type { CompareSideInfo, Labels, RankBounds } from '@/types/compare';
 import type { HeroPick } from '@/types/hero';
 import type { MapVariant } from '@/types/map';
@@ -11,13 +12,14 @@ import type { SplitSearch } from '@/types/variants';
 /** The picks tables, then the players tabs: side 1's players, side 2's, the latest games. */
 export type StatsView = 'heroes' | 'towers' | 'loadouts' | 'maps' | 'players' | 'opponents' | 'games';
 
-/** What a side is: a range of each leaderboard, or one player. */
-export type SideMode = 'top' | 'player';
+/** What a side is: a range of each leaderboard, one player, or a clan. */
+export type SideMode = GroupMode;
 
 /** What a side shows, defaults filled in. */
 export interface SideState {
     mode: SideMode;
     player: string | undefined;
+    clan: string | undefined;
     range: string;
     exclude: string | undefined;
 }
@@ -46,6 +48,8 @@ export interface Stats extends BaseApiResponse {
     exclude?: string | null | undefined;
     band: boolean;
     player: { userId: string; name: string | null; alias: string | null } | null;
+    /** side 1's clan (clan mode) */
+    clan?: ClanSideInfo | null;
     /** a player in both ranges counts on both sides */
     overlap?: boolean;
     /** only the games against them; null: anyone (older servers: missing) */
@@ -113,10 +117,12 @@ export interface StatsParams {
     /** false: a player in both ranges counts only for the players counted */
     overlap?: boolean | undefined;
     player?: string | undefined;
+    clan?: string | undefined;
     players?: string | undefined;
     exclude?: string | undefined;
-    /** who they played: one player, or a range (neither: anyone) */
+    /** who they played: one player, a clan, or a range (none: anyone) */
     player2?: string | undefined;
+    clan2?: string | undefined;
     players2?: string | undefined;
     exclude2?: string | undefined;
     map?: string | undefined;
@@ -144,12 +150,16 @@ export interface StatsSearch extends SplitSearch {
     overlap?: false | undefined;
     /** one player's id */
     player?: string | undefined;
+    /** or a clan's id */
+    clan?: string | undefined;
     /** a leaderboard range (default top 25) */
     players?: string | undefined;
     /** a smaller range left out at the top */
     exclude?: string | undefined;
     /** only their games against one player… */
     player2?: string | undefined;
+    /** …or against a clan… */
+    clan2?: string | undefined;
     /** …or against a range of each leaderboard (default: every HoM player) */
     players2?: string | undefined;
     exclude2?: string | undefined;

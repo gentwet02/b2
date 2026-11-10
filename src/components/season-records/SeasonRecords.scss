@@ -2,7 +2,7 @@
 @use '@/styles/components';
 @use '@/styles/utils' as *;
 
-.season-history {
+.season-records {
     overflow-x: auto;
     border: 1.5px solid colors.$line;
     border-radius: $radius-inner;
@@ -13,8 +13,6 @@
         border-collapse: collapse;
         font-size: $text-md;
 
-        // the cells in :where(): one class, so __num below wins by coming later
-        // (the header row, more specific, keeps its own weight and font)
         :where(th, td) {
             padding: 0.5rem 0.65rem;
             text-align: start;
@@ -62,7 +60,7 @@
         font-size: $text-sm;
         color: colors.$ink-soft;
 
-        .season-history__amount-select {
+        .season-records__amount-select {
             inline-size: 4.5rem;
             font-size: $text-md;
         }

@@ -22,7 +22,7 @@ interface StatsControlsProps {
     seasonQuery: SeasonQuery | undefined;
     a: SideState;
     b: SideState;
-    /** names of the players picked (they may not be in the pickers' lists) */
+    /** names of the players and clans picked, by id (they may not be in the pickers' lists) */
     names: Record<string, string>;
     towers: string[];
     /** the players tabs: no map, hero and towers focus there */
@@ -183,7 +183,7 @@ export default function StatsControls(props: StatsControlsProps) {
                             </ControlCheckbox>
                         )}
                         <SplitVariants />
-                        {a.mode === 'top' && b.mode === 'top' && (
+                        {a.mode !== 'player' && b.mode !== 'player' && (
                             <ControlCheckbox
                                 checked={search.overlap !== false}
                                 onChange={(checked) =>

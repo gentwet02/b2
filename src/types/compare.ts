@@ -1,4 +1,5 @@
 import type { BaseApiResponse } from '@/types/api';
+import type { ClanSideInfo } from '@/types/clan';
 import type { Match } from '@/types/match';
 import type { PlayerTag } from '@/types/player';
 import type { RecordRow, Wld } from '@/types/record';
@@ -96,7 +97,7 @@ export interface CompareSeasonRow {
     lastMet: string | null;
 }
 
-/** Who a side is: one player, a range of each season's leaderboard, or anyone (side 2). */
+/** Who a side is: one player, a range of each season's leaderboard, a clan, or anyone (side 2). */
 export interface CompareSideInfo {
     mode: GroupMode | 'anyone';
     userId: string | null;
@@ -105,6 +106,16 @@ export interface CompareSideInfo {
     range: string | null;
     /** the smaller range left out at the top */
     exclude: string | null;
+    /** the clan (clan mode) */
+    clan?: ClanSideInfo | null | undefined;
+}
+
+/** One of the opponents of a head to head card (a player's, or a clan's). */
+export interface OpponentSlot {
+    index: number;
+    id: string;
+    /** replaced by the visitor */
+    custom: boolean;
 }
 
 /** Which side: the first one (the records are its own) or the second. */
@@ -152,9 +163,19 @@ export interface MetOpponent {
     record: Wld;
 }
 
-/** GET /users/:id/opponents */
-export interface OpponentsMet extends BaseApiResponse {
+/** A clan a side met: the clan its opponents are in today. */
+export interface MetClan {
+    id: string;
+    name: string;
+    /** its players the side met */
+    met: number;
+    record: Wld;
+}
+
+/** GET /compare/opponents: who a player or a clan met, most games first. */
+export interface SideOpponents extends BaseApiResponse {
     opponents: MetOpponent[];
+    clans: MetClan[];
 }
 
 /** GET /compare/games: one page of the games between the two sides. */

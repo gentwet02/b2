@@ -9,7 +9,6 @@ export default function User() {
 
     return (
         <Page className='user'>
-            {/* keyed: another profile starts fresh (open rows, pages shown) */}
             <UserProfile key={userId} userId={userId} />
         </Page>
     );

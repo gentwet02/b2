@@ -2,16 +2,8 @@
 @use '@/styles/components';
 @use '@/styles/utils' as *;
 
-// this season's card: the "Ranked" tag and the most played hero
+// the season card: the most played hero
 .stats-panel {
-    &__tag {
-        @include components.chip(colors.$paper);
-        vertical-align: middle;
-        margin-inline-start: 0.4rem;
-        font-family: $font-body;
-        font-size: $text-xs;
-    }
-
     &__hero {
         display: flex;
         align-items: center;

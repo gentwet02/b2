@@ -1,0 +1,48 @@
+@use '@/styles/utils/colors';
+@use '@/styles/utils' as *;
+
+// the profile's hero without an avatar: the text starts under the banner
+.clan-hero {
+    // (two classes: wins over .profile-hero whatever order the CSS loads in)
+    &.profile-hero .profile-hero__body {
+        padding-block-start: $space-s-m;
+    }
+
+    &__eyebrow {
+        font-size: $text-xs;
+        font-weight: 600;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: colors.$ink-soft;
+    }
+
+    &__facts {
+        display: flex;
+        flex-wrap: wrap;
+        gap: $space-xs $space-l;
+        margin-block-start: $space-xs;
+    }
+
+    &__fact {
+        display: grid;
+        gap: 0.15rem;
+
+        dt {
+            font-size: $text-sm;
+            color: colors.$ink-soft;
+        }
+
+        dd {
+            margin: 0;
+            font-weight: 700;
+        }
+
+        a {
+            @include transition(color, $duration-fast);
+
+            @include when-hover {
+                color: colors.$bloon;
+            }
+        }
+    }
+}

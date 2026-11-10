@@ -9,12 +9,16 @@ import { seasonTitle } from '@/utils/season';
 import StatCard from './StatCard';
 import StatDetails from './StatDetails';
 import WinLossSummary from './WinLossSummary';
+import LiveTag from '@/components/live-tag/LiveTag';
 
 interface SeasonRecordProps {
     userId: string;
 }
 
-/** This season's ranked record, from the matches and profile readings our server recorded. */
+/**
+ * The player's ranked record in the live season (or in the last one they played in, when they
+ * have no game in it yet), from the matches and profile readings our server recorded.
+ */
 export default function SeasonRecord(props: SeasonRecordProps) {
     const { userId } = props;
 
@@ -68,8 +72,8 @@ export default function SeasonRecord(props: SeasonRecordProps) {
             accent
             title={
                 <>
-                    {data.seasonName ? seasonTitle(data.seasonName) : 'This season'}{' '}
-                    <span className='stats-panel__tag'>Ranked</span>
+                    {data.seasonName ? seasonTitle(data.seasonName) : 'This season'}
+                    {data.live && <LiveTag small />}
                 </>
             }
         >

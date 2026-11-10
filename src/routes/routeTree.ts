@@ -1,3 +1,4 @@
+import { clanRoute } from './clanRoute';
 import { userCompareRoute } from './compareRoute';
 import { homeRoute } from './homeRoute';
 import { leaderboardIndexRoute } from './leaderboardIndexRoute';
@@ -14,5 +15,6 @@ export const routeTree = rootRoute.addChildren([
     matchesRoute,
     userRoute,
     userCompareRoute,
+    clanRoute,
     statsRoute,
 ]);

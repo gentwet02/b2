@@ -40,6 +40,12 @@ export const PLAYER_QUERY = {
     ranksStale: 5 * MINUTE,
 };
 
+/** A clan and its members, the clans list: they change slowly (the server caches the list too). */
+export const CLAN_QUERY = {
+    stale: MINUTE,
+    listStale: 5 * MINUTE,
+};
+
 /** Head to head, versus, opponents met and stats: heavy for the server, which caches too. */
 export const AGGREGATE_QUERY = {
     stale: 5 * MINUTE,

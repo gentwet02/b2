@@ -7,15 +7,16 @@ import Dropdown from '@/components/dropdown/Dropdown';
 import { SwapIcon } from '@/components/icons';
 import SegmentedControl from '@/components/segmented-control/SegmentedControl';
 import { STATS_MODES } from '@/config/stats';
-import useOpponentsMet from '@/hooks/queries/useOpponentsMet';
 import useRankedPlayers from '@/hooks/queries/useRankedPlayers';
 import useSeasons from '@/hooks/queries/useSeasons';
+import useSideOpponents from '@/hooks/queries/useSideOpponents';
 import useOldNamesSearch from '@/hooks/useOldNamesSearch';
 import type { SeasonQuery, SeasonScope } from '@/types/season';
 import type { SideMode, SideState, StatsSearch } from '@/types/stats';
 import { formatNumber, plural } from '@/utils/format';
 import { nameWithAlias, playerKeywords, rankedLabel } from '@/utils/player';
 import { formatRecord, gamesOf } from '@/utils/record';
+import ClanPicker from './ClanPicker';
 
 interface StatsSidesProps {
     /** the season picked (whose leaderboard the player pickers list) */
@@ -24,7 +25,7 @@ interface StatsSidesProps {
     seasonQuery: SeasonQuery | undefined;
     a: SideState;
     b: SideState;
-    /** names of the players picked, from the current answer (they may not be in the lists) */
+    /** names of the players and clans picked, by id (they may not be in the lists) */
     names: Record<string, string>;
     onChange: (next: Partial<StatsSearch>) => void;
     onModeA: (mode: SideMode) => void;
@@ -42,7 +43,7 @@ interface Option {
 
 /**
  * The two sides, like the matches page's "filter sides separately": the players counted
- * and who they played, each a range of each leaderboard or one player.
+ * and who they played, each a range of each leaderboard, one player or a clan.
  */
 export default function StatsSides(props: StatsSidesProps) {
     const { season, seasonQuery, a, b, names, onChange, onModeA, onModeB, onSwap, filtersA, filtersB } =
@@ -52,13 +53,18 @@ export default function StatsSides(props: StatsSidesProps) {
     const liveSeason = seasons.data?.liveSeason;
     // one player: pick among the season's leaderboard (the live one for "all seasons")
     const boardSeason = typeof season === 'number' ? season : liveSeason;
-    const pickFromBoard = b.mode === 'player' && !a.player;
+    // side 1 picked (a player or a clan): side 2 only offers who it met
+    const picked = useMemo(
+        () => (a.player ? { player: a.player } : a.clan ? { clan: a.clan } : null),
+        [a.player, a.clan],
+    );
+    const pickFromBoard = b.mode === 'player' && !picked;
     const ranked = useRankedPlayers(
         a.mode === 'player' || pickFromBoard ? boardSeason : undefined,
         boardSeason === liveSeason,
     );
-    // against one player, with one player: the players they met, with the record
-    const met = useOpponentsMet(b.mode === 'player' && a.player ? a.player : '', seasonQuery);
+    // the players and clans side 1 met, with the record
+    const met = useSideOpponents(b.mode === 'top' ? null : picked, seasonQuery);
 
     const oldNames = useOldNamesSearch();
 
@@ -78,8 +84,8 @@ export default function StatsSides(props: StatsSidesProps) {
     }, [ranked.players, a.player, b.player, names, oldNames]);
 
     const optionsB = useMemo(() => {
-        const list: Option[] = a.player
-            ? (met.data ?? []).map((o) => {
+        const list: Option[] = picked
+            ? (met.data?.opponents ?? []).map((o) => {
                   const games = gamesOf(o.record);
                   return {
                       value: o.userId,
@@ -98,12 +104,12 @@ export default function StatsSides(props: StatsSidesProps) {
                   }));
         if (b.player && !list.some((o) => o.value === b.player)) {
             const name = names[b.player] ?? 'Selected player';
-            list.unshift({ value: b.player, label: a.player ? `${name} · never met` : name });
+            list.unshift({ value: b.player, label: picked ? `${name} · never met` : name });
         }
         return list;
-    }, [met.data, ranked.players, a.player, b.player, names, oldNames]);
+    }, [met.data, ranked.players, picked, a.player, b.player, names, oldNames]);
 
-    const pickerB = a.player
+    const pickerB = picked
         ? {
               loading: met.isLoading,
               placeholder: met.isLoading
@@ -149,6 +155,14 @@ export default function StatsSides(props: StatsSidesProps) {
                                 onSelect={(id) => onChange({ player: id })}
                             />
                         </ControlGroup>
+                    ) : a.mode === 'clan' ? (
+                        <ClanPicker
+                            label='Clan'
+                            value={a.clan}
+                            other={b.clan}
+                            name={a.clan ? names[a.clan] : undefined}
+                            onSelect={(id) => onChange({ clan: id })}
+                        />
                     ) : (
                         <RangeControl
                             aria-label='Players counted'
@@ -205,6 +219,19 @@ export default function StatsSides(props: StatsSidesProps) {
                                 onSelect={(id) => onChange({ player2: id })}
                             />
                         </ControlGroup>
+                    ) : b.mode === 'clan' ? (
+                        <ClanPicker
+                            label='Opposing clan'
+                            value={b.clan}
+                            other={a.clan}
+                            name={b.clan ? names[b.clan] : undefined}
+                            met={
+                                picked
+                                    ? { clans: met.data?.clans, loading: met.isLoading }
+                                    : undefined
+                            }
+                            onSelect={(id) => onChange({ clan2: id })}
+                        />
                     ) : (
                         <RangeControl
                             aria-label='Opponents counted'

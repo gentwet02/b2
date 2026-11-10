@@ -3,9 +3,12 @@
 
 // the banner runs edge to edge as the card's header
 .clan-card {
-    padding: 0;
-    gap: 0;
-    overflow: hidden;
+    // (two classes: wins over .panel whatever order the CSS loads in)
+    &.panel {
+        padding: 0;
+        gap: 0;
+        overflow: hidden;
+    }
 
     &__banner {
         display: block;
@@ -53,6 +56,10 @@
         display: flex;
         flex-wrap: wrap;
         gap: $space-xs $space-l;
+        margin-block-start: $space-xs;
+    }
+
+    &__more {
         margin-block-start: $space-xs;
     }
 

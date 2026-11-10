@@ -9,6 +9,14 @@ export interface RecordRow {
     record: Wld;
 }
 
+/** The games of one season: a player's, or a clan's members' added up. */
+export interface SeasonRecord {
+    seasonId: number;
+    wins: number;
+    draws: number;
+    losses: number;
+}
+
 /** An extra column of a RecordTable. */
 export interface RecordColumn<T> {
     title: string;

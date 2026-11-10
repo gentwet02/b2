@@ -17,6 +17,10 @@ interface DropdownProps<V extends DropdownValue> {
     placeholder?: string | undefined;
     disabled?: boolean | undefined;
     autoFocus?: boolean | undefined;
+    /** open as it appears, its text selected: a select shown on demand */
+    openOnMount?: boolean | undefined;
+    /** it closed: an option picked, a click outside, Escape */
+    onClose?: (() => void) | undefined;
     /** type to filter the options (default: more than 8 of them) */
     searchable?: boolean | undefined;
     variant?: DropdownVariant | undefined;
@@ -36,6 +40,8 @@ export default function Dropdown<V extends DropdownValue>(props: DropdownProps<V
         placeholder,
         disabled = false,
         autoFocus = false,
+        openOnMount = false,
+        onClose,
         searchable = options.length > DROPDOWN_SEARCH_THRESHOLD,
         variant = 'default',
         noResultsText = 'No matches found',
@@ -47,7 +53,15 @@ export default function Dropdown<V extends DropdownValue>(props: DropdownProps<V
     const listboxId = `${inputId}-listbox`;
     const optionId = (index: number) => `${inputId}-option-${index}`;
 
-    const { rootRef, listRef, ...dropdown } = useDropdown({ options, value, onSelect, disabled, searchable });
+    const { rootRef, listRef, ...dropdown } = useDropdown({
+        options,
+        value,
+        onSelect,
+        disabled,
+        searchable,
+        openOnMount,
+        onClose,
+    });
 
     const rootClassName = cx(
         bem('dropdown', variant !== 'default' && variant, dropdown.isOpen && 'open'),

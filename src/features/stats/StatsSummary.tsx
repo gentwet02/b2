@@ -44,7 +44,7 @@ export default function StatsSummary(props: StatsSummaryProps) {
                         label={`Pick rate, of ${formatNumber(groupGames)} games`}
                     />
                 )}
-                {players !== null && data.mode === 'top' && (
+                {players !== null && data.mode !== 'player' && (
                     <StatsSummaryItem value={formatNumber(players)} label='Players counted' />
                 )}
             </div>

@@ -25,7 +25,7 @@ interface CompareMembersProps {
     onDrill: (side: CompareSideKey, userId: string) => void;
 }
 
-/** A range side: the record of (or against) each of its players, each one a drill-down. */
+/** A range or clan side: the record of (or against) each of its players, each one a drill-down. */
 export default function CompareMembers(props: CompareMembersProps) {
     const { data, side, title, note, tabs, min = 1, onDrill } = props;
 
@@ -92,7 +92,8 @@ export default function CompareMembers(props: CompareMembersProps) {
                         render: (o) => (o.rank === null ? '–' : `#${formatNumber(o.rank)}`),
                         sort: (a, b) => (a.rank ?? Infinity) - (b.rank ?? Infinity),
                     },
-                    ...(all
+                    // a clan's members are the same every season
+                    ...(all && data[side].mode === 'top'
                         ? [
                               {
                                   title: 'Seasons in range',

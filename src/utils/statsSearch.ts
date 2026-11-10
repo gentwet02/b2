@@ -12,12 +12,13 @@ import {
     STATS_VIEW_DEFAULT,
     STATS_VIEWS,
 } from '@/config/stats';
-import type { CompareParams } from '@/services/api/compare';
+import type { CompareParams, CompareSideParams } from '@/services/api/compare';
 import type { CompareSideKey } from '@/types/compare';
 import type { SeasonQuery } from '@/types/season';
 import type { SideState, StatsParams, StatsSearch, StatsView } from '@/types/stats';
 import { groupName } from '@/utils/compareTitles';
 import {
+    parseClanId,
     parseExclusions,
     parseFlag,
     parseHeroPick,
@@ -34,30 +35,36 @@ const RANGES = LEADERBOARD_RANGES.map((r) => r.value);
 
 /**
  * The /stats URL, read. Every rule of the page's URL lives here: defaults are left out,
- * a range's `exclude` must be a smaller range, a player can't play themselves, the opponent's
- * loadout only goes with `sides`... The route runs it on the URL it opens and, through its search
+ * a range's `exclude` must be a smaller range, a player or a clan can't play themselves, a side
+ * is one player before a clan and a clan before a range, the opponent's loadout only goes
+ * with `sides`... The route runs it on the URL it opens and, through its search
  * middleware, on every link and navigation to the page, so a change only gives what changes.
  */
 export function parseStatsSearch(search: Record<string, unknown>): StatsSearch {
     const sides = parseFlag(search.sides);
     const player = parseUserId(search.player);
-    const players = player
-        ? undefined
-        : parseOption(
-              search.players != null ? String(search.players) : undefined,
-              RANGES,
-              STATS_PLAYERS_DEFAULT,
-          );
-    // who they played: one player, or a range
+    const clan = player ? undefined : parseClanId(search.clan);
+    const players =
+        player || clan
+            ? undefined
+            : parseOption(
+                  search.players != null ? String(search.players) : undefined,
+                  RANGES,
+                  STATS_PLAYERS_DEFAULT,
+              );
+    // who they played: one player, a clan, or a range
     const second = parseUserId(search.player2);
     const player2 = second === player ? undefined : second;
-    const players2 = player2
-        ? undefined
-        : parseOption(
-              search.players2 != null ? String(search.players2) : undefined,
-              RANGES,
-              STATS_AGAINST_DEFAULT,
-          );
+    const secondClan = player2 ? undefined : parseClanId(search.clan2);
+    const clan2 = secondClan === clan ? undefined : secondClan;
+    const players2 =
+        player2 || clan2
+            ? undefined
+            : parseOption(
+                  search.players2 != null ? String(search.players2) : undefined,
+                  RANGES,
+                  STATS_AGAINST_DEFAULT,
+              );
     const season = parseSeason(search.season, true);
     const { exHeroes, exTowers, exMaps, exHeroes2, exTowers2 } = parseExclusions(search);
     return {
@@ -66,15 +73,19 @@ export function parseStatsSearch(search: Record<string, unknown>): StatsSearch {
         seasonTo: season === 'all' ? undefined : parseSeason(search.seasonTo),
         overlap: parseOff(search.overlap),
         player,
+        clan,
         players,
-        exclude: player
-            ? undefined
-            : parseExclude(players ?? STATS_PLAYERS_DEFAULT, search.exclude, search.band),
+        exclude:
+            player || clan
+                ? undefined
+                : parseExclude(players ?? STATS_PLAYERS_DEFAULT, search.exclude, search.band),
         player2,
+        clan2,
         players2,
-        exclude2: player2
-            ? undefined
-            : parseExclude(players2 ?? STATS_AGAINST_DEFAULT, search.exclude2, undefined),
+        exclude2:
+            player2 || clan2
+                ? undefined
+                : parseExclude(players2 ?? STATS_AGAINST_DEFAULT, search.exclude2, undefined),
         map: parseMapKey(search.map),
         hero: parseHeroPick(search.hero),
         towers: parseTowerList(search.towers, 130),
@@ -103,24 +114,43 @@ export function parseStatsSearch(search: Record<string, unknown>): StatsSearch {
     };
 }
 
-/** Which side is being picked ("One player" chosen, the player not yet). */
-export type Picking = Record<CompareSideKey, boolean>;
+/**
+ * What each side is picking: "One player" or "Clan" chosen, the player or clan not yet
+ * (false: nothing).
+ */
+export type Picking = Record<CompareSideKey, 'player' | 'clan' | false>;
+
+/** A side's mode: what the URL holds, else what is being picked, else a range. */
+const sideMode = (
+    player: string | undefined,
+    clan: string | undefined,
+    picking: Picking[CompareSideKey],
+) => (player ? 'player' : clan ? 'clan' : picking || 'top');
 
 /** Both sides, defaults filled in. */
 export function statsSides(search: StatsSearch, picking: Picking) {
     const a: SideState = {
-        mode: search.player || picking.a ? 'player' : 'top',
+        mode: sideMode(search.player, search.clan, picking.a),
         player: search.player,
+        clan: search.clan,
         range: search.players ?? STATS_PLAYERS_DEFAULT,
         exclude: search.exclude,
     };
     const b: SideState = {
-        mode: search.player2 || picking.b ? 'player' : 'top',
+        mode: sideMode(search.player2, search.clan2, picking.b),
         player: search.player2,
+        clan: search.clan2,
         range: search.players2 ?? STATS_AGAINST_DEFAULT,
         exclude: search.exclude2,
     };
     return { a, b };
+}
+
+/** What a side still needs before anything can be asked: its player or its clan. */
+export function sideMissing(side: SideState) {
+    if (side.mode === 'player' && !side.player) return 'player';
+    if (side.mode === 'clan' && !side.clan) return 'clan';
+    return null;
 }
 
 /** The seasons counted: the one picked, or a range of them for the server. */
@@ -160,7 +190,11 @@ export function isFocused(search: StatsSearch) {
     );
 }
 
-/** A players tab's name: "Top 25 players", "All HoM players". */
+/** A players tab's name: "Top 25 players", "All HoM players", "Clan members". */
+function groupTab(side: SideState) {
+    return side.mode === 'clan' ? 'Clan members' : rangeTab(side.range, side.exclude);
+}
+
 function rangeTab(range: string, exclude: string | undefined) {
     const name = groupName({
         mode: 'top',
@@ -191,19 +225,23 @@ export function statsTabs(a: SideState, b: SideState, search: StatsSearch): Stat
         a.range === b.range &&
         (a.exclude ?? '') === (b.exclude ?? '') &&
         !isLoadoutFiltered(search);
-    const tabA = rangeTab(a.range, a.exclude);
-    const tabB = rangeTab(b.range, b.exclude);
-    // the same name on both tabs (a loadout filter tells them apart): name the boxes too
-    const twin = a.mode === 'top' && b.mode === 'top' && tabA === tabB;
+    const tabA = groupTab(a);
+    const tabB = groupTab(b);
+    const groupA = a.mode !== 'player';
+    const groupB = b.mode !== 'player';
+    // the same name on both tabs (two clans, or a loadout filter tells them apart): name the
+    // boxes too
+    const twin = groupA && groupB && tabA === tabB;
     const tabs: StatsTabs['tabs'] = [
         ...STATS_VIEWS,
-        ...(a.mode === 'top'
+        ...(groupA
             ? [{ value: 'players' as const, label: twin && !sameRange ? `Players: ${tabA}` : tabA }]
             : []),
-        ...(b.mode === 'top' && !sameRange
+        ...(groupB && !sameRange
             ? [{ value: 'opponents' as const, label: twin ? `Against: ${tabB}` : tabB }]
             : []),
-        ...(a.mode === 'player' || b.mode === 'player'
+        // two ranges: too many games for a list
+        ...(a.mode !== 'top' || b.mode !== 'top'
             ? [{ value: 'games' as const, label: 'Games' }]
             : []),
     ];
@@ -224,9 +262,11 @@ export function statsParamsOf(
         season: seasonQuery,
         overlap: search.overlap !== false,
         player: search.player,
+        clan: search.clan,
         players: a.range,
         exclude: search.exclude,
         player2: search.player2,
+        clan2: search.clan2,
         players2: b.range,
         exclude2: search.exclude2,
         map: search.map,
@@ -245,6 +285,12 @@ export function statsParamsOf(
     };
 }
 
+function compareSide(side: SideState): CompareSideParams {
+    if (side.player) return { player: side.player };
+    if (side.clan) return { clan: side.clan };
+    return { range: side.range, exclude: side.exclude };
+}
+
 /** What /compare is asked: the same sides and filters. */
 export function compareParamsOf(
     search: StatsSearch,
@@ -254,8 +300,8 @@ export function compareParamsOf(
     return {
         season: seasonQuery,
         overlap: search.overlap !== false,
-        a: a.player ? { player: a.player } : { range: a.range, exclude: a.exclude },
-        b: b.player ? { player: b.player } : { range: b.range, exclude: b.exclude },
+        a: compareSide(a),
+        b: compareSide(b),
         filters: {
             map: search.map,
             exMaps: search.exMaps,
@@ -280,9 +326,11 @@ export function swappedSearch(
     b: SideState,): Partial<StatsSearch> {
     return {
         player: search.player2,
+        clan: search.clan2,
         players: b.range,
         exclude: search.exclude2,
         player2: search.player,
+        clan2: search.clan,
         players2: a.range,
         exclude2: search.exclude,
         ...(search.sides && {
@@ -301,6 +349,6 @@ export function swappedSearch(
 /** One player of a side's table alone takes the place of their side. */
 export function drilledSearch(side: CompareSideKey, userId: string): Partial<StatsSearch> {
     return side === 'a'
-        ? { player: userId, players: undefined, exclude: undefined }
-        : { player2: userId, players2: undefined, exclude2: undefined };
+        ? { player: userId, clan: undefined, players: undefined, exclude: undefined }
+        : { player2: userId, clan2: undefined, players2: undefined, exclude2: undefined };
 }

@@ -11,7 +11,7 @@ export const STATS_VIEWS: { value: StatsView; label: string }[] = [
     { value: 'maps', label: 'Maps' },
 ];
 
-/** Tabs about the players: each side's table, and the latest games (a side is one player). */
+/** Tabs about the players: each side's table, and the games (a side is one player or a clan). */
 export const STATS_PLAYER_VIEWS = ['players', 'opponents', 'games'] as const;
 export const STATS_VIEW_DEFAULT: StatsView = 'heroes';
 
@@ -29,10 +29,11 @@ export const STATS_MIN_PICK_OPTIONS = STATS_MIN_PICK.map((n) => ({
 
 export const STATS_MAX_TOWERS = 3;
 
-/** Who each side is: a range of each leaderboard, or one player. */
+/** Who each side is: a range of each leaderboard, one player, or a clan. */
 export const STATS_MODES = [
     { value: 'top', label: 'Top players' },
     { value: 'player', label: 'One player' },
+    { value: 'clan', label: 'Clan' },
 ] as const;
 
 /** Against, by default: every HoM player (a player in both ranges counts for the first side). */

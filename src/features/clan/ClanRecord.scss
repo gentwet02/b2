@@ -1,0 +1,13 @@
+@use '@/styles/utils/colors';
+@use '@/styles/utils' as *;
+
+// a player or a clan named in a stat card: plain like the other values, a link on hover
+.clan-record__link {
+    color: inherit;
+    overflow-wrap: anywhere;
+    @include transition(color, $duration-fast);
+
+    @include when-hover {
+        color: colors.$bloon;
+    }
+}

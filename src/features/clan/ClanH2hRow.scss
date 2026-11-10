@@ -1,0 +1,33 @@
+@use '@/styles/utils/colors';
+@use '@/styles/utils' as *;
+
+.clan-h2h-row {
+    // the profile's row without the avatar column: the clan's banner and select take it
+    // (two classes: wins over .h2h-row__main whatever order the CSS loads in)
+    &__main.h2h-row__main {
+        // as wide as the card's longest record (--record-chars, set on the list): every row
+        // keeps the same columns, and "30–138" stays on one line
+        --record: max(3.2rem, calc(var(--record-chars, 5) * 1ch));
+        grid-template-columns:
+            minmax(0, 22rem) var(--record) minmax(3rem, 1fr) 3rem minmax(6.5rem, auto)
+            2rem;
+
+        @include breakpoint-down(tablet) {
+            grid-template-columns: minmax(0, 4fr) var(--record) minmax(2.5rem, 1fr) 3rem 2rem;
+        }
+
+        @include breakpoint-down(phablet) {
+            grid-template-columns: minmax(0, 1fr) var(--record) 2.8rem 2rem;
+        }
+
+        .h2h-row__record {
+            white-space: nowrap;
+        }
+    }
+
+    // the row's round button, as a link to the games
+    &__games {
+        font-weight: 700;
+        text-decoration: none;
+    }
+}

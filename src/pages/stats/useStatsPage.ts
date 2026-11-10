@@ -3,9 +3,10 @@ import { getRouteApi } from '@tanstack/react-router';
 import { MATCH_SORT_DEFAULT } from '@/config/match';
 import { STATS_MIN_DEFAULT, STATS_MIN_PICK_DEFAULT } from '@/config/stats';
 import useComparison from '@/hooks/queries/useComparison';
-import useOpponentsMet from '@/hooks/queries/useOpponentsMet';
 import useSeasons from '@/hooks/queries/useSeasons';
+import useSideOpponents from '@/hooks/queries/useSideOpponents';
 import useStats from '@/hooks/queries/useStats';
+import type { ClanSideInfo } from '@/types/clan';
 import type { CompareSideKey } from '@/types/compare';
 import type { SideMode, StatsSearch, StatsViewState } from '@/types/stats';
 import { playerLabel } from '@/utils/player';
@@ -15,6 +16,7 @@ import {
     focusedTowers,
     isFocused,
     isLoadoutFiltered,
+    sideMissing,
     statsParamsOf,
     statsSeasonQuery,
     statsSides,
@@ -25,7 +27,12 @@ import {
 
 const routeApi = getRouteApi('/stats');
 
-type NamedPlayer = { userId: string | null; name?: string | null; alias?: string | null };
+interface NamedPlayer {
+    userId: string | null;
+    name?: string | null;
+    alias?: string | null;
+    clan?: ClanSideInfo | null | undefined;
+}
 
 /**
  * Everything the stats page shows, read from its URL: the sides, the tabs, both answers
@@ -35,18 +42,24 @@ type NamedPlayer = { userId: string | null; name?: string | null; alias?: string
 export default function useStatsPage() {
     const search = routeApi.useSearch();
     const navigate = routeApi.useNavigate();
-    // "One player" picked on a side, the player not yet (not in the URL)
+    // "One player" or "Clan" picked on a side, the player or clan not yet (not in the URL)
     const [picking, setPicking] = useState<Picking>({ a: false, b: false });
 
     const seasons = useSeasons();
     const liveSeason = seasons.data?.liveSeason;
     const { from, seasonQuery } = statsSeasonQuery(search, liveSeason);
-    const met = useOpponentsMet(search.player ?? '', seasonQuery);
+    // who side 1 met, once it is one player or one clan: what side 2 is picked from
+    const picked = useMemo(
+        () =>
+            search.player ? { player: search.player } : search.clan ? { clan: search.clan } : null,
+        [search.player, search.clan],
+    );
+    const met = useSideOpponents(picked, seasonQuery);
 
     const { a, b } = statsSides(search, picking);
+    const missing = sideMissing(a) ?? sideMissing(b);
     const waiting =
-        (a.mode === 'player' && !a.player) ||
-        (b.mode === 'player' && !b.player) ||
+        !!missing ||
         // a range from the live season: wait to know which one it is
         (search.seasonTo !== undefined && from === undefined);
 
@@ -67,8 +80,13 @@ export default function useStatsPage() {
 
     /** Every change: the route's search rules (utils/statsSearch) tidy the URL. */
     function update(next: Partial<StatsSearch>) {
-        if ('player' in next && !next.player) setPicking((p) => ({ ...p, a: false }));
-        if ('player2' in next && !next.player2) setPicking((p) => ({ ...p, b: false }));
+        // a side's player or clan taken away, nothing put in its place: back to its range
+        if (('player' in next || 'clan' in next) && !next.player && !next.clan) {
+            setPicking((p) => ({ ...p, a: false }));
+        }
+        if (('player2' in next || 'clan2' in next) && !next.player2 && !next.clan2) {
+            setPicking((p) => ({ ...p, b: false }));
+        }
         void navigate({
             search: (prev) => ({ ...prev, ...next }),
             replace: true,
@@ -77,35 +95,47 @@ export default function useStatsPage() {
     }
 
     function onModeA(mode: SideMode) {
-        if (mode === 'top') update({ player: undefined });
-        else setPicking((p) => ({ ...p, a: true }));
+        if (mode === a.mode) return;
+        // picking set after update, which resets it
+        update({ player: undefined, clan: undefined });
+        if (mode !== 'top') setPicking((p) => ({ ...p, a: mode }));
     }
 
     function onModeB(mode: SideMode) {
-        if (mode === 'top') {
-            update({ player2: undefined });
+        if (mode === b.mode) return;
+        // side 1 picked: the player or the clan it met most, right away
+        const first =
+            mode === 'player' ? met.data?.opponents[0]?.userId : met.data?.clans[0]?.id;
+        if (mode !== 'top' && first) {
+            update(
+                mode === 'player'
+                    ? { player2: first, clan2: undefined }
+                    : { player2: undefined, clan2: first },
+            );
             return;
         }
-        // one player against one player: the opponent they met most, right away
-        const first = search.player ? met.data?.[0]?.userId : undefined;
-        if (first) update({ player2: first });
-        else setPicking((p) => ({ ...p, b: true }));
+        update({ player2: undefined, clan2: undefined });
+        if (mode !== 'top') setPicking((p) => ({ ...p, b: mode }));
     }
 
     function swap() {
-        setPicking({ a: picking.b, b: picking.a });
+        // after update, which resets what a side without a player or a clan is picking
         update(swappedSearch(search, a, b));
+        setPicking({ a: picking.b, b: picking.a });
     }
 
     const drill = (side: CompareSideKey, userId: string) => update(drilledSearch(side, userId));
 
-    // names of the players picked, for the pickers when they aren't in their lists
+    // names of the players and clans picked, by id, for the pickers when they aren't in
+    // their lists
     const names = useMemo(() => {
         const out: Record<string, string> = {};
         function add(p: NamedPlayer | null | undefined) {
             if (p?.userId && (p.name || p.alias)) out[p.userId] = playerLabel(p);
+            if (p?.clan?.name) out[p.clan.id] = p.clan.name;
         }
         add(stats.data?.player);
+        add(stats.data && { userId: null, clan: stats.data.clan });
         add(stats.data?.against);
         add(comparison.data?.a);
         add(comparison.data?.b);
@@ -125,8 +155,10 @@ export default function useStatsPage() {
         seasons,
         a,
         b,
-        /** a side's player isn't picked yet, or the season isn't known */
+        /** a side's player or clan isn't picked yet, or the season isn't known */
         waiting,
+        /** what a side still needs: its player or its clan */
+        missing,
         viewState,
         picksView,
         sameRange,

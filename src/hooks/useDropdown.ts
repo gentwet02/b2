@@ -14,6 +14,10 @@ interface UseDropdownOptions<V extends DropdownValue> {
     onSelect: (value: V) => void;
     disabled: boolean;
     searchable: boolean;
+    /** open as it appears, the input's text selected (a select shown on demand) */
+    openOnMount: boolean;
+    /** it closed: an option picked, a click outside, Escape */
+    onClose: (() => void) | undefined;
 }
 
 const isItem = <V extends DropdownValue>(option: DropdownOption<V>): option is DropdownItem<V> =>
@@ -24,16 +28,25 @@ const isItem = <V extends DropdownValue>(option: DropdownOption<V>): option is D
  * filter, arrow keys, and the list kept on screen with its last options while it folds away.
  */
 export default function useDropdown<V extends DropdownValue>(props: UseDropdownOptions<V>) {
-    const { options, value, onSelect, disabled, searchable } = props;
+    const { options, value, onSelect, disabled, searchable, openOnMount, onClose } = props;
 
     const rootRef = useRef<HTMLDivElement>(null);
     const listRef = useRef<HTMLUListElement>(null);
-    const shouldScrollRef = useRef(false);
+    const startsOpen = openOnMount && !disabled;
+    const shouldScrollRef = useRef(startsOpen);
 
-    const [isOpen, setIsOpen] = useState(false);
+    const [isOpen, setIsOpen] = useState(startsOpen);
     const [query, setQuery] = useState('');
     const [isFiltering, setIsFiltering] = useState(false);
-    const [activeIndex, setActiveIndex] = useState(-1);
+    // starting open: on the selected option, like `open`
+    const [activeIndex, setActiveIndex] = useState(() =>
+        startsOpen
+            ? Math.max(
+                  options.findIndex((o) => (isItem(o) ? o.value : o) === value),
+                  0,
+              )
+            : -1,
+    );
     const [spacerTop, setSpacerTop] = useState(0);
     // after closing, the list stays rendered with its last options until its exit animation ends
     const [exitItems, setExitItems] = useState<DropdownShownItem<V>[] | null>(null);
@@ -78,11 +91,18 @@ export default function useDropdown<V extends DropdownValue>(props: UseDropdownO
         wasOpenRef.current = isOpen;
     }, [isOpen]);
 
+    // the latest onClose, for the stable `close`
+    const onCloseRef = useRef(onClose);
+    useEffect(() => {
+        onCloseRef.current = onClose;
+    }, [onClose]);
+
     const close = useCallback(() => {
         setIsOpen(false);
         setIsFiltering(false);
         setQuery('');
         setActiveIndex(-1);
+        onCloseRef.current?.();
     }, []);
 
     function open() {
@@ -113,6 +133,16 @@ export default function useDropdown<V extends DropdownValue>(props: UseDropdownO
     function finishClosing() {
         if (isClosing) setExitItems(null);
     }
+
+    // shown on demand (starts open): its text selected, so typing replaces it
+    useEffect(() => {
+        if (!startsOpen) return;
+        const input = rootRef.current?.querySelector('input');
+        input?.focus();
+        input?.select();
+        // on mount only
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []);
 
     // a click outside closes it
     useEffect(() => {

@@ -14,6 +14,8 @@ interface MatchCardProps {
     match: Match;
     /** Profile being viewed: the card edge shows its result. */
     perspectiveId?: string | undefined;
+    /** Or a group being viewed (a clan's members): the same for whichever of them played. */
+    perspectiveIds?: ReadonlySet<string> | undefined;
     /** The viewed (or else searched) player goes left, whatever side they played on. */
     keepSide?: boolean | undefined;
     /** When set, hero, towers and map become buttons that filter on them. */
@@ -23,11 +25,19 @@ interface MatchCardProps {
 }
 
 export default function MatchCard(props: MatchCardProps) {
-    const { match, perspectiveId, keepSide, onPick, showSeason } = props;
+    const { match, perspectiveId, perspectiveIds, keepSide, onPick, showSeason } = props;
 
     const { playerLeft, playerRight } = match;
-    const focusRight = perspectiveId
-        ? extractUserId(playerRight.profileURL) === perspectiveId
+    function isViewed(player: typeof playerLeft) {
+        const id = extractUserId(player.profileURL);
+        return perspectiveId ? id === perspectiveId : !!perspectiveIds?.has(id);
+    }
+    const hasPerspective = !!perspectiveId || !!perspectiveIds;
+    // two players of the group against each other: as recorded, no result of the group's
+    const bothViewed = hasPerspective && isViewed(playerLeft) && isViewed(playerRight);
+    const showResult = hasPerspective && !bothViewed;
+    const focusRight = hasPerspective
+        ? !bothViewed && isViewed(playerRight)
         : match.searchedSide === 'right';
     const [left, right] =
         keepSide && focusRight ? [playerRight, playerLeft] : [playerLeft, playerRight];
@@ -36,14 +46,14 @@ export default function MatchCard(props: MatchCardProps) {
     const viewed = focusRight ? playerRight : playerLeft;
     // the result stripe goes on the viewed player's edge
     const rightViewed = viewed === right;
-    const tone = perspectiveId ? matchOutcome(viewed.result) : 'neutral';
+    const tone = showResult ? matchOutcome(viewed.result) : 'neutral';
     const nobodyWon = leftOutcome === 'neutral' && rightOutcome === 'neutral';
     const middle = nobodyWon ? (NEUTRAL_TEXT[left.result] ?? formatLabel(left.result)) : 'vs';
     const seen = timeAgo(match.seenAt);
     const mapSrc = mapImage(match.map, match.mapURL);
 
     return (
-        <article className={bem('match-card', tone, perspectiveId && rightViewed && 'edge-right')}>
+        <article className={bem('match-card', tone, showResult && rightViewed && 'edge-right')}>
             <PlayerSide player={left} align='left' outcome={leftOutcome} onPick={onPick} />
             <div className='match-card__center'>
                 {mapSrc && (

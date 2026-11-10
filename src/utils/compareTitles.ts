@@ -24,10 +24,15 @@ export function groupName(side: CompareSideInfo, bounds?: RankBounds | null) {
     return side.exclude ? `${label} without the ${lowerFirst(rangeLabel(side.exclude))}` : label;
 }
 
-/** What a side is called: the player's name, its range, or "Anyone". */
+/** A clan side's name. */
+export const clanName = (side: Pick<CompareSideInfo, 'clan'>) =>
+    side.clan?.name ?? 'Unknown clan';
+
+/** What a side is called: the player's name, the clan's, its range, or "Anyone". */
 export function sideName(data: Comparison, key: CompareSideKey) {
     const side = data[key];
     if (side.mode === 'anyone') return 'Anyone';
+    if (side.mode === 'clan') return clanName(side);
     if (side.mode === 'player') {
         const member = (key === 'a' ? data.players : data.opponents)[0];
         return playerLabel(side.name || side.alias ? side : (member ?? {}), 'Unknown player');
@@ -35,9 +40,9 @@ export function sideName(data: Comparison, key: CompareSideKey) {
     return groupName(side, sideBounds(data, key));
 }
 
-/** "Bob’s", or the range as is: "Top 10" (to put before a noun). */
+/** "Bob’s", "Some Clan’s", or the range as is: "Top 10" (to put before a noun). */
 export function sidePossessive(data: Comparison, key: CompareSideKey) {
-    return data[key].mode === 'player'
+    return data[key].mode === 'player' || data[key].mode === 'clan'
         ? `${sideName(data, key)}’s`
         : data[key].mode === 'anyone'
           ? 'Opponent'

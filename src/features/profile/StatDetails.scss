@@ -12,6 +12,8 @@
 
     &__detail {
         display: grid;
+        // a taller neighbour (a value on two lines) doesn't spread the label and the value
+        align-content: start;
         gap: 0.1rem;
 
         dt {

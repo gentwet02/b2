@@ -1,5 +1,6 @@
 import { useIsFetching, useQueryClient } from '@tanstack/react-query';
 import { getRouteApi, Link } from '@tanstack/react-router';
+import LiveTag from '@/components/live-tag/LiveTag';
 import Page from '@/components/page/Page';
 import PageHeader from '@/components/page/PageHeader';
 import SeasonSelect from '@/components/season-select/SeasonSelect';
@@ -106,7 +107,7 @@ export default function Leaderboard() {
                 title={
                     <>
                         {current?.name ?? seasonLabel(season)}
-                        {live && <span className='leaderboard__live'>Live</span>}
+                        {live && <LiveTag />}
                     </>
                 }
                 subtitle={

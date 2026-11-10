@@ -16,7 +16,7 @@ export default function Stats() {
         <Page className='stats'>
             <PageHeader
                 title='Stats'
-                subtitle='How heroes, towers, strats and maps do, and who beats whom: for a group or one player, against another group or one opponent.'
+                subtitle='How heroes, towers, strats and maps do, and who beats whom: for a group, a clan or one player, against another.'
             />
 
             <StatsControls
@@ -36,7 +36,7 @@ export default function Stats() {
 
             {page.waiting ? (
                 page.seasonKnown ? (
-                    <Prompt>Pick a player above to see the stats.</Prompt>
+                    <Prompt>Pick a {page.missing ?? 'player'} above to see the stats.</Prompt>
                 ) : page.seasons.error ? (
                     <ErrorState
                         title="Couldn't load the seasons"

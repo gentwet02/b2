@@ -1,4 +1,4 @@
-import { USER_ID_PATTERN } from '@/config/player';
+import { CLAN_ID_PATTERN, USER_ID_PATTERN } from '@/config/player';
 import type { SeasonScope } from '@/types/season';
 
 /**
@@ -31,6 +31,9 @@ export function parseSeason(value: unknown, allowAll = false): SeasonScope | und
 
 export const parseUserId = (value: unknown) =>
     typeof value === 'string' && USER_ID_PATTERN.test(value) ? value : undefined;
+
+export const parseClanId = (value: unknown) =>
+    typeof value === 'string' && CLAN_ID_PATTERN.test(value) ? value : undefined;
 
 /** Trimmed text, cut at `max` characters; undefined when empty. */
 export const parseText = (value: unknown, max = 40) =>

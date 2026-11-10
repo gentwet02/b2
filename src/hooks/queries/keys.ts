@@ -28,6 +28,9 @@ export const queryKeys = {
     stats: (params?: object) => key('stats', params),
     /** the normalized params (services/api/compare), or 'games', the params and the sort */
     compare: (...parts: Part[]) => key('compare', ...parts),
+    clans: () => key('clans'),
+    clan: (clanId: string) => key('clan', clanId),
+    clanOverview: (clanId: string) => key('clanOverview', clanId),
 
     profile: (userId?: string) => key('userProfile', userId),
     seasonStats: (userId: string, season?: Season) => key('seasonStats', userId, season),
@@ -36,7 +39,8 @@ export const queryKeys = {
     userMatches: (userId: string) => key('userMatches', userId),
     headToHead: (userId: string, season?: Season, opponents?: string) =>
         key('headToHead', userId, season, opponents),
-    opponentsMet: (userId: string, season?: Season) => key('opponentsMet', userId, season),
+    /** `id`: the player's, or a clan's */
+    opponentsMet: (id: string, season?: Season) => key('opponentsMet', id, season),
 };
 
 /** What the profile's Refresh reloads: everything that changes when the player plays. */

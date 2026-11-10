@@ -18,6 +18,8 @@ interface MatchListProps {
     matches: Match[];
     /** the profile being viewed: each card shows its result, and with "keep side" it goes left */
     perspectiveId?: string | undefined;
+    /** or the group being viewed (a clan's members): whichever of them played */
+    perspectiveIds?: ReadonlySet<string> | undefined;
     /** hero, towers and map become buttons that filter on them */
     onPick?: ((pick: MatchPick) => void) | undefined;
     className?: string;
@@ -29,7 +31,7 @@ interface MatchListProps {
 
 /** Match cards, only the ones near the viewport rendered; the window scrolls through them all. */
 export default function MatchList(props: MatchListProps) {
-    const { perspectiveId, onPick, className, showSeason, onEnd } = props;
+    const { perspectiveId, perspectiveIds, onPick, className, showSeason, onEnd } = props;
     const keepSide = useKeepSide();
     // a key twice and React leaves stale cards behind as the window moves
     const matches = useMemo(() => uniqueMatches(props.matches), [props.matches]);
@@ -68,6 +70,7 @@ export default function MatchList(props: MatchListProps) {
                         <MatchCard
                             match={match}
                             perspectiveId={perspectiveId}
+                            perspectiveIds={perspectiveIds}
                             keepSide={keepSide}
                             onPick={onPick}
                             showSeason={showSeason}

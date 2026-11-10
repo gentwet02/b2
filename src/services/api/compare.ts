@@ -1,13 +1,17 @@
 import { getFromApi, withQuery } from '@/services/api/client';
-import type { CompareGamesPage, Comparison, HeadToHead, OpponentsMet } from '@/types/compare';
+import type { CompareGamesPage, Comparison, HeadToHead, SideOpponents } from '@/types/compare';
 import type { MatchSort } from '@/types/match';
 import type { SeasonQuery, SeasonScope } from '@/types/season';
 
-/** One side: a player, a range (and a smaller one left out), or anyone (side 2). */
+/** One side: a player, a clan, a range (and a smaller one left out), or anyone (side 2). */
 export type CompareSideParams =
     | { player: string }
+    | { clan: string }
     | { range: string; exclude?: string | undefined }
     | { anyone: true };
+
+/** A side that is picked: one player or one clan. */
+export type MetSideParams = { player: string } | { clan: string };
 
 export interface CompareParams {
     season?: SeasonQuery | undefined;
@@ -21,7 +25,7 @@ export interface CompareParams {
 
 /** A side with nothing empty in it. */
 function normalizeSide(side: CompareSideParams): CompareSideParams {
-    return 'player' in side || 'anyone' in side
+    return 'player' in side || 'clan' in side || 'anyone' in side
         ? side
         : side.exclude
           ? { range: side.range, exclude: side.exclude }
@@ -44,12 +48,11 @@ export function normalizeCompareParams({ season, a, b, overlap, filters }: Compa
 }
 
 function sideQuery(side: CompareSideParams, suffix: '' | '2') {
-    return 'player' in side
-        ? { [`player${suffix}`]: side.player }
-        : 'anyone' in side
-          ? {}
-          : // the names /stats takes too
-            { [`players${suffix}`]: side.range, [`exclude${suffix}`]: side.exclude };
+    if ('player' in side) return { [`player${suffix}`]: side.player };
+    if ('clan' in side) return { [`clan${suffix}`]: side.clan };
+    if ('anyone' in side) return {};
+    // the names /stats takes too
+    return { [`players${suffix}`]: side.range, [`exclude${suffix}`]: side.exclude };
 }
 
 export const compareService = {
@@ -68,7 +71,7 @@ export const compareService = {
                 ...filters,
             }),
         ),
-    /** a player on at least one side */
+    /** a player or a clan on at least one side */
     getCompareGames: (
         { season, a, b, overlap, filters }: CompareParams,
         sort: MatchSort,
@@ -87,6 +90,7 @@ export const compareService = {
                 limit,
             }),
         ),
-    getOpponents: (userId: string, season?: SeasonQuery) =>
-        getFromApi<OpponentsMet>(withQuery(`users/${userId}/opponents`, { season })),
+    /** who a player or a clan met: the players, and the clans they are in */
+    getSideOpponents: (side: MetSideParams, season?: SeasonQuery) =>
+        getFromApi<SideOpponents>(withQuery('compare/opponents', { ...side, season })),
 };
