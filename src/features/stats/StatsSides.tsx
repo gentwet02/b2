@@ -261,7 +261,9 @@ export default function StatsSides(props: StatsSidesProps) {
                                 aria-label='Player'
                                 noResultsText='No player with that name'
                                 onSelect={(id) =>
-                                    listedA ? setDraft('a', { player: id }) : onChange({ player: id })
+                                    listedA
+                                        ? setDraft('a', { player: id })
+                                        : onChange({ player: id })
                                 }
                             />
                         </ControlGroup>
@@ -297,6 +299,20 @@ export default function StatsSides(props: StatsSidesProps) {
                         onRemove={(tag) => remove('a', tag)}
                         onRemoveExcluded={(tag) => remove('a', tag)}
                     />
+                )}
+                {a.list.length + a.not.length > 1 && (
+                    <button
+                        type='button'
+                        className='text-link'
+                        onClick={() =>
+                            onChange({
+                                list: undefined,
+                                not: undefined,
+                            })
+                        }
+                    >
+                        Clear
+                    </button>
                 )}
             </div>
 
@@ -382,6 +398,20 @@ export default function StatsSides(props: StatsSidesProps) {
                         onRemove={(tag) => remove('b', tag)}
                         onRemoveExcluded={(tag) => remove('b', tag)}
                     />
+                )}
+                {b.list.length + b.not.length > 1 && (
+                    <button
+                        type='button'
+                        className='text-link'
+                        onClick={() =>
+                            onChange({
+                                list2: undefined,
+                                not2: undefined,
+                            })
+                        }
+                    >
+                        Clear
+                    </button>
                 )}
             </div>
         </div>

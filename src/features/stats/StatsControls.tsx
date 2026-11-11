@@ -74,6 +74,10 @@ export default function StatsControls(props: StatsControlsProps) {
     const maxExcluded = data?.maxExcluded ?? MAX_EXCLUDED;
     const split = !!search.sides;
     const hasFocus =
+        a.list.length > 0 ||
+        b.list.length > 0 ||
+        a.not.length > 0 ||
+        b.not.length > 0 ||
         !!search.map ||
         !!search.hero ||
         towers.length > 0 ||
@@ -84,6 +88,7 @@ export default function StatsControls(props: StatsControlsProps) {
         !!search.towers2 ||
         !!search.exHeroes2 ||
         !!search.exTowers2;
+
     function loadoutFilters(side: '' | '2') {
         return (
             <LoadoutFilters
@@ -97,143 +102,154 @@ export default function StatsControls(props: StatsControlsProps) {
     }
 
     return (
-        <Panel className='stats-controls'>
-            <Controls>
-                <ControlGroup label='Season'>
-                    {(search.season ?? liveSeason) !== undefined && (
-                        <SeasonSelect
-                            className='controls__season'
-                            variant='compact'
-                            allowAll
-                            seasons={seasons.data?.seasons ?? []}
-                            liveSeason={liveSeason}
-                            value={search.season}
-                            onChange={(season) =>
-                                onChange({ season: urlSeason(season, liveSeason) })
-                            }
-                        />
-                    )}
-                </ControlGroup>
-                {/* a range of seasons: the other end (the same season: just that one) */}
-                {search.season !== 'all' && from !== undefined && (
-                    <ControlGroup label='To'>
-                        <SeasonSelect
-                            className='controls__season'
-                            variant='compact'
-                            seasons={seasons.data?.seasons ?? []}
-                            liveSeason={liveSeason}
-                            value={search.seasonTo ?? from}
-                            onChange={(to) => onChange({ seasonTo: to === from ? undefined : to })}
-                        />
+        <>
+            <Panel className='stats-controls'>
+                <Controls>
+                    <ControlGroup label='Season'>
+                        {(search.season ?? liveSeason) !== undefined && (
+                            <SeasonSelect
+                                className='controls__season'
+                                variant='compact'
+                                allowAll
+                                seasons={seasons.data?.seasons ?? []}
+                                liveSeason={liveSeason}
+                                value={search.season}
+                                onChange={(season) =>
+                                    onChange({ season: urlSeason(season, liveSeason) })
+                                }
+                            />
+                        )}
                     </ControlGroup>
-                )}
-            </Controls>
-
-            <SeasonNote season={search.season} />
-
-            <div className='stats-controls__sides'>
-                <StatsSides
-                    season={search.season}
-                    seasonQuery={seasonQuery}
-                    a={a}
-                    b={b}
-                    names={names}
-                    onChange={onChange}
-                    onModeA={onModeA}
-                    onModeB={onModeB}
-                    onSwap={onSwap}
-                    onAdd={onAdd}
-                    onLeaveOut={onLeaveOut}
-                    filtersA={focus && split ? loadoutFilters('') : null}
-                    filtersB={focus && split ? loadoutFilters('2') : null}
-                />
-                {/* one choice for both sides' player pickers, so it sits outside them */}
-                {(a.picker === 'player' || b.picker === 'player') && (
-                    <div>
-                        <OldNamesCheckbox />
-                    </div>
-                )}
-            </div>
-
-            {/* the focus (picks tabs) and the options: under one line, like the match filters */}
-            <div className='stats-controls__focus'>
-                {/* one loadout filter for the players counted, unless each side has its own */}
-                {focus && !split && (
-                    <Controls className='stats-controls__loadout'>{loadoutFilters('')}</Controls>
-                )}
-                <div className='stats-controls__map-row'>
-                    {focus && (
-                        <ControlGroup label='Map'>
-                            <MapChip
-                                value={search.map}
-                                options={mapOptions}
-                                onChange={(map) => onChange({ map })}
-                                exclude={{
-                                    items: exMaps,
-                                    max: maxExcluded.maps,
-                                    onChange: (next) => onChange({ exMaps: joinList(next) }),
-                                }}
-                                onClear={() => onChange({ map: undefined, exMaps: undefined })}
+                    {/* a range of seasons: the other end (the same season: just that one) */}
+                    {search.season !== 'all' && from !== undefined && (
+                        <ControlGroup label='To'>
+                            <SeasonSelect
+                                className='controls__season'
+                                variant='compact'
+                                seasons={seasons.data?.seasons ?? []}
+                                liveSeason={liveSeason}
+                                value={search.seasonTo ?? from}
+                                onChange={(to) =>
+                                    onChange({ seasonTo: to === from ? undefined : to })
+                                }
                             />
                         </ControlGroup>
                     )}
-                    <div className='stats-controls__toggles'>
+                </Controls>
+
+                <SeasonNote season={search.season} />
+
+                <div className='stats-controls__sides'>
+                    <StatsSides
+                        season={search.season}
+                        seasonQuery={seasonQuery}
+                        a={a}
+                        b={b}
+                        names={names}
+                        onChange={onChange}
+                        onModeA={onModeA}
+                        onModeB={onModeB}
+                        onSwap={onSwap}
+                        onAdd={onAdd}
+                        onLeaveOut={onLeaveOut}
+                        filtersA={focus && split ? loadoutFilters('') : null}
+                        filtersB={focus && split ? loadoutFilters('2') : null}
+                    />
+                    {/* one choice for both sides' player pickers, so it sits outside them */}
+                    {(a.picker === 'player' || b.picker === 'player') && (
+                        <div>
+                            <OldNamesCheckbox />
+                        </div>
+                    )}
+                </div>
+
+                {/* the focus (picks tabs) and the options: under one line, like the match filters */}
+                <div className='stats-controls__focus'>
+                    {/* one loadout filter for the players counted, unless each side has its own */}
+                    {focus && !split && (
+                        <Controls className='stats-controls__loadout'>
+                            {loadoutFilters('')}
+                        </Controls>
+                    )}
+                    <div className='stats-controls__map-row'>
                         {focus && (
-                            <ControlCheckbox
-                                checked={split}
-                                onChange={(checked) =>
-                                    onChange(
-                                        checked
-                                            ? { sides: true }
-                                            : {
-                                                  sides: undefined,
-                                                  hero2: undefined,
-                                                  towers2: undefined,
-                                                  exHeroes2: undefined,
-                                                  exTowers2: undefined,
-                                              },
-                                    )
-                                }
-                            >
-                                Filter sides separately
-                            </ControlCheckbox>
+                            <ControlGroup label='Map'>
+                                <MapChip
+                                    value={search.map}
+                                    options={mapOptions}
+                                    onChange={(map) => onChange({ map })}
+                                    exclude={{
+                                        items: exMaps,
+                                        max: maxExcluded.maps,
+                                        onChange: (next) => onChange({ exMaps: joinList(next) }),
+                                    }}
+                                    onClear={() => onChange({ map: undefined, exMaps: undefined })}
+                                />
+                            </ControlGroup>
                         )}
-                        <SplitVariants />
-                        {a.mode !== 'player' && b.mode !== 'player' && (
-                            <ControlCheckbox
-                                checked={search.overlap !== false}
-                                onChange={(checked) =>
-                                    onChange({ overlap: checked ? undefined : false })
-                                }
-                            >
-                                Count shared players on both sides
-                            </ControlCheckbox>
-                        )}
-                        {focus && hasFocus && (
-                            <button
-                                type='button'
-                                className='text-link'
-                                onClick={() =>
-                                    onChange({
-                                        map: undefined,
-                                        hero: undefined,
-                                        towers: undefined,
-                                        exHeroes: undefined,
-                                        exTowers: undefined,
-                                        exMaps: undefined,
-                                        hero2: undefined,
-                                        towers2: undefined,
-                                        exHeroes2: undefined,
-                                        exTowers2: undefined,
-                                    })
-                                }
-                            >
-                                Clear map, heroes and towers
-                            </button>
-                        )}
+                        <div className='stats-controls__toggles'>
+                            {focus && (
+                                <ControlCheckbox
+                                    checked={split}
+                                    onChange={(checked) =>
+                                        onChange(
+                                            checked
+                                                ? { sides: true }
+                                                : {
+                                                      sides: undefined,
+                                                      hero2: undefined,
+                                                      towers2: undefined,
+                                                      exHeroes2: undefined,
+                                                      exTowers2: undefined,
+                                                  },
+                                        )
+                                    }
+                                >
+                                    Filter sides separately
+                                </ControlCheckbox>
+                            )}
+                            <SplitVariants />
+                            {a.mode !== 'player' && b.mode !== 'player' && (
+                                <ControlCheckbox
+                                    checked={search.overlap !== false}
+                                    onChange={(checked) =>
+                                        onChange({ overlap: checked ? undefined : false })
+                                    }
+                                >
+                                    Count shared players on both sides
+                                </ControlCheckbox>
+                            )}
+                        </div>
                     </div>
                 </div>
-            </div>
-        </Panel>
+            </Panel>
+
+            {focus && hasFocus && (
+                <button
+                    type='button'
+                    className='text-link'
+                    onClick={() =>
+                        onChange({
+                            list: undefined,
+                            list2: undefined,
+                            not: undefined,
+                            not2: undefined,
+                            map: undefined,
+                            hero: undefined,
+                            towers: undefined,
+                            exHeroes: undefined,
+                            exTowers: undefined,
+                            exMaps: undefined,
+                            hero2: undefined,
+                            towers2: undefined,
+                            exHeroes2: undefined,
+                            exTowers2: undefined,
+                        })
+                    }
+                >
+                    Clear filters
+                </button>
+            )}
+        </>
     );
 }

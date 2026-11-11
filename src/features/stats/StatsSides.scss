@@ -48,6 +48,11 @@
             inline-size: 100%;
             min-inline-size: 0;
         }
+
+        .text-link {
+            margin-block-start: calc(-1 * $space-2xs);
+            font-size: $text-sm;
+        }
     }
 
     // hero and towers of the side, under its players

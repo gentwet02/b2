@@ -5,7 +5,7 @@
     display: flex;
     flex-direction: column;
     flex-wrap: wrap;
-    gap: $space-2xs;
+    gap: $space-xs;
 
     &__selectors,
     &__list {
@@ -15,11 +15,9 @@
         gap: $space-2xs;
     }
 
-    // "Clear", after the selects
     &__clear {
         margin-inline-start: $space-2xs;
         font-size: $text-sm;
-        color: colors.$ink-soft;
     }
 }
 
