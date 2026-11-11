@@ -6,11 +6,12 @@ import { useSplitMaps } from '@/hooks/useSplitVariants';
 import type { Comparison, CompareSideKey } from '@/types/compare';
 import {
     groupName,
+    listName,
+    sameSides,
+    side2Effective,
     sideBounds,
     sideName,
     sidePossessive,
-    side2Effective,
-    sameSides,
     sidesOverlap,
 } from '@/utils/compareTitles';
 import { formatNumber, plural, timeAgo } from '@/utils/format';
@@ -65,17 +66,26 @@ export default function VersusSummary(props: VersusSummaryProps) {
     const groupSides = (['a', 'b'] as const).filter((side) => data[side].mode === 'top');
     const size = groupSides.map((side) => sideBounds(data, side)?.size).find((n) => n != null);
     const shared = sidesOverlap(data);
-    const hasClan = data.a.mode === 'clan' || data.b.mode === 'clan';
-    const bothGroups = [data.a.mode, data.b.mode].every((m) => m === 'top' || m === 'clan');
+    const sides = [data.a, data.b];
+    const hasClan = sides.some((s) => s.mode === 'clan' || s.list?.some((p) => p.mode === 'clan'));
+    const hasList = sides.some((s) => s.mode === 'list');
+    const bothGroups = sides.every((s) => s.mode === 'top' || s.mode === 'clan' || s.mode === 'list');
+    // "All HoM players without Bob and Some Clan."
+    const leftOut = (['a', 'b'] as const).flatMap((side) =>
+        data[side].not?.length
+            ? [`${sideName(data, side)} without ${listName(data[side].not)}.`]
+            : [],
+    );
     const notes = [
+        ...leftOut,
         groupSides.length > 0 &&
             (where
                 ? `${groupSides.map(describe).join(' vs ')}${size != null ? `, of the ${formatNumber(size)} players in its leaderboard` : ''}.`
                 : 'Ranks come from each season’s own leaderboard.'),
         hasClan &&
             'A clan is the HoM players known in it today, in every season, whatever clan they were in then.',
-        // a clan and another group: who they share isn't known here, only the rule
-        hasClan &&
+        // a clan or a list and another group: who they share isn't known here, only the rule
+        (hasClan || hasList) &&
             bothGroups &&
             (data.overlap !== false
                 ? 'A player on both sides counts on both.'
@@ -106,7 +116,8 @@ export default function VersusSummary(props: VersusSummaryProps) {
             value: formatNumber(metA),
             label: `of ${formatNumber(data.players.length)} players played`,
         },
-        (data.b.mode === 'top' || data.b.mode === 'clan') && {
+        data.b.mode !== 'player' &&
+            data.b.mode !== 'anyone' && {
             value: formatNumber(metB),
             label: `of ${formatNumber(data.opponents.length)} opponents met`,
         },

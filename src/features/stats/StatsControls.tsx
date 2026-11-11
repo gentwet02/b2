@@ -1,6 +1,7 @@
 import ControlCheckbox from '@/components/controls/ControlCheckbox';
 import ControlGroup from '@/components/controls/ControlGroup';
 import Controls from '@/components/controls/Controls';
+import OldNamesCheckbox from '@/components/controls/OldNamesCheckbox';
 import MapChip from '@/components/filter-chips/MapChip';
 import Panel from '@/components/panel/Panel';
 import SeasonNote from '@/components/season-note/SeasonNote';
@@ -8,6 +9,7 @@ import SeasonSelect from '@/components/season-select/SeasonSelect';
 import SplitVariants from '@/components/split-variants/SplitVariants';
 import { MAX_EXCLUDED } from '@/config/filters';
 import useSeasons from '@/hooks/queries/useSeasons';
+import type { CompareSideKey } from '@/types/compare';
 import type { MapChipOption } from '@/types/map';
 import type { SeasonQuery } from '@/types/season';
 import type { SideMode, SideState, Stats, StatsSearch } from '@/types/stats';
@@ -33,6 +35,10 @@ interface StatsControlsProps {
     onModeA: (mode: SideMode) => void;
     onModeB: (mode: SideMode) => void;
     onSwap: () => void;
+    /** "+" on a side: its player, clan or range starts a list */
+    onAdd: (side: CompareSideKey) => void;
+    /** "×" on a side: everyone but its player, clan or range */
+    onLeaveOut: (side: CompareSideKey) => void;
 }
 
 /** The season and split options, who is counted against whom, and the focus: map, hero, towers. */
@@ -50,6 +56,8 @@ export default function StatsControls(props: StatsControlsProps) {
         onModeA,
         onModeB,
         onSwap,
+        onAdd,
+        onLeaveOut,
     } = props;
 
     const seasons = useSeasons();
@@ -134,9 +142,17 @@ export default function StatsControls(props: StatsControlsProps) {
                     onModeA={onModeA}
                     onModeB={onModeB}
                     onSwap={onSwap}
+                    onAdd={onAdd}
+                    onLeaveOut={onLeaveOut}
                     filtersA={focus && split ? loadoutFilters('') : null}
                     filtersB={focus && split ? loadoutFilters('2') : null}
                 />
+                {/* one choice for both sides' player pickers, so it sits outside them */}
+                {(a.picker === 'player' || b.picker === 'player') && (
+                    <div>
+                        <OldNamesCheckbox />
+                    </div>
+                )}
             </div>
 
             {/* the focus (picks tabs) and the options: under one line, like the match filters */}

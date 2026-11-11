@@ -63,7 +63,7 @@ select {
 
 ::selection {
     color: colors.$ink;
-    background: colors.with-opacity('banana', 0.6);
+    background: colors.with-opacity('banana', 0.66);
 }
 
 [class^='button'] {

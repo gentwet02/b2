@@ -32,6 +32,8 @@ export default function Stats() {
                 onModeA={page.onModeA}
                 onModeB={page.onModeB}
                 onSwap={page.swap}
+                onAdd={page.addToList}
+                onLeaveOut={page.leaveOut}
             />
 
             {page.waiting ? (

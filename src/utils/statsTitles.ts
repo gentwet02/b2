@@ -1,7 +1,7 @@
 import { previousRange, rangeLabel } from '@/config/ranges';
 import { STATS_PLAYERS_DEFAULT } from '@/config/stats';
 import type { Stats } from '@/types/stats';
-import { clanName, groupName } from '@/utils/compareTitles';
+import { clanName, groupName, listName } from '@/utils/compareTitles';
 import { formatLabel, formatNumber, lowerFirst } from '@/utils/format';
 import { formatHero } from '@/utils/hero';
 import { formatMap } from '@/utils/map';
@@ -13,6 +13,7 @@ export function groupTitle(data: Stats) {
     const against = data.against;
     if (!against) return whoTitle(data);
     if (against.mode === 'clan') return `${whoTitle(data)}, against ${clanName(against)}`;
+    if (against.mode === 'list') return `${whoTitle(data)}, against ${listName(against.list)}`;
     const group = groupName(against, data.season === 'all' ? null : data.seasons[0]?.boundsAgainst);
     // "the top 100", "ranks 26–100", "all HoM players"
     const them =
@@ -28,6 +29,7 @@ function whoTitle(data: Stats) {
     const where = data.season === 'all' ? 'every season' : seasonTitle(data.seasonName);
     if (data.mode === 'player' && data.player) return `${playerLabel(data.player)} in ${where}`;
     if (data.mode === 'clan') return `${clanName(data)} in ${where}`;
+    if (data.mode === 'list') return `${listName(data.list)} in ${where}`;
     const range = data.players ?? STATS_PLAYERS_DEFAULT;
     const label = lowerFirst(rangeLabel(range));
     const bounds = data.season === 'all' ? null : data.seasons[0]?.bounds;

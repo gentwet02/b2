@@ -18,6 +18,7 @@ import { formatNumber } from '@/utils/format';
 import { playerLabel } from '@/utils/player';
 import { formatRecord, gamesOf, recordTitle } from '@/utils/record';
 import { inScope } from '@/utils/season';
+import { playerTag } from '@/utils/sideList';
 import H2hOpponentRow from './H2hOpponentRow';
 
 interface HeadToHeadProps {
@@ -88,8 +89,8 @@ export default function HeadToHead(props: HeadToHeadProps) {
                             <strong title={recordTitle(data.total.record)}>
                                 {formatRecord(data.total.record)}
                             </strong>{' '}
-                            against these players, {formatNumber(totalGames)} games, met {formatNumber(met)} of{' '}
-                            {formatNumber(data.opponents.length)}
+                            against these players, {formatNumber(totalGames)} games, met{' '}
+                            {formatNumber(met)} of {formatNumber(data.opponents.length)}
                         </>
                     )}
                 </H2hSummary>
@@ -141,7 +142,15 @@ export default function HeadToHead(props: HeadToHeadProps) {
                 )}
                 <Link
                     to='/stats'
-                    search={{ season, player: userId, players2: 't10', view: 'opponents', ...split }}
+                    search={{
+                        season,
+                        player: userId,
+                        ...(hasCustom
+                            ? { list2: ids.map(playerTag).join(',') }
+                            : { players2: 't10' }),
+                        view: 'opponents',
+                        ...split,
+                    }}
                     className='button--quiet'
                 >
                     Full head to head

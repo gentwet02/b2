@@ -38,3 +38,8 @@ export const STATS_MODES = [
 
 /** Against, by default: every HoM player (a player in both ranges counts for the first side). */
 export const STATS_AGAINST_DEFAULT: LeaderboardRange = 'all';
+
+/** Players, clans and ranges listed together on one side (btdb2server `config/limits.ts` MAX_SIDE_PARTS). */
+export const STATS_LIST_MAX = 12;
+/** The range a list offers to add first. */
+export const STATS_LIST_RANGE_DEFAULT: LeaderboardRange = 't10';

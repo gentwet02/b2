@@ -97,9 +97,12 @@ export interface CompareSeasonRow {
     lastMet: string | null;
 }
 
-/** Who a side is: one player, a range of each season's leaderboard, a clan, or anyone (side 2). */
+/**
+ * Who a side is: one player, a range of each season's leaderboard, a clan, a list of those
+ * counted together, or anyone (side 2).
+ */
 export interface CompareSideInfo {
-    mode: GroupMode | 'anyone';
+    mode: GroupMode | 'list' | 'anyone';
     userId: string | null;
     name: string | null;
     alias: string | null;
@@ -108,6 +111,10 @@ export interface CompareSideInfo {
     exclude: string | null;
     /** the clan (clan mode) */
     clan?: ClanSideInfo | null | undefined;
+    /** each item, as a side of its own (list mode) */
+    list?: CompareSideInfo[] | undefined;
+    /** the players, clans and ranges the side leaves out (null: nobody) */
+    not?: CompareSideInfo[] | null | undefined;
 }
 
 /** One of the opponents of a head to head card (a player's, or a clan's). */

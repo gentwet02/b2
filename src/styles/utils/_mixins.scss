@@ -33,7 +33,12 @@
     }
 }
 
-@mixin icon-button($size: 1.75rem, $bg: colors.$paper, $hover-bg: colors.$ink, $hover-fg: #fff) {
+@mixin icon-button(
+    $size: 1.75rem,
+    $bg: colors.$paper,
+    $hover-bg: colors.with-opacity('ink', 50%),
+    $hover-fg: #fff
+) {
     display: grid;
     place-items: center;
     flex: none;

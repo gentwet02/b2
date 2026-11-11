@@ -5,8 +5,14 @@
 .stats-controls {
     // the two sides, under a line like the match filters'
     &__sides {
+        display: grid;
+        gap: $space-xs;
         padding-block-start: $space-s;
         border-block-start: 1px solid colors.$line;
+
+        .controls__check {
+            min-block-size: fit-content;
+        }
     }
 
     // under one line like the sides: hero and towers stacked (one filter for the

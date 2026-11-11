@@ -25,13 +25,28 @@ export function groupName(side: CompareSideInfo, bounds?: RankBounds | null) {
 }
 
 /** A clan side's name. */
-export const clanName = (side: Pick<CompareSideInfo, 'clan'>) =>
-    side.clan?.name ?? 'Unknown clan';
+export const clanName = (side: Pick<CompareSideInfo, 'clan'>) => side.clan?.name ?? 'Unknown clan';
 
-/** What a side is called: the player's name, the clan's, its range, or "Anyone". */
+/** A list's name: "Player, Some Clan and Top 10", "..., ... and 8 more". */
+export function listName(list: CompareSideInfo[] | null | undefined) {
+    const names = (list ?? []).map((part) =>
+        part.mode === 'clan'
+            ? clanName(part)
+            : part.mode === 'player'
+              ? playerLabel(part, 'Unknown player')
+              : groupName(part),
+    );
+    if (names.length > 3) return `${names.slice(0, 2).join(', ')} and ${names.length - 2} more`;
+    return names.length > 1
+        ? `${names.slice(0, -1).join(', ')} and ${names.at(-1)}`
+        : (names[0] ?? 'Nobody');
+}
+
+/** What a side is called: the player's name, the clan's, its range, its list, or "Anyone". */
 export function sideName(data: Comparison, key: CompareSideKey) {
     const side = data[key];
     if (side.mode === 'anyone') return 'Anyone';
+    if (side.mode === 'list') return listName(side.list);
     if (side.mode === 'clan') return clanName(side);
     if (side.mode === 'player') {
         const member = (key === 'a' ? data.players : data.opponents)[0];
@@ -42,6 +57,8 @@ export function sideName(data: Comparison, key: CompareSideKey) {
 
 /** "Bob’s", "Some Clan’s", or the range as is: "Top 10" (to put before a noun). */
 export function sidePossessive(data: Comparison, key: CompareSideKey) {
+    // a list's name is too long to carry an ’s
+    if (data[key].mode === 'list') return key === 'a' ? 'Players’' : 'Opponents’';
     return data[key].mode === 'player' || data[key].mode === 'clan'
         ? `${sideName(data, key)}’s`
         : data[key].mode === 'anyone'

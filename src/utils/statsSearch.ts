@@ -1,7 +1,8 @@
 import { MATCH_SORT_DEFAULT, MATCH_SORTS } from '@/config/match';
-import { LEADERBOARD_RANGES, parseExclude } from '@/config/ranges';
+import { LEADERBOARD_RANGES, parseExclude, validExclude } from '@/config/ranges';
 import {
     STATS_AGAINST_DEFAULT,
+    STATS_LIST_MAX,
     STATS_MAX_TOWERS,
     STATS_MIN_DEFAULT,
     STATS_MIN_GAMES,
@@ -18,6 +19,7 @@ import type { SeasonQuery } from '@/types/season';
 import type { SideState, StatsParams, StatsSearch, StatsView } from '@/types/stats';
 import { groupName } from '@/utils/compareTitles';
 import {
+    joinList,
     parseClanId,
     parseExclusions,
     parseFlag,
@@ -30,22 +32,38 @@ import {
     parseUserId,
     splitList,
 } from '@/utils/search';
+import { clanTag, listsRange, parseSideList, playerTag, rangeTag } from '@/utils/sideList';
 
 const RANGES = LEADERBOARD_RANGES.map((r) => r.value);
 
 /**
  * The /stats URL, read. Every rule of the page's URL lives here: defaults are left out,
  * a range's `exclude` must be a smaller range, a player or a clan can't play themselves, a side
- * is one player before a clan and a clan before a range, the opponent's loadout only goes
- * with `sides`... The route runs it on the URL it opens and, through its search
+ * is a list before one player, one player before a clan and a clan before a range, the
+ * opponent's loadout only goes with `sides`... The route runs it on the URL it opens and, through its search
  * middleware, on every link and navigation to the page, so a change only gives what changes.
  */
 export function parseStatsSearch(search: Record<string, unknown>): StatsSearch {
     const sides = parseFlag(search.sides);
-    const player = parseUserId(search.player);
-    const clan = player ? undefined : parseClanId(search.clan);
+    // several players, clans and ranges together: instead of the side's one
+    const given = parseSideList(search.list, STATS_LIST_MAX);
+    const player = given ? undefined : parseUserId(search.player);
+    // who a side leaves out: nobody to take out of one player
+    const leftOut = player
+        ? undefined
+        : parseSideList(search.not, STATS_LIST_MAX, { everyone: false });
+    // players left out of one clan or range: a list of that one
+    const listed =
+        given ??
+        (leftOut &&
+            impliedList(search.clan, search.players, search.exclude, STATS_PLAYERS_DEFAULT));
+    const clan = player || listed ? undefined : parseClanId(search.clan);
+    // the other side's one player or clan isn't in a list
+    const given2 = parseSideList(search.list2, STATS_LIST_MAX, {
+        skip: player ? playerTag(player) : clan ? clanTag(clan) : undefined,
+    });
     const players =
-        player || clan
+        player || clan || listed
             ? undefined
             : parseOption(
                   search.players != null ? String(search.players) : undefined,
@@ -53,12 +71,24 @@ export function parseStatsSearch(search: Record<string, unknown>): StatsSearch {
                   STATS_PLAYERS_DEFAULT,
               );
     // who they played: one player, a clan, or a range
-    const second = parseUserId(search.player2);
+    const second = given2 ? undefined : parseUserId(search.player2);
     const player2 = second === player ? undefined : second;
-    const secondClan = player2 ? undefined : parseClanId(search.clan2);
+    const leftOut2 = player2
+        ? undefined
+        : parseSideList(search.not2, STATS_LIST_MAX, { everyone: false });
+    const list2 =
+        given2 ??
+        (leftOut2 &&
+            impliedList(search.clan2, search.players2, search.exclude2, STATS_AGAINST_DEFAULT));
+    const secondClan = player2 || list2 ? undefined : parseClanId(search.clan2);
     const clan2 = secondClan === clan ? undefined : secondClan;
+    const list =
+        listed &&
+        parseSideList(listed, STATS_LIST_MAX, {
+            skip: player2 ? playerTag(player2) : clan2 ? clanTag(clan2) : undefined,
+        });
     const players2 =
-        player2 || clan2
+        player2 || clan2 || list2
             ? undefined
             : parseOption(
                   search.players2 != null ? String(search.players2) : undefined,
@@ -76,16 +106,20 @@ export function parseStatsSearch(search: Record<string, unknown>): StatsSearch {
         clan,
         players,
         exclude:
-            player || clan
+            player || clan || listed
                 ? undefined
                 : parseExclude(players ?? STATS_PLAYERS_DEFAULT, search.exclude, search.band),
+        list,
+        not: list ? leftOut : undefined,
         player2,
         clan2,
         players2,
         exclude2:
-            player2 || clan2
+            player2 || clan2 || list2
                 ? undefined
                 : parseExclude(players2 ?? STATS_AGAINST_DEFAULT, search.exclude2, undefined),
+        list2,
+        not2: list2 ? leftOut2 : undefined,
         map: parseMapKey(search.map),
         hero: parseHeroPick(search.hero),
         towers: parseTowerList(search.towers, 130),
@@ -115,6 +149,17 @@ export function parseStatsSearch(search: Record<string, unknown>): StatsSearch {
 }
 
 /**
+ * Players left out of a side that is one clan or one range: the list that clan or range
+ * makes alone (the default range without either), so the side is a list like any other.
+ */
+function impliedList(clan: unknown, players: unknown, exclude: unknown, fallback: string) {
+    const clanId = parseClanId(clan);
+    if (clanId) return clanTag(clanId);
+    const range = RANGES.find((r) => r === String(players)) ?? fallback;
+    return rangeTag(range, validExclude(range, exclude));
+}
+
+/**
  * What each side is picking: "One player" or "Clan" chosen, the player or clan not yet
  * (false: nothing).
  */
@@ -129,22 +174,66 @@ const sideMode = (
 
 /** Both sides, defaults filled in. */
 export function statsSides(search: StatsSearch, picking: Picking) {
+    const pickerA = sideMode(search.player, search.clan, picking.a);
+    const listA = splitList(search.list);
     const a: SideState = {
-        mode: sideMode(search.player, search.clan, picking.a),
+        mode: listA.length ? 'list' : pickerA,
+        picker: pickerA,
         player: search.player,
         clan: search.clan,
         range: search.players ?? STATS_PLAYERS_DEFAULT,
         exclude: search.exclude,
+        list: listA,
+        not: splitList(search.not),
     };
+    const pickerB = sideMode(search.player2, search.clan2, picking.b);
+    const listB = splitList(search.list2);
     const b: SideState = {
-        mode: sideMode(search.player2, search.clan2, picking.b),
+        mode: listB.length ? 'list' : pickerB,
+        picker: pickerB,
         player: search.player2,
         clan: search.clan2,
         range: search.players2 ?? STATS_AGAINST_DEFAULT,
         exclude: search.exclude2,
+        list: listB,
+        not: splitList(search.not2),
     };
     return { a, b };
 }
+
+/** What a side is, as a list's first tag: its player, its clan (once picked) or its range. */
+export function sideOwnTag(side: SideState) {
+    if (side.mode === 'list') return undefined;
+    if (side.mode === 'player') return side.player && playerTag(side.player);
+    if (side.mode === 'clan') return side.clan && clanTag(side.clan);
+    return rangeTag(side.range, side.exclude);
+}
+
+/** "+": the side's player, clan or range becomes a list of one, its picker free for another. */
+export function listedSearch(key: CompareSideKey, tag: string): Partial<StatsSearch> {
+    return key === 'a'
+        ? { list: tag, player: undefined, clan: undefined, players: undefined, exclude: undefined }
+        : {
+              list2: tag,
+              player2: undefined,
+              clan2: undefined,
+              players2: undefined,
+              exclude2: undefined,
+          };
+}
+
+/**
+ * "×": the side's player, clan or range is left out of everyone, "All HoM players" the
+ * list's first tag.
+ */
+export function leftOutSearch(key: CompareSideKey, tag: string): Partial<StatsSearch> {
+    const everyone = listedSearch(key, rangeTag('all'));
+    return key === 'a' ? { ...everyone, not: tag } : { ...everyone, not2: tag };
+}
+
+/** No range on the side: few enough games to list them (the server's rule). */
+const isPicked = (side: SideState) =>
+    side.mode === 'list' ? !listsRange(side.list) : side.mode !== 'top';
 
 /** What a side still needs before anything can be asked: its player or its clan. */
 export function sideMissing(side: SideState) {
@@ -190,8 +279,9 @@ export function isFocused(search: StatsSearch) {
     );
 }
 
-/** A players tab's name: "Top 25 players", "All HoM players", "Clan members". */
+/** A players tab's name: "Top 25 players", "All HoM players", "Clan members", "Listed players". */
 function groupTab(side: SideState) {
+    if (side.mode === 'list') return 'Listed players';
     return side.mode === 'clan' ? 'Clan members' : rangeTab(side.range, side.exclude);
 }
 
@@ -240,10 +330,8 @@ export function statsTabs(a: SideState, b: SideState, search: StatsSearch): Stat
         ...(groupB && !sameRange
             ? [{ value: 'opponents' as const, label: twin ? `Against: ${tabB}` : tabB }]
             : []),
-        // two ranges: too many games for a list
-        ...(a.mode !== 'top' || b.mode !== 'top'
-            ? [{ value: 'games' as const, label: 'Games' }]
-            : []),
+        // a range on both sides: too many games for a list
+        ...(isPicked(a) || isPicked(b) ? [{ value: 'games' as const, label: 'Games' }] : []),
     ];
     // a link to the opponents' table lands on the one table there is
     const asked =
@@ -265,10 +353,14 @@ export function statsParamsOf(
         clan: search.clan,
         players: a.range,
         exclude: search.exclude,
+        list: search.list,
+        not: search.not,
         player2: search.player2,
         clan2: search.clan2,
         players2: b.range,
         exclude2: search.exclude2,
+        list2: search.list2,
+        not2: search.not2,
         map: search.map,
         hero: search.hero,
         towers: focusedTowers(search),
@@ -286,9 +378,11 @@ export function statsParamsOf(
 }
 
 function compareSide(side: SideState): CompareSideParams {
-    if (side.player) return { player: side.player };
-    if (side.clan) return { clan: side.clan };
-    return { range: side.range, exclude: side.exclude };
+    if (side.mode !== 'list' && side.player) return { player: side.player };
+    const not = joinList(side.not);
+    if (side.list.length) return { list: side.list.join(','), not };
+    if (side.clan) return { clan: side.clan, not };
+    return { range: side.range, exclude: side.exclude, not };
 }
 
 /** What /compare is asked: the same sides and filters. */
@@ -329,10 +423,14 @@ export function swappedSearch(
         clan: search.clan2,
         players: b.range,
         exclude: search.exclude2,
+        list: search.list2,
+        not: search.not2,
         player2: search.player,
         clan2: search.clan,
         players2: a.range,
         exclude2: search.exclude,
+        list2: search.list,
+        not2: search.not,
         ...(search.sides && {
             hero: search.hero2,
             towers: search.towers2,
@@ -349,6 +447,20 @@ export function swappedSearch(
 /** One player of a side's table alone takes the place of their side. */
 export function drilledSearch(side: CompareSideKey, userId: string): Partial<StatsSearch> {
     return side === 'a'
-        ? { player: userId, clan: undefined, players: undefined, exclude: undefined }
-        : { player2: userId, clan2: undefined, players2: undefined, exclude2: undefined };
+        ? {
+              player: userId,
+              clan: undefined,
+              players: undefined,
+              exclude: undefined,
+              list: undefined,
+              not: undefined,
+          }
+        : {
+              player2: userId,
+              clan2: undefined,
+              players2: undefined,
+              exclude2: undefined,
+              list2: undefined,
+              not2: undefined,
+          };
 }

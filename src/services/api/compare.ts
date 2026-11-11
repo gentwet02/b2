@@ -3,12 +3,20 @@ import type { CompareGamesPage, Comparison, HeadToHead, SideOpponents } from '@/
 import type { MatchSort } from '@/types/match';
 import type { SeasonQuery, SeasonScope } from '@/types/season';
 
-/** One side: a player, a clan, a range (and a smaller one left out), or anyone (side 2). */
-export type CompareSideParams =
+/**
+ * One side: a player, a clan, a range (and a smaller one left out), a list of those as the
+ * URL's tags ("p:<id>,r:t10"), or anyone (side 2).
+ */
+export type CompareSideParams = (
+    | { list: string }
     | { player: string }
     | { clan: string }
     | { range: string; exclude?: string | undefined }
-    | { anyone: true };
+    | { anyone: true }
+) & {
+    /** the players, clans and ranges left out, as tags too (not of one player, nor of anyone) */
+    not?: string | undefined;
+};
 
 /** A side that is picked: one player or one clan. */
 export type MetSideParams = { player: string } | { clan: string };
@@ -25,11 +33,17 @@ export interface CompareParams {
 
 /** A side with nothing empty in it. */
 function normalizeSide(side: CompareSideParams): CompareSideParams {
-    return 'player' in side || 'clan' in side || 'anyone' in side
-        ? side
-        : side.exclude
-          ? { range: side.range, exclude: side.exclude }
-          : { range: side.range };
+    if ('player' in side) return { player: side.player };
+    if ('anyone' in side) return { anyone: true };
+    const own =
+        'list' in side
+            ? { list: side.list }
+            : 'clan' in side
+              ? { clan: side.clan }
+              : side.exclude
+                ? { range: side.range, exclude: side.exclude }
+                : { range: side.range };
+    return side.not ? { ...own, not: side.not } : own;
 }
 
 /**
@@ -48,6 +62,11 @@ export function normalizeCompareParams({ season, a, b, overlap, filters }: Compa
 }
 
 function sideQuery(side: CompareSideParams, suffix: '' | '2') {
+    return { ...ownQuery(side, suffix), [`not${suffix}`]: side.not };
+}
+
+function ownQuery(side: CompareSideParams, suffix: '' | '2') {
+    if ('list' in side) return { [`list${suffix}`]: side.list };
     if ('player' in side) return { [`player${suffix}`]: side.player };
     if ('clan' in side) return { [`clan${suffix}`]: side.clan };
     if ('anyone' in side) return {};

@@ -10,13 +10,17 @@ import type { ClanSideInfo } from '@/types/clan';
 import type { CompareSideKey } from '@/types/compare';
 import type { SideMode, StatsSearch, StatsViewState } from '@/types/stats';
 import { playerLabel } from '@/utils/player';
+import { isEveryone } from '@/utils/sideList';
 import {
     compareParamsOf,
     drilledSearch,
     focusedTowers,
     isFocused,
     isLoadoutFiltered,
+    leftOutSearch,
+    listedSearch,
     sideMissing,
+    sideOwnTag,
     statsParamsOf,
     statsSeasonQuery,
     statsSides,
@@ -32,6 +36,9 @@ interface NamedPlayer {
     name?: string | null;
     alias?: string | null;
     clan?: ClanSideInfo | null | undefined;
+    /** a list's players and clans, and the ones left out */
+    list?: NamedPlayer[] | null | undefined;
+    not?: NamedPlayer[] | null | undefined;
 }
 
 /**
@@ -94,15 +101,22 @@ export default function useStatsPage() {
         });
     }
 
+    /** A list keeps what it holds: the mode only says what its picker adds next. */
+    function pickNext(key: CompareSideKey, mode: SideMode) {
+        setPicking((p) => ({ ...p, [key]: mode === 'top' ? false : mode }));
+    }
+
     function onModeA(mode: SideMode) {
-        if (mode === a.mode) return;
+        if (mode === a.picker) return;
+        if (a.mode === 'list') return pickNext('a', mode);
         // picking set after update, which resets it
         update({ player: undefined, clan: undefined });
         if (mode !== 'top') setPicking((p) => ({ ...p, a: mode }));
     }
 
     function onModeB(mode: SideMode) {
-        if (mode === b.mode) return;
+        if (mode === b.picker) return;
+        if (b.mode === 'list') return pickNext('b', mode);
         // side 1 picked: the player or the clan it met most, right away
         const first =
             mode === 'player' ? met.data?.opponents[0]?.userId : met.data?.clans[0]?.id;
@@ -126,6 +140,25 @@ export default function useStatsPage() {
 
     const drill = (side: CompareSideKey, userId: string) => update(drilledSearch(side, userId));
 
+    /** "+": the side's player, clan or range becomes a list of one, ready for another. */
+    function addToList(key: CompareSideKey) {
+        const side = key === 'a' ? a : b;
+        const tag = sideOwnTag(side);
+        if (!tag) return;
+        update(listedSearch(key, tag));
+        // after update, which resets it: the next one is picked the same way
+        pickNext(key, side.picker);
+    }
+
+    /** "×": everyone but the side's player, clan or range, as a list to add to. */
+    function leaveOut(key: CompareSideKey) {
+        const side = key === 'a' ? a : b;
+        const tag = sideOwnTag(side);
+        if (!tag || isEveryone(tag)) return;
+        update(leftOutSearch(key, tag));
+        pickNext(key, side.picker);
+    }
+
     // names of the players and clans picked, by id, for the pickers when they aren't in
     // their lists
     const names = useMemo(() => {
@@ -133,9 +166,18 @@ export default function useStatsPage() {
         function add(p: NamedPlayer | null | undefined) {
             if (p?.userId && (p.name || p.alias)) out[p.userId] = playerLabel(p);
             if (p?.clan?.name) out[p.clan.id] = p.clan.name;
+            p?.list?.forEach(add);
+            p?.not?.forEach(add);
         }
         add(stats.data?.player);
-        add(stats.data && { userId: null, clan: stats.data.clan });
+        add(
+            stats.data && {
+                userId: null,
+                clan: stats.data.clan,
+                list: stats.data.list,
+                not: stats.data.not,
+            },
+        );
         add(stats.data?.against);
         add(comparison.data?.a);
         add(comparison.data?.b);
@@ -175,5 +217,7 @@ export default function useStatsPage() {
         onModeB,
         swap,
         drill,
+        addToList,
+        leaveOut,
     };
 }

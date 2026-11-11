@@ -15,13 +15,34 @@ export type StatsView = 'heroes' | 'towers' | 'loadouts' | 'maps' | 'players' | 
 /** What a side is: a range of each leaderboard, one player, or a clan. */
 export type SideMode = GroupMode;
 
+/** One item of a side's list: a player, a clan, or a range of each leaderboard. */
+export type SideItem =
+    | { kind: 'player'; id: string }
+    | { kind: 'clan'; id: string }
+    | { kind: 'top'; range: string; exclude: string | undefined };
+
+/** What a list's picker holds until it is counted ("+") or left out ("×"). */
+export interface SideDraft {
+    player?: string | undefined;
+    clan?: string | undefined;
+    range: string;
+    exclude: string | undefined;
+}
+
 /** What a side shows, defaults filled in. */
 export interface SideState {
-    mode: SideMode;
+    /** what the side is; 'list': several players, clans and ranges together */
+    mode: SideMode | 'list';
+    /** the picker shown: the side's own mode, or what a list adds next */
+    picker: SideMode;
     player: string | undefined;
     clan: string | undefined;
     range: string;
     exclude: string | undefined;
+    /** the list's tags, "p:<id>", "c:<id>", "r:t50-t10" (none: one player, clan or range) */
+    list: string[];
+    /** the tags left out of the list (none without a list) */
+    not: string[];
 }
 
 /** A hero base, a tower, a loadout key ("Quincy|Alchemist,Druid,Ninja") or a map key. */
@@ -41,7 +62,7 @@ export interface StatsOption {
 export interface Stats extends BaseApiResponse {
     season: SeasonScope;
     seasonName: string;
-    mode: GroupMode;
+    mode: GroupMode | 'list';
     /** leaderboard range (top mode) */
     players: string | null;
     /** the smaller range left out at the top */
@@ -50,6 +71,10 @@ export interface Stats extends BaseApiResponse {
     player: { userId: string; name: string | null; alias: string | null } | null;
     /** side 1's clan (clan mode) */
     clan?: ClanSideInfo | null;
+    /** side 1's players, clans and ranges (list mode) */
+    list?: CompareSideInfo[] | null;
+    /** who side 1 leaves out (null: nobody) */
+    not?: CompareSideInfo[] | null;
     /** a player in both ranges counts on both sides */
     overlap?: boolean;
     /** only the games against them; null: anyone (older servers: missing) */
@@ -120,11 +145,17 @@ export interface StatsParams {
     clan?: string | undefined;
     players?: string | undefined;
     exclude?: string | undefined;
+    /** several players, clans and ranges together, as the URL's tags */
+    list?: string | undefined;
+    /** the players, clans and ranges left out, as the URL's tags */
+    not?: string | undefined;
     /** who they played: one player, a clan, or a range (none: anyone) */
     player2?: string | undefined;
     clan2?: string | undefined;
     players2?: string | undefined;
     exclude2?: string | undefined;
+    list2?: string | undefined;
+    not2?: string | undefined;
     map?: string | undefined;
     hero?: string | undefined;
     towers?: string[] | undefined;
@@ -156,6 +187,13 @@ export interface StatsSearch extends SplitSearch {
     players?: string | undefined;
     /** a smaller range left out at the top */
     exclude?: string | undefined;
+    /**
+     * or several players, clans and ranges counted together: "p:<id>,c:<id>,r:t50-t10"
+     * (it goes before the three above)
+     */
+    list?: string | undefined;
+    /** players, clans and ranges left out of the list: "p:<id>,r:t10" (never a bare "r:all") */
+    not?: string | undefined;
     /** only their games against one player… */
     player2?: string | undefined;
     /** …or against a clan… */
@@ -163,6 +201,9 @@ export interface StatsSearch extends SplitSearch {
     /** …or against a range of each leaderboard (default: every HoM player) */
     players2?: string | undefined;
     exclude2?: string | undefined;
+    /** …or against several of those together */
+    list2?: string | undefined;
+    not2?: string | undefined;
     /** "oasis" (both versions), "oasis:classic" or "oasis:reversed" */
     map?: string | undefined;
     /** "Quincy" (any variant) or "Quincy:Quincy_Cyber" */
