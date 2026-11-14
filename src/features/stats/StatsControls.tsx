@@ -141,7 +141,6 @@ export default function StatsControls(props: StatsControlsProps) {
 
                 <div className='stats-controls__sides'>
                     <StatsSides
-                        season={search.season}
                         seasonQuery={seasonQuery}
                         a={a}
                         b={b}

@@ -3,6 +3,7 @@ import { PLAYER_TAG_LABELS, TAG_SEARCH_MIN_LENGTH } from '@/config/player';
 import type { DropdownKeyword } from '@/types/dropdown';
 import type { PlayerTag } from '@/types/player';
 import { formatNumber } from '@/utils/format';
+import { seasonLabel } from '@/utils/season';
 
 /** NK's profile URL → the player's id. */
 export function extractUserId(profileUrl: string): string {
@@ -133,5 +134,8 @@ export function matchedKeyword(
     return keywords.find((k) => keywordHit(k, needle));
 }
 
-/** "#3 Bob (Alias)", for leaderboard player pickers. */
-export const rankedLabel = (p: Named & { rank: number }) => `#${formatNumber(p.rank)} ${nameWithAlias(p)}`;
+/** "#3 Bob (Alias)", for leaderboard player pickers; "#3 Bob · Season 40" from a past season. */
+export function rankedLabel(p: Named & { rank: number; seasonId?: number | undefined }) {
+    const label = `#${formatNumber(p.rank)} ${nameWithAlias(p)}`;
+    return p.seasonId === undefined ? label : `${label} · ${seasonLabel(p.seasonId)}`;
+}

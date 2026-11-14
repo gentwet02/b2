@@ -20,6 +20,12 @@ export interface RankedPlayer extends LeaderboardPlayer {
     rank: number;
 }
 
+/** A player of several seasons' leaderboards, at the newest one they ranked in. */
+export interface SeasonsPlayer extends RankedPlayer {
+    /** that season, when it isn't the newest one counted (the rank is that season's) */
+    seasonId?: number;
+}
+
 /**
  * The server's compact player: i = id, r = alias, t = tag, n = name, d = in HoM flag + score,
  * o = old names, c = current name (when it isn't n)

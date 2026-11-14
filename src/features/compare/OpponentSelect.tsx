@@ -3,14 +3,14 @@ import Dropdown from '@/components/dropdown/Dropdown';
 import useOldNamesSearch from '@/hooks/useOldNamesSearch';
 import type { OpponentSlot } from '@/types/compare';
 import type { DropdownItem } from '@/types/dropdown';
-import type { RankedPlayer } from '@/types/leaderboard';
+import type { SeasonsPlayer } from '@/types/leaderboard';
 import { bem } from '@/utils/className';
 import { playerKeywords, rankedLabel } from '@/utils/player';
 
 interface OpponentSelectProps {
     slot: OpponentSlot;
-    /** leaderboard the options come from */
-    players: RankedPlayer[];
+    /** leaderboard players the options come from (several seasons' for "all seasons") */
+    players: SeasonsPlayer[];
     /** the profile player and the other slots: not offered */
     taken: Set<string>;
     /** name of the slot's player when they aren't in the leaderboard */
@@ -29,7 +29,7 @@ export default function OpponentSelect(props: OpponentSelectProps) {
             .map((p) => ({
                 value: p.id,
                 label: rankedLabel(p),
-                searchLabel: rankedLabel({ ...p, tag: null }),
+                searchLabel: rankedLabel({ ...p, tag: null, seasonId: undefined }),
                 keywords: playerKeywords(p, p.id, oldNames),
             }));
         // a pick from another season's leaderboard still needs a label

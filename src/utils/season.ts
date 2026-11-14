@@ -1,6 +1,7 @@
 import { INCOMPLETE_SEASON_NUMBERS, UNFILTERED_SEASON_NUMBERS } from '@/config/seasons';
+import type { InfoResponse } from '@/types/info';
 import type { MatchesPage } from '@/types/match';
-import type { SeasonScope, SeasonSummary } from '@/types/season';
+import type { SeasonQuery, SeasonScope, SeasonSummary } from '@/types/season';
 
 export const seasonLabel = (seasonId: number) => `Season ${seasonId + 1}`;
 
@@ -65,4 +66,30 @@ export function seasonOptions(seasons: SeasonSummary[]) {
         value: s.id,
         label: `${seasonLabel(s.id)}${s.live ? ' (live)' : ''}`,
     }));
+}
+
+/**
+ * The season ids a query counts, newest first: the live one without a query, and for "all"
+ * the seasons since the first one with recorded games.
+ */
+export function seasonIdsOf(query: SeasonQuery | undefined, info: InfoResponse | undefined) {
+    if (!info) return [];
+    const live = info.liveSeason;
+    if (query === undefined) return [live];
+    if (typeof query === 'number') return [query];
+    const known = new Set((info.seasons ?? []).map((s) => s.id));
+    let from: number;
+    let to = live;
+    if (query === 'all') {
+        from = info.firstRecordedSeason ?? (known.size ? Math.min(...known) : live);
+    } else {
+        const [a, b] = query.split('-').map(Number) as [number, number];
+        from = Math.min(a, b);
+        to = Math.min(Math.max(a, b), live);
+    }
+    const ids: number[] = [];
+    for (let id = to; id >= from; id--) {
+        if (!known.size || known.has(id)) ids.push(id);
+    }
+    return ids;
 }

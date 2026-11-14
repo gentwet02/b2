@@ -5,12 +5,11 @@ import Dropdown from '@/components/dropdown/Dropdown';
 import { SwapIcon } from '@/components/icons';
 import SegmentedControl from '@/components/segmented-control/SegmentedControl';
 import { STATS_LIST_MAX, STATS_LIST_RANGE_DEFAULT, STATS_MODES } from '@/config/stats';
-import useRankedPlayers from '@/hooks/queries/useRankedPlayers';
-import useSeasons from '@/hooks/queries/useSeasons';
+import useSeasonsPlayers from '@/hooks/queries/useSeasonsPlayers';
 import useSideOpponents from '@/hooks/queries/useSideOpponents';
 import useOldNamesSearch from '@/hooks/useOldNamesSearch';
 import type { CompareSideKey } from '@/types/compare';
-import type { SeasonQuery, SeasonScope } from '@/types/season';
+import type { SeasonQuery } from '@/types/season';
 import type { SideDraft, SideMode, SideState, StatsSearch } from '@/types/stats';
 import { formatNumber, plural } from '@/utils/format';
 import { nameWithAlias, playerKeywords, rankedLabel } from '@/utils/player';
@@ -24,9 +23,7 @@ import SideRange from './SideRange';
 import SideTags from './SideTags';
 
 interface StatsSidesProps {
-    /** the season picked (whose leaderboard the player pickers list) */
-    season: SeasonScope | undefined;
-    /** the seasons counted (a range too), for the players met */
+    /** the seasons counted (a range too): the player pickers list their leaderboards */
     seasonQuery: SeasonQuery | undefined;
     a: SideState;
     b: SideState;
@@ -61,7 +58,6 @@ const NO_DRAFT: SideDraft = { range: STATS_LIST_RANGE_DEFAULT, exclude: undefine
  */
 export default function StatsSides(props: StatsSidesProps) {
     const {
-        season,
         seasonQuery,
         a,
         b,
@@ -76,20 +72,14 @@ export default function StatsSides(props: StatsSidesProps) {
         filtersB,
     } = props;
 
-    const seasons = useSeasons();
-    const liveSeason = seasons.data?.liveSeason;
-    // one player: pick among the season's leaderboard (the live one for "all seasons")
-    const boardSeason = typeof season === 'number' ? season : liveSeason;
     // side 1 picked (a player or a clan): side 2 only offers who it met
     const picked = useMemo(
         () => (a.player ? { player: a.player } : a.clan ? { clan: a.clan } : null),
         [a.player, a.clan],
     );
     const pickFromBoard = b.picker === 'player' && !picked;
-    const ranked = useRankedPlayers(
-        a.picker === 'player' || pickFromBoard ? boardSeason : undefined,
-        boardSeason === liveSeason,
-    );
+    // one player: pick among the leaderboards of every season counted
+    const ranked = useSeasonsPlayers(seasonQuery, a.picker === 'player' || pickFromBoard);
     // the players and clans side 1 met, with the record
     const met = useSideOpponents(b.picker === 'top' ? null : picked, seasonQuery);
 
@@ -179,7 +169,7 @@ export default function StatsSides(props: StatsSidesProps) {
             .map((p) => ({
                 value: p.id,
                 label: rankedLabel(p),
-                searchLabel: rankedLabel({ ...p, tag: null }),
+                searchLabel: rankedLabel({ ...p, tag: null, seasonId: undefined }),
                 keywords: playerKeywords(p, p.id, oldNames),
             }));
         if (a.player && !list.some((o) => o.value === a.player)) {
@@ -205,7 +195,7 @@ export default function StatsSides(props: StatsSidesProps) {
                   .map((p) => ({
                       value: p.id,
                       label: rankedLabel(p),
-                      searchLabel: rankedLabel({ ...p, tag: null }),
+                      searchLabel: rankedLabel({ ...p, tag: null, seasonId: undefined }),
                       keywords: playerKeywords(p, p.id, oldNames),
                   }));
         if (b.player && !list.some((o) => o.value === b.player)) {
@@ -227,7 +217,7 @@ export default function StatsSides(props: StatsSidesProps) {
           }
         : {
               loading: ranked.isLoading,
-              placeholder: ranked.isLoading ? 'Loading the leaderboard…' : 'Pick a player',
+              placeholder: ranked.isLoading ? 'Loading the leaderboards…' : 'Pick a player',
               noResults: 'No player with that name',
           };
 
@@ -256,7 +246,7 @@ export default function StatsSides(props: StatsSidesProps) {
                                 searchable
                                 disabled={ranked.isLoading && !a.player}
                                 placeholder={
-                                    ranked.isLoading ? 'Loading the leaderboard…' : 'Pick a player'
+                                    ranked.isLoading ? 'Loading the leaderboards…' : 'Pick a player'
                                 }
                                 aria-label='Player'
                                 noResultsText='No player with that name'

@@ -2,6 +2,7 @@ import { useMemo } from 'react';
 import { COMPARE_SLOTS } from '@/config/compare';
 import useRankedPlayers from '@/hooks/queries/useRankedPlayers';
 import useSeasons from '@/hooks/queries/useSeasons';
+import useSeasonsPlayers from '@/hooks/queries/useSeasonsPlayers';
 import useCompareSlots, { resetCompareSlots, setCompareSlot } from '@/hooks/useCompareSlots';
 import type { OpponentSlot } from '@/types/compare';
 import type { SeasonScope } from '@/types/season';
@@ -9,7 +10,8 @@ import { fillSlots } from '@/utils/slots';
 
 /**
  * The 10 opponents of a profile: the season's top 10 (the profile player left out),
- * where every slot the visitor replaced shows their pick instead.
+ * where every slot the visitor replaced shows their pick instead. The picks come from every
+ * season counted ("all seasons": every leaderboard).
  */
 export default function useOpponentSlots(userId: string, season?: SeasonScope) {
     const seasons = useSeasons();
@@ -17,6 +19,7 @@ export default function useOpponentSlots(userId: string, season?: SeasonScope) {
     // "all seasons" uses the live leaderboard
     const boardSeason = typeof season === 'number' ? season : liveSeason;
     const board = useRankedPlayers(boardSeason, boardSeason === liveSeason);
+    const pickable = useSeasonsPlayers(season);
     const overrides = useCompareSlots();
 
     const slots = useMemo<OpponentSlot[]>(() => {
@@ -27,7 +30,7 @@ export default function useOpponentSlots(userId: string, season?: SeasonScope) {
     return {
         slots,
         ids: slots.map((s) => s.id),
-        players: board.players,
+        players: pickable.players,
         /** slots can be built (or the leaderboard failed: let the server pick) */
         ready: slots.length > 0 || !!board.error,
         setSlot: setCompareSlot,
