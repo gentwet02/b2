@@ -68,7 +68,7 @@ export default function ProfileHero(props: ProfileHeroProps) {
                         )}
                     </div>
                     {knownAs && <p className='profile-hero__alias'>Known as {knownAs}</p>}
-                    {oldNames && oldNames.length > 0 && <OldNames names={oldNames} />}
+                    {oldNames && oldNames.length > 1 && <OldNames names={oldNames} />}
                     {title && <p className='profile-hero__title'>{formatLabel(title)}</p>}
                     {badges.length > 0 && (
                         <ul className='profile-hero__equipped' aria-label='Equipped medals'>
