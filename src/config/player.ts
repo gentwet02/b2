@@ -12,4 +12,5 @@ export const PLAYER_TAG_LABELS = {
     nuker: 'Nuker',
     booster: 'Booster',
     suspicious: 'Suspicious',
+    hacked: 'Hacked',
 } as const;
