@@ -2,6 +2,8 @@
 @use '@/styles/utils' as *;
 
 .record-table-scroll {
+    // the pages size their columns on the table's room, not the screen's (@container record-table)
+    container: record-table / inline-size;
     overflow: auto;
     max-block-size: min(70vh, 34rem);
     border: 1.5px solid colors.$line;
@@ -100,6 +102,11 @@
 
     .rate-bar {
         min-inline-size: 7rem;
+    }
+
+    // a bar narrower than that reads as nothing: the tables hide it before it gets there
+    .rate-bar__bar {
+        min-inline-size: 2rem;
     }
 }
 

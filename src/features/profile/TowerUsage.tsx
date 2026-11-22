@@ -3,8 +3,8 @@ import PanelEmpty from '@/components/panel/PanelEmpty';
 import { HERO_BASES } from '@/config/profile';
 import type { Tower } from '@/types/profile';
 import { formatLabel, formatNumber } from '@/utils/format';
+import { heroPicture, towerPicture } from '@/utils/gamePictures';
 import { formatHero } from '@/utils/hero';
-import { heroPicture, towerPicture } from '@/utils/unitImages';
 
 interface TowerUsageProps {
     towers: Tower[];

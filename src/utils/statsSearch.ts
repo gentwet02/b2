@@ -13,6 +13,7 @@ import {
     STATS_VIEW_DEFAULT,
     STATS_VIEWS,
 } from '@/config/stats';
+import { SPLIT_HEROES_DEFAULT } from '@/config/variants';
 import type { CompareParams, CompareSideParams } from '@/services/api/compare';
 import type { CompareSideKey } from '@/types/compare';
 import type { SeasonQuery } from '@/types/season';
@@ -307,6 +308,25 @@ export interface StatsTabs {
     sameRange: boolean;
 }
 
+/**
+ * The picks tables the focus leaves something to show: none whose rows would all be the
+ * filter itself (a map picked: no maps tabs; a hero and its variant: no heroes tab; 3 towers:
+ * no towers tab; both: no strats tabs either).
+ */
+function picksTabs(search: StatsSearch) {
+    const splitHeroes = search.splitHeroes ?? SPLIT_HEROES_DEFAULT;
+    // a base hero with variants apart still lists its variants
+    const oneHero = !!search.hero && (search.hero.includes(':') || !splitHeroes);
+    const threeTowers = focusedTowers(search).length >= STATS_MAX_TOWERS;
+    const hidden = new Set<StatsView>([
+        ...(search.map ? (['maps', 'mapStrats'] as const) : []),
+        ...(oneHero ? (['heroes'] as const) : []),
+        ...(threeTowers ? (['towers'] as const) : []),
+        ...(oneHero && threeTowers ? (['loadouts', 'mapStrats'] as const) : []),
+    ]);
+    return STATS_VIEWS.filter((t) => !hidden.has(t.value));
+}
+
 /** The tabs: the picks tables, then the players ones that fit the sides. */
 export function statsTabs(a: SideState, b: SideState, search: StatsSearch): StatsTabs {
     const sameRange =
@@ -323,7 +343,7 @@ export function statsTabs(a: SideState, b: SideState, search: StatsSearch): Stat
     // boxes too
     const twin = groupA && groupB && tabA === tabB;
     const tabs: StatsTabs['tabs'] = [
-        ...STATS_VIEWS,
+        ...picksTabs(search),
         ...(groupA
             ? [{ value: 'players' as const, label: twin && !sameRange ? `Players: ${tabA}` : tabA }]
             : []),
@@ -336,7 +356,10 @@ export function statsTabs(a: SideState, b: SideState, search: StatsSearch): Stat
     // a link to the opponents' table lands on the one table there is
     const asked =
         sameRange && search.view === 'opponents' ? 'players' : (search.view ?? STATS_VIEW_DEFAULT);
-    const view = tabs.some((t) => t.value === asked) ? asked : STATS_VIEW_DEFAULT;
+    // a tab the focus hides: the default one, or the first left
+    const has = (v: StatsView) => tabs.some((t) => t.value === v);
+    const fallback = has(STATS_VIEW_DEFAULT) ? STATS_VIEW_DEFAULT : tabs[0]?.value;
+    const view = has(asked) ? asked : (fallback ?? STATS_VIEW_DEFAULT);
     return { tabs, view, picksView: STATS_VIEWS.some((t) => t.value === view), sameRange };
 }
 

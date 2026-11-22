@@ -10,12 +10,14 @@ interface StatsViewOptionsProps extends StatsViewState {
     onChange: (next: Partial<StatsSearch>) => void;
 }
 
-const PICKS: StatsView[] = ['heroes', 'towers', 'loadouts', 'maps'];
+const PICKS: StatsView[] = ['heroes', 'towers', 'loadouts', 'maps', 'mapStrats'];
 
 /** Above the table: which table, and for the picks tables the minimums for a row. */
 export default function StatsViewOptions(props: StatsViewOptionsProps) {
     const { tabs, view, towersOnly, min, minPick, sort, onChange } = props;
     const picks = PICKS.includes(view);
+    // map strats: one row per map, nothing to leave out
+    const mins = picks && view !== 'mapStrats';
 
     return (
         <>
@@ -29,7 +31,7 @@ export default function StatsViewOptions(props: StatsViewOptionsProps) {
                     onChange={(next) => onChange({ view: next })}
                 />
             </div>
-            {view === 'loadouts' && (
+            {(view === 'loadouts' || view === 'mapStrats') && (
                 <ControlCheckbox
                     checked={!towersOnly}
                     onChange={(checked) => onChange({ towersOnly: checked ? undefined : true })}
@@ -52,7 +54,7 @@ export default function StatsViewOptions(props: StatsViewOptionsProps) {
                     />
                 </label>
             )}
-            {(picks || view === 'players' || view === 'opponents') && (
+            {(mins || view === 'players' || view === 'opponents') && (
                 <div className='stats-results__mins'>
                     <label className='stats-results__min'>
                         <ControlLabel>Min. games</ControlLabel>
@@ -65,7 +67,7 @@ export default function StatsViewOptions(props: StatsViewOptionsProps) {
                             onSelect={(n) => onChange({ min: n })}
                         />
                     </label>
-                    {picks && (
+                    {mins && (
                         <label className='stats-results__min'>
                             <ControlLabel>Min. pick rate</ControlLabel>
                             <Dropdown

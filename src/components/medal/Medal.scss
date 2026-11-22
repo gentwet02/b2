@@ -12,6 +12,14 @@
         --medal-width: 2rem;
     }
 
+    &--xs {
+        --medal-width: 1.4rem;
+
+        .medal__season {
+            display: none;
+        }
+    }
+
     &__art {
         position: relative;
         display: block;

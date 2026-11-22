@@ -47,6 +47,83 @@
     }
 }
 
+.rank-cell {
+    display: inline-flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: $space-2xs;
+}
+
+// The players tables follow their own room (RecordTable's record-table container). What they
+// give up as it shrinks, least needed first (measured where each stops fitting, Chromium):
+// the focus text, the last met column (it moves under the name), the win rate bar (from its
+// 2rem minimum), then the rank's medal with the rank (the narrowest phones, below).
+$players-focus-text-from: 760px;
+$players-last-met-from: 660px;
+$players-bar-from: 440px;
+
+@container record-table (min-width: 560px) {
+    // every column its content, the room left over shared (the win rate four shares: its
+    // bar), the focus at the row's end (StatsTable.scss)
+    .record-table.compare-members__table {
+        :where(tr > *) {
+            inline-size: 1%;
+        }
+
+        :where(tr > .record-table__rate) {
+            inline-size: 4%;
+        }
+
+        :where(tr > :last-child) {
+            text-align: end;
+        }
+    }
+}
+
+@container record-table (min-width: #{$players-focus-text-from}) {
+    .record-table.compare-members__table .drill-link__text {
+        display: inline;
+    }
+}
+
+@container record-table (max-width: #{$players-focus-text-from}) {
+    .record-table.compare-members__table .drill-link__text {
+        display: none;
+    }
+}
+
+@container record-table (max-width: #{$players-last-met-from}) {
+    .record-table.compare-members__table {
+        .opponent-last-met {
+            display: none;
+        }
+
+        .opponent-cell__last {
+            display: block;
+        }
+    }
+}
+
+// the bar down to its 2rem (RecordTable) before it goes, phones included
+@container record-table (min-width: #{$players-bar-from}) {
+    .record-table.compare-members__table {
+        .rate-bar {
+            display: grid;
+            min-inline-size: 0;
+        }
+
+        .rate-bar__bar {
+            display: block;
+        }
+    }
+}
+
+@container record-table (max-width: #{$players-bar-from}) {
+    .record-table.compare-members__table .rate-bar__bar {
+        display: none;
+    }
+}
+
 // The player tables on small screens. .record-table.compare-members__table weighs two classes:
 // above RecordTable's own rules whatever order the stylesheets load in; the cells are in
 // :where(), so here the later rule wins.

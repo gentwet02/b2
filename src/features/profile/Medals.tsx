@@ -1,9 +1,10 @@
 import Medal from '@/components/medal/Medal';
 import Panel from '@/components/panel/Panel';
+import type { ProfileBadge } from '@/types/profile';
 import { bySeason, readBadges } from '@/utils/badges';
 
 interface MedalsProps {
-    medals: unknown[] | undefined;
+    medals: ProfileBadge[] | undefined;
 }
 
 /** Every season medal the player earned, oldest first. */

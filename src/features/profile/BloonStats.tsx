@@ -3,7 +3,7 @@ import PanelEmpty from '@/components/panel/PanelEmpty';
 import { MOAB_CLASS } from '@/config/profile';
 import type { BloonStat } from '@/types/profile';
 import { formatLabel, formatNumber } from '@/utils/format';
-import { bloonPicture } from '@/utils/unitImages';
+import { bloonPicture } from '@/utils/gamePictures';
 
 interface BloonStatsProps {
     bloons: BloonStat[];

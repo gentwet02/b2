@@ -7,6 +7,15 @@
     align-items: center;
     gap: $space-2xs;
 
+    // fixed sizes below: without the reset's 100% max, which Safari counts as 0 wide when it
+    // sizes a table column to its content (the name then runs past the column)
+    @at-root [class^='item-label__map'],
+        [class^='item-label__portrait'],
+        [class^='item-label__hero'],
+        [class^='item-label__tower'] {
+        max-inline-size: none;
+    }
+
     @at-root [class^='item-label__map'] {
         flex: none;
         inline-size: 3.25rem;
@@ -17,13 +26,29 @@
         background: colors.$paper-dim;
     }
 
-    @at-root [class^='item-label__hero'] {
+    @at-root [class^='item-label__portrait'] {
         flex: none;
         @include size(2rem);
         object-fit: cover;
         border: 1.5px solid colors.$ink;
         border-radius: 50%;
         background: colors.$paper-dim;
+    }
+
+    @at-root [class^='item-label__hero'],
+        [class^='item-label__tower'] {
+        flex: none;
+        @include size(2rem);
+        object-fit: contain;
+    }
+
+    // the pictures in the thumbnail's place (the stats tables put it back where they lack room)
+    &--pictures > :not(.item-label__pictures, .item-label__text) {
+        display: none;
+    }
+
+    &__pictures {
+        flex: none;
     }
 
     &__text {
@@ -56,7 +81,9 @@
             block-size: 1.45rem;
         }
 
-        @at-root [class^='item-label__hero'] {
+        @at-root [class^='item-label__portrait'],
+            [class^='item-label__hero'],
+        [class^='item-label__tower'] {
             @include size(1.6rem);
         }
 
@@ -68,7 +95,9 @@
     // the narrowest phones: the name alone
     @include breakpoint-down(tiny) {
         @at-root [class^='item-label__map'],
-            [class^='item-label__hero'] {
+            [class^='item-label__portrait'],
+            [class^='item-label__hero'],
+        [class^='item-label__tower'] {
             display: none;
         }
     }

@@ -1,3 +1,19 @@
+@use '@/styles/utils' as *;
+
+.stats-trio {
+    display: flex;
+    align-items: center;
+    gap: $space-2xs;
+
+    .stats-tower {
+        white-space: normal;
+    }
+
+    .loadout-pictures {
+        flex: none;
+    }
+}
+
 .stats-tower {
     font-weight: 600;
 }

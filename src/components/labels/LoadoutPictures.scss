@@ -1,0 +1,16 @@
+@use '@/styles/utils' as *;
+
+.loadout-pictures {
+    display: flex;
+    align-items: center;
+    gap: $space-3xs;
+
+    &__picture {
+        flex: none;
+        @include size(2rem);
+        // the reset's 100% lets Safari count the picture as 0 wide when it sizes a table
+        // column to its content: the column then ends before the pictures
+        max-inline-size: none;
+        object-fit: contain;
+    }
+}

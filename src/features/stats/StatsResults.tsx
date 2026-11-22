@@ -1,5 +1,6 @@
-import HeroLabel from '@/components/labels/HeroLabel';
+import ItemLabel from '@/components/labels/ItemLabel';
 import LoadoutLabel from '@/components/labels/LoadoutLabel';
+import LoadoutPictures from '@/components/labels/LoadoutPictures';
 import MapLabel from '@/components/labels/MapLabel';
 import RecordTable from '@/components/record-table/RecordTable';
 import { STATS_MAX_TOWERS } from '@/config/stats';
@@ -10,8 +11,10 @@ import type {
     StatsSearch,
     StatsTableSpec,
     StatsView,
+    StratForm,
 } from '@/types/stats';
 import { formatLabel, plural } from '@/utils/format';
+import { heroThumb, towerPicture } from '@/utils/gamePictures';
 import { formatHero, formatHeroPick } from '@/utils/hero';
 import { formatTowerList, loadoutName, parseLoadout, withVariantLabels } from '@/utils/loadout';
 import { formatMap } from '@/utils/map';
@@ -19,6 +22,7 @@ import { formatShare, gamesOf, keepRows, share } from '@/utils/record';
 import { joinList } from '@/utils/search';
 import { byText } from '@/utils/sort';
 import FocusButton from './FocusButton';
+import MapStratsTable from './MapStratsTable';
 import StatsTable from './StatsTable';
 
 interface StatsResultsProps {
@@ -32,7 +36,7 @@ interface StatsResultsProps {
     onFocus: (next: Partial<StatsSearch>) => void;
 }
 
-/** The table of the chosen view: heroes, towers, strats or maps. */
+/** The table of the chosen view: heroes, towers, strats, maps or each map's top strat. */
 export default function StatsResults(props: StatsResultsProps) {
     const { data, view, min, minPick, towersOnly, onFocus } = props;
     const [splitMaps] = useSplitMaps();
@@ -70,11 +74,12 @@ export default function StatsResults(props: StatsResultsProps) {
                   render: (r) => {
                       const variant = labels.variants[r.key];
                       return (
-                          <HeroLabel
-                              hero={r.key}
-                              portrait={variant?.portrait}
+                          <ItemLabel
+                              {...heroThumb(r.key, variant?.portrait)}
                               sub={r.key === (variant?.base ?? r.key) ? 'Classic' : undefined}
-                          />
+                          >
+                              {formatHero(r.key)}
+                          </ItemLabel>
                       );
                   },
                   name: (r) => formatHero(r.key),
@@ -93,11 +98,9 @@ export default function StatsResults(props: StatsResultsProps) {
                   rows: data.heroes,
                   title: 'Hero',
                   render: (r) => (
-                      <HeroLabel
-                          hero={r.key}
-                          pictured={labels.heroes[r.key]?.hero}
-                          portrait={labels.heroes[r.key]?.portrait}
-                      />
+                      <ItemLabel {...heroThumb(r.key, labels.heroes[r.key]?.portrait)}>
+                          {formatHero(r.key)}
+                      </ItemLabel>
                   ),
                   name: (r) => formatHero(r.key),
                   focus: (r) =>
@@ -110,7 +113,11 @@ export default function StatsResults(props: StatsResultsProps) {
             id: 'towers',
             rows: data.towers,
             title: 'Tower',
-            render: (r) => <span className='stats-tower'>{formatLabel(r.key)}</span>,
+            render: (r) => (
+                <ItemLabel kind='tower' image={towerPicture(r.key)}>
+                    {formatLabel(r.key)}
+                </ItemLabel>
+            ),
             name: (r) => formatLabel(r.key),
             focus: (r) =>
                 filters.towers.includes(r.key) || filters.towers.length >= STATS_MAX_TOWERS
@@ -119,27 +126,40 @@ export default function StatsResults(props: StatsResultsProps) {
         });
     }
 
-    if (view === 'loadouts') {
-        if (towersOnly) {
-            return table({
+    // the strats table's form, which the map strats tab follows
+    const stratForm: StratForm = towersOnly
+        ? 'trios'
+        : splitHeroes
+          ? 'loadoutVariants'
+          : 'loadouts';
+
+    function stratSpec(): StatsTableSpec {
+        if (stratForm === 'trios') {
+            return {
                 id: 'trios',
                 rows: data.trios,
                 title: 'Towers',
-                render: (r) => <span className='stats-tower'>{formatTowerList(r.key, ' · ')}</span>,
+                render: (r) => (
+                    <span className='stats-trio'>
+                        <span className='stats-tower'>{formatTowerList(r.key, ' · ')}</span>
+                        <LoadoutPictures towers={r.key.split(',')} />
+                    </span>
+                ),
                 name: (r) => formatTowerList(r.key, ' '),
                 focus: (r) =>
                     [...filters.towers].sort().join(',') === r.key ? null : { towers: r.key },
                 counted: 'tower pick',
-            });
+                strats: true,
+            };
         }
-        if (splitHeroes) {
+        if (stratForm === 'loadoutVariants') {
             // the variants' portraits, keyed like the strat rows ("Quincy_Cyber")
             const variantLabels = withVariantLabels(labels);
-            return table({
+            return {
                 id: 'loadout-variants',
                 rows: data.loadoutVariants,
                 title: 'Strat',
-                render: (r) => <LoadoutLabel loadoutKey={r.key} labels={variantLabels} />,
+                render: (r) => <LoadoutLabel loadoutKey={r.key} labels={variantLabels} pictures />,
                 name: (r) => loadoutName(r.key),
                 focus: (r) => {
                     const { hero, towers } = parseLoadout(r.key);
@@ -147,20 +167,46 @@ export default function StatsResults(props: StatsResultsProps) {
                     return { hero: formatHeroPick({ base, hero }), towers: joinList(towers) };
                 },
                 counted: 'strat',
-            });
+                strats: true,
+            };
         }
-        return table({
+        return {
             id: 'loadouts',
             rows: data.loadouts,
             title: 'Strat',
-            render: (r) => <LoadoutLabel loadoutKey={r.key} labels={labels} />,
+            render: (r) => <LoadoutLabel loadoutKey={r.key} labels={labels} pictures />,
             name: (r) => loadoutName(r.key),
             focus: (r) => {
                 const { hero, towers } = parseLoadout(r.key);
                 return { hero, towers: joinList(towers) };
             },
             counted: 'strat',
-        });
+            strats: true,
+        };
+    }
+
+    if (view === 'loadouts') return table(stratSpec());
+
+    const reversible = new Set(
+        data.options.maps
+            .filter((m) => m.variants.some((v) => v.variant === 'reversed'))
+            .map((m) => m.key),
+    );
+    const pickKey = (key: string) =>
+        splitMaps && !key.includes(':') && reversible.has(key) ? `${key}:classic` : key;
+
+    if (view === 'mapStrats') {
+        const mapStrats = splitMaps ? data.mapVariantStrats : data.mapStrats;
+        return (
+            <MapStratsTable
+                key={`${splitMaps ? 'map-variants' : 'maps'}:${stratForm}`}
+                rows={mapStrats?.[stratForm] ?? []}
+                labels={labels}
+                strat={stratSpec()}
+                mapFocus={pickKey}
+                onFocus={onFocus}
+            />
+        );
     }
 
     // maps: with a focus, the pick rate on each map; without one, how often each map is played
@@ -174,15 +220,6 @@ export default function StatsResults(props: StatsResultsProps) {
             ? `${filters.map.base}:${filters.map.variant}`
             : filters.map.base
         : null;
-    const reversible = new Set(
-        data.options.maps
-            .filter((m) => m.variants.some((v) => v.variant === 'reversed'))
-            .map((m) => m.key),
-    );
-    // split rows: "oasis" is the classic version when a reversed one exists
-    const pickKey = (key: string) =>
-        splitMaps && !key.includes(':') && reversible.has(key) ? `${key}:classic` : key;
-
     return (
         <RecordTable<StatsMapRow>
             key={splitMaps ? 'map-variants' : 'maps'}

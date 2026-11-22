@@ -1,6 +1,7 @@
 import RecordTable from '@/components/record-table/RecordTable';
 import Note from '@/components/text/Note';
 import type { StatsRow, StatsSearch, StatsTableSpec } from '@/types/stats';
+import { bem } from '@/utils/className';
 import { formatNumber, plural } from '@/utils/format';
 import { formatShare, gamesOf, keepRows, share } from '@/utils/record';
 import { byText } from '@/utils/sort';
@@ -28,7 +29,7 @@ export default function StatsTable(props: StatsTableProps) {
     return (
         <>
             <RecordTable<StatsRow>
-                className='stats-table'
+                className={bem('stats-table', spec.strats && 'strats')}
                 rows={rows}
                 rowKey={(r) => r.key}
                 label={{ title: spec.title, render: spec.render, sort: byText(spec.name) }}

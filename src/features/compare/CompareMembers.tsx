@@ -1,9 +1,11 @@
 import { useState, type ReactNode } from 'react';
 import { Link } from '@tanstack/react-router';
 import UserAvatar from '@/components/avatar/UserAvatar';
+import Medal from '@/components/medal/Medal';
 import Panel from '@/components/panel/Panel';
 import RecordTable from '@/components/record-table/RecordTable';
 import type { Comparison, CompareMember, CompareSideKey } from '@/types/compare';
+import { homMedalBadge } from '@/utils/badges';
 import { formatNumber, timeAgo } from '@/utils/format';
 import { nameWithAlias, playerLabel } from '@/utils/player';
 import { gamesOf } from '@/utils/record';
@@ -89,7 +91,18 @@ export default function CompareMembers(props: CompareMembersProps) {
                     {
                         title: all ? 'Best rank' : 'Rank',
                         numeric: true,
-                        render: (o) => (o.rank === null ? '–' : `#${formatNumber(o.rank)}`),
+                        render: (o) => (
+                            <span className='rank-cell'>
+                                {o.rank === null ? '–' : `#${formatNumber(o.rank)}`}
+                                {o.medal && (
+                                    <Medal
+                                        className='rank-cell__medal'
+                                        size='xs'
+                                        badge={homMedalBadge(o.medal)}
+                                    />
+                                )}
+                            </span>
+                        ),
                         sort: (a, b) => (a.rank ?? Infinity) - (b.rank ?? Infinity),
                     },
                     // a clan's members are the same every season

@@ -46,8 +46,8 @@ export interface UserProfile {
     equippedTitle: string;
     casualStats: ProfileStats;
     rankedStats: ProfileStats;
-    badges_equipped: unknown[];
-    badges_all: unknown[];
+    badges_equipped: ProfileBadge[];
+    badges_all: ProfileBadge[];
     chests: string[];
     chestsOpened: number;
     currentSeason: string;
@@ -86,7 +86,7 @@ export interface ProfileSeason {
         banner: string | null;
         border: string | null;
         title: string | null;
-        badges: { season: number | null; name: string; iconURL: string | null }[];
+        badges: ProfileBadge[];
     };
     firstSeen: string;
     lastSeen: string;
@@ -165,14 +165,22 @@ export interface StatDetail {
 }
 
 /**
- * Equipped badges as Ninja Kiwi sends them. Their exact shape isn't documented, so read
- * defensively: an image URL anywhere in the item becomes a picture, otherwise its name.
+ * A medal as the server sends it: NK's name ("Arena_Master_Top50Percent", "Arena_MOAB") and the
+ * season as the game numbers it. NK's picture link comes along unused: we draw ours.
  */
+export interface ProfileBadge {
+    season: number | null;
+    name: string;
+    iconURL: string | null;
+}
+
+/** A medal to draw (Medal): its title, our picture of it, its season. */
 export interface Badge {
     key: string;
-    /** "Hall of Masters, top 50%" */
+    /** "Top 50% of the Hall of Masters" */
     name: string;
-    url?: string | undefined;
+    /** our picture (gamePictures); none: Medal's plain stand-in */
+    picture?: string | undefined;
     /** season number the medal was earned in, as the game shows it (our season id + 1); null when unknown */
     season: number | null;
 }

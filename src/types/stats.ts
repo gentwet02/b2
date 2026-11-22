@@ -10,7 +10,15 @@ import type { GroupMode, SeasonQuery, SeasonScope } from '@/types/season';
 import type { SplitSearch } from '@/types/variants';
 
 /** The picks tables, then the players tabs: side 1's players, side 2's, the latest games. */
-export type StatsView = 'heroes' | 'towers' | 'loadouts' | 'maps' | 'players' | 'opponents' | 'games';
+export type StatsView =
+    | 'heroes'
+    | 'towers'
+    | 'loadouts'
+    | 'maps'
+    | 'mapStrats'
+    | 'players'
+    | 'opponents'
+    | 'games';
 
 /** What a side is: a range of each leaderboard, one player, or a clan. */
 export type SideMode = GroupMode;
@@ -52,6 +60,24 @@ export interface StatsMapRow extends StatsRow {
     /** the group's games on that map, focus or not */
     total: number;
 }
+
+/** A map's most played strat: `key` the map, `record` the strat's games there. */
+export interface StatsMapStratRow extends StatsRow {
+    /** a strats table key: "Quincy|…", "Quincy_Cyber|…" or the 3 towers alone ("Alchemist,…") */
+    strat: string;
+    /** the focus's games on that map, what the strat's pick rate is out of */
+    total: number;
+}
+
+/** Each map's most played strat, in the strats table's three forms. */
+export interface StatsMapStrats {
+    loadouts: StatsMapStratRow[];
+    loadoutVariants: StatsMapStratRow[];
+    trios: StatsMapStratRow[];
+}
+
+/** The strats table's form: base heroes, hero variants apart, or the 3 towers alone. */
+export type StratForm = keyof StatsMapStrats;
 
 export interface StatsOption {
     key: string;
@@ -117,6 +143,10 @@ export interface Stats extends BaseApiResponse {
     maps: StatsMapRow[];
     /** classic and reversed apart: "oasis", "oasis:reversed" */
     mapVariants: StatsMapRow[];
+    /** each map's most played strat (the map filter is ignored here; older servers: missing) */
+    mapStrats?: StatsMapStrats | undefined;
+    /** the same, classic and reversed apart */
+    mapVariantStrats?: StatsMapStrats | undefined;
     /** the opponents' heroes and towers (sides filtered separately) */
     options2?: SideFilterOptions | null;
     /** the opponent's loadout filter, as the server read it */
@@ -257,4 +287,6 @@ export interface StatsTableSpec {
     focus: (r: StatsRow) => Partial<StatsSearch> | null;
     /** what a row is ("strat"): the table's rows counted under it */
     counted?: string;
+    /** a strats table: its pictures and widths (StatsTable.scss) */
+    strats?: true;
 }

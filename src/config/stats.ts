@@ -9,6 +9,7 @@ export const STATS_VIEWS: { value: StatsView; label: string }[] = [
     { value: 'towers', label: 'Towers' },
     { value: 'loadouts', label: 'Strats' },
     { value: 'maps', label: 'Maps' },
+    { value: 'mapStrats', label: 'Map strats' },
 ];
 
 /** Tabs about the players: each side's table, and the games (a side is one player or a clan). */

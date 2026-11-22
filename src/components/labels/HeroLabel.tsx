@@ -16,7 +16,7 @@ export default function HeroLabel(props: HeroLabelProps) {
     const { hero, pictured, portrait, sub } = props;
 
     return (
-        <ItemLabel kind='hero' image={heroImage(pictured ?? hero, portrait ?? undefined)} sub={sub}>
+        <ItemLabel kind='portrait' image={heroImage(pictured ?? hero, portrait ?? undefined)} sub={sub}>
             {formatHero(hero)}
         </ItemLabel>
     );

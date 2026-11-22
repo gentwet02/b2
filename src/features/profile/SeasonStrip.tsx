@@ -3,7 +3,7 @@ import type { UserProfile } from '@/types/profile';
 import { arenaName } from '@/utils/badges';
 import { bem } from '@/utils/className';
 import { formatNumber } from '@/utils/format';
-import { arenaPicture } from '@/utils/unitImages';
+import { arenaPicture } from '@/utils/gamePictures';
 
 interface SeasonStripProps {
     profile: UserProfile;

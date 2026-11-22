@@ -1,0 +1,15 @@
+@use '@/styles/utils' as *;
+
+// Tablets (phones are edge to edge already): the stats tables get the room the page's and the
+// panels' margins took
+@include breakpoint-down(tablet) {
+    @include breakpoint-up(small) {
+        .page.stats {
+            inline-size: calc(100% - 2 * #{$space-xs});
+
+            .panel:has(.record-table) {
+                padding-inline: $space-xs;
+            }
+        }
+    }
+}

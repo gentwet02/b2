@@ -71,6 +71,8 @@ export interface CompareMember {
     tag?: PlayerTag | null;
     /** best rank among the seasons counted */
     rank: number | null;
+    /** the medal that rank earns: NK's badge name, the season as the game numbers it (older servers: missing) */
+    medal?: { name: string; season: number } | null;
     /** seasons the player was on that side */
     seasons: number;
     record: Wld;

@@ -4,7 +4,8 @@ import { bem, cx } from '@/utils/className';
 
 interface MedalProps {
     badge: Badge;
-    size?: 'sm' | 'md';
+    /** xs: a table's, without the season's numeral (too small to read) */
+    size?: 'xs' | 'sm' | 'md';
     className?: string;
 }
 
@@ -24,8 +25,8 @@ export default function Medal(props: MedalProps) {
             title={label}
         >
             <span className='medal__art'>
-                {badge.url ? (
-                    <img className='medal__img' src={badge.url} alt={label} loading='lazy' />
+                {badge.picture ? (
+                    <img className='medal__img' src={badge.picture} alt={label} loading='lazy' />
                 ) : (
                     <span className='medal__fallback' role='img' aria-label={label} />
                 )}

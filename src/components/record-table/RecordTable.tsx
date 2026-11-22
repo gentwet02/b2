@@ -2,7 +2,11 @@ import { useMemo, useRef, useState, type CSSProperties, type ReactNode } from 'r
 import { useVirtualizer } from '@tanstack/react-virtual';
 import PanelEmpty from '@/components/panel/PanelEmpty';
 import VirtualSpacer from '@/components/virtual/VirtualSpacer';
-import { RECORD_TABLE_OVERSCAN, RECORD_TABLE_ROW_ESTIMATE } from '@/config/table';
+import {
+    RECORD_TABLE_FULL_ROWS,
+    RECORD_TABLE_OVERSCAN,
+    RECORD_TABLE_ROW_ESTIMATE,
+} from '@/config/table';
 import useScrollMargin from '@/hooks/useScrollMargin';
 import type { RecordColumn, RecordSortKey, RecordSortState, Wld } from '@/types/record';
 import { cx } from '@/utils/className';
@@ -71,7 +75,7 @@ export default function RecordTable<T extends { record: Wld }>(props: RecordTabl
         count: sorted.length,
         getScrollElement: () => scrollRef.current,
         estimateSize: () => RECORD_TABLE_ROW_ESTIMATE,
-        overscan: RECORD_TABLE_OVERSCAN,
+        overscan: sorted.length <= RECORD_TABLE_FULL_ROWS ? sorted.length : RECORD_TABLE_OVERSCAN,
         scrollMargin: margin,
         // a row keeps its measured height when a sort moves it
         getItemKey: (i) => rowKey(sorted[i]!),

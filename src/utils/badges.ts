@@ -1,9 +1,8 @@
-import type { Badge } from '@/types/profile';
+import type { Badge, ProfileBadge } from '@/types/profile';
 import { formatLabel } from '@/utils/format';
+import { medalPicture } from '@/utils/gamePictures';
 import { toRoman } from '@/utils/roman';
 import { seasonLabel } from '@/utils/season';
-
-const IMAGE_URL = /^https?:\/\/\S+\.(png|jpe?g|webp|gif|svg)(\?\S*)?$/i;
 
 /** NK's arena codes in medal names → what the game calls them. */
 const ARENAS: Record<string, string> = {
@@ -58,32 +57,26 @@ export function medalLabel(badge: Badge) {
         : `${seasonLabel(badge.season - 1)} medal: ${badge.name}`;
 }
 
-/** Badges (medals) as NK sends them, read defensively (see Badge). */
-export function readBadges(raw: unknown[] | undefined): Badge[] {
-    return (raw ?? []).flatMap((item, i): Badge[] => {
-        if (typeof item === 'string') {
-            return IMAGE_URL.test(item)
-                ? [{ key: `b${i}`, url: item, name: 'Unknown medal', season: null }]
-                : [{ key: `b${i}`, name: medalTitle(item), season: null }];
-        }
-        if (item && typeof item === 'object') {
-            const values = Object.entries(item as Record<string, unknown>);
-            const url = values.find(([, v]) => typeof v === 'string' && IMAGE_URL.test(v))?.[1] as
-                | string
-                | undefined;
-            const nameField = values.find(
-                ([k, v]) => typeof v === 'string' && /^(name|badge|type|id)$/i.test(k),
-            )?.[1] as string | undefined;
-            const rawSeason = (item as { season?: unknown }).season;
-            const season =
-                typeof rawSeason === 'number' && Number.isFinite(rawSeason) ? rawSeason : null;
-            const name = nameField ? medalTitle(nameField) : 'Unknown medal';
-            return url || nameField ? [{ key: `b${i}`, url, name, season }] : [];
-        }
-        return [];
-    });
+/** The server's medals, to draw: their titles and our pictures. */
+export function readBadges(badges: ProfileBadge[] | undefined): Badge[] {
+    return (badges ?? []).map((badge, i) => ({
+        key: `b${i}`,
+        name: medalTitle(badge.name),
+        picture: medalPicture(badge.name),
+        season: badge.season,
+    }));
 }
 
 /** Oldest season first, like the game's medal list. */
 export const bySeason = (badges: Badge[]) =>
     [...badges].sort((a, b) => (a.season ?? -1) - (b.season ?? -1));
+
+/** A Hall of Masters medal the server named for a rank, as a badge to draw. */
+export function homMedalBadge(medal: { name: string; season: number }): Badge {
+    return {
+        key: medal.name,
+        name: medalTitle(medal.name),
+        picture: medalPicture(medal.name),
+        season: medal.season,
+    };
+}

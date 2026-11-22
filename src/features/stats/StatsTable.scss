@@ -1,4 +1,195 @@
+@use '@/styles/utils/colors';
 @use '@/styles/utils' as *;
+
+// Map strats: the strat is a second label, set apart like the first.
+.record-table.stats-table .stats-table__strat {
+    box-shadow: inset -1.5px 0 0 colors.$line;
+}
+
+// Sizes follow the table's own room (its scroll box is the record-table container), not the
+// screen's. Each "from …px" below is where the next thing stops fitting, measured on the real
+// tables (Chromium, Nov 2026 data).
+$names-from: 560px; // below: phones, RecordTable gives the label column the room
+$strat-pictures-from: 716px; // the strats table's hero and towers pictures
+$map-pictures-from: 944px; // map strats': its strat's hero and towers pictures
+$map-record-from: 808px; // map strats' W–L
+$map-hero-from: 728px; // map strats' hero picture, on the left once the towers' are gone
+$map-games-from: 672px; // map strats' games
+$map-thumb-from: 576px; // map strats' map picture, the last to go
+
+.record-table.stats-table {
+    // A name's room: what the row leaves it (the box less the other columns, per table and step:
+    // --stats-others), from a floor up to the longest strat's towers on one line (295px).
+    --stats-others: 30rem;
+    --stats-name-min: 6rem;
+    --stats-name: clamp(var(--stats-name-min), 100cqi - var(--stats-others), 18.5rem);
+}
+
+// From $names-from: every column as wide as its content, and the room left over shared between
+// them. A table as wide as its box hands its slack to its auto columns, the label the most (a
+// hero's name in a third of the table); with 1% on every column it goes to them in proportion:
+// it reads as padding, not as one empty column. The win rate four shares: its bar grows.
+@container record-table (min-width: #{$names-from}) {
+    .record-table.stats-table {
+        :where(tr > *) {
+            inline-size: 1%;
+        }
+
+        :where(tr > .record-table__rate) {
+            inline-size: 4%;
+        }
+
+        // the focus at the row's end: its share before it, like the numbers' (the win rate's
+        // cell otherwise ends the row's content with no gap of its own)
+        :where(tr > :last-child) {
+            text-align: end;
+        }
+
+        // a 1% column is its content's narrowest: a name keeps its one line up to its room
+        .item-label__text,
+        .stats-trio > .stats-tower {
+            inline-size: max-content;
+            max-inline-size: var(--stats-name);
+        }
+
+        // a strat (and a towers-only row) at its room on every row: the pictures after it line
+        // up, and the column keeps its width whichever rows are rendered
+        .item-label--pictures > .item-label__text,
+        .stats-trio > .stats-tower {
+            inline-size: var(--stats-name);
+        }
+
+        // the bar gives way first: names and pictures need the room more (RecordTable keeps
+        // it 2rem at least)
+        .rate-bar {
+            min-inline-size: 0;
+            max-inline-size: 16rem;
+        }
+    }
+}
+
+// Strats: the pictures while the strat keeps 10rem, then the hero's alone on the left.
+.record-table.stats-table--strats {
+    --stats-others: 38.5rem;
+    --stats-name-min: 10rem;
+
+    // narrower cells and no focus text below desktops (RecordTable)
+    @include breakpoint-down(big) {
+        --stats-others: 34.75rem;
+    }
+}
+
+@container record-table (max-width: #{$strat-pictures-from}) {
+    .record-table.stats-table--strats {
+        --stats-others: 27.5rem;
+        --stats-name-min: 6rem;
+
+        .item-label--pictures > :not(.item-label__pictures, .item-label__text) {
+            display: block;
+        }
+
+        .item-label__pictures,
+        .stats-trio .loadout-pictures {
+            display: none;
+        }
+    }
+}
+
+// Map strats: two labels side by side. The map's name wraps past 17ch (the longest two-word
+// names stay on one line, "Cobra Command Reversed" doesn't), the strat's
+// text what the row leaves it. As the room shrinks, the strat's text wraps first, then the table
+// gives up in this order: the towers' pictures (the hero's alone on the left), the W–L, the
+// hero's picture, the games, and last the map's picture. No focus text: the arrow says it.
+.record-table.stats-table--map-strats {
+    --stats-others: 50rem;
+    --stats-name-min: 9rem;
+
+    @include breakpoint-down(big) {
+        --stats-others: 49.5rem;
+    }
+
+    th .item-label__text {
+        max-inline-size: 17ch;
+    }
+
+    .drill-link__text {
+        display: none;
+    }
+}
+
+@container record-table (max-width: #{$map-pictures-from}) {
+    .record-table.stats-table--map-strats {
+        --stats-others: 43.5rem;
+        --stats-name-min: 7rem;
+
+        .item-label--pictures > :not(.item-label__pictures, .item-label__text) {
+            display: block;
+        }
+
+        .item-label__pictures,
+        .stats-trio .loadout-pictures {
+            display: none;
+        }
+    }
+}
+
+@container record-table (max-width: #{$map-record-from}) {
+    .record-table.stats-table--map-strats {
+        --stats-others: 38.5rem;
+
+        .record-table__record {
+            display: none;
+        }
+    }
+}
+
+@container record-table (max-width: #{$map-hero-from}) {
+    .record-table.stats-table--map-strats {
+        --stats-others: 35rem;
+
+        .stats-table__strat .item-label > :not(.item-label__text, .item-label__pictures) {
+            display: none;
+        }
+    }
+}
+
+@container record-table (max-width: #{$map-games-from}) {
+    .record-table.stats-table--map-strats {
+        --stats-others: 30rem;
+
+        .record-table__games {
+            display: none;
+        }
+    }
+}
+
+@container record-table (max-width: #{$map-thumb-from}) {
+    .record-table.stats-table--map-strats {
+        --stats-others: 25rem;
+
+        [class^='item-label__map'] {
+            display: none;
+        }
+    }
+}
+
+// Phones (below $names-from): RecordTable gives the label column the room; in map strats the
+// strat's column takes it.
+@container record-table (max-width: #{$names-from}) {
+    .record-table.stats-table .item-label > .item-label__text {
+        min-inline-size: 0;
+    }
+
+    .record-table.stats-table--map-strats {
+        thead tr > :first-child {
+            inline-size: 1%;
+        }
+
+        thead .stats-table__strat {
+            inline-size: 100%;
+        }
+    }
+}
 
 // The picks tables (StatsTable, and the maps table of StatsResults) on small screens.
 // .record-table.stats-table weighs two classes: above RecordTable's own rules (one) whatever
@@ -70,5 +261,13 @@
         :where(tr > :last-child) {
             padding-inline: 0.125rem 0.25rem;
         }
+    }
+}
+
+// the narrowest phones: the names alone (ItemLabel's rule, which the strats' thumbnail rules
+// above outweigh)
+@include breakpoint-down(tiny) {
+    .record-table.stats-table .item-label > :not(.item-label__text, .item-label__pictures) {
+        display: none;
     }
 }
